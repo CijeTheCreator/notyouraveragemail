@@ -10,6 +10,7 @@ import {
   Mail,
   Check,
   SlidersHorizontal,
+  RefreshCw,
 } from "lucide-react";
 import { Email, FolderType } from "../types";
 
@@ -22,6 +23,8 @@ interface EmailListProps {
   onSearchChange: (query: string) => void;
   filter: "all" | "unread" | "starred" | "actions";
   onFilterChange: (filter: "all" | "unread" | "starred" | "actions") => void;
+  onSync?: () => void;
+  isSyncing?: boolean;
 }
 
 export default function EmailList({
@@ -33,6 +36,8 @@ export default function EmailList({
   onSearchChange,
   filter,
   onFilterChange,
+  onSync,
+  isSyncing,
 }: EmailListProps) {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
@@ -75,10 +80,22 @@ export default function EmailList({
     <div className="flex-1 bg-[#FEFBEA] flex flex-col h-screen overflow-hidden">
       {/* Top Header & Search Bar */}
       <div className="p-4 border-b-2 border-[#2c2a29] bg-white/70 flex items-center justify-between gap-4">
-        {/* Title */}
-        <h2 className="font-anton text-2xl tracking-wide text-[#2c2a29] min-w-[120px]">
-          {getFolderTitle()}
-        </h2>
+        {/* Title & Sync button */}
+        <div className="flex items-center gap-2">
+          <h2 className="font-anton text-2xl tracking-wide text-[#2c2a29] min-w-[100px]">
+            {getFolderTitle()}
+          </h2>
+          {onSync && (
+            <button
+              onClick={onSync}
+              disabled={isSyncing}
+              className="brutal-btn bg-white hover:bg-[#D0B4FF] p-1.5 text-[#2c2a29] disabled:opacity-50"
+              title="Sync with AgentMail"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? "animate-spin text-[#8544FA]" : ""}`} />
+            </button>
+          )}
+        </div>
 
         {/* Search Bar */}
         <div className="relative flex-1 max-w-xl">

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import {
   Inbox,
   Send,
@@ -9,6 +10,8 @@ import {
   Sparkles,
   Plus,
   HelpCircle,
+  LogIn,
+  LogOut,
 } from "lucide-react";
 import { FolderType } from "../types";
 
@@ -20,6 +23,13 @@ interface SidebarProps {
   inboxUnreadCount: number;
   sentCount: number;
   actionCardsCount: number;
+  user?: {
+    name?: string;
+    username?: string;
+    inboxId?: string;
+    email?: string;
+  } | null;
+  onSignOut?: () => void;
 }
 
 export default function Sidebar({
@@ -30,7 +40,13 @@ export default function Sidebar({
   inboxUnreadCount,
   sentCount,
   actionCardsCount,
+  user,
+  onSignOut,
 }: SidebarProps) {
+  const displayName = user?.name || user?.username || "Guest User";
+  const displayEmail = user?.inboxId || user?.email || "chijioke-6638@agentmail.to";
+  const initials = displayName.substring(0, 2).toUpperCase();
+
   return (
     <aside className="w-60 flex-shrink-0 bg-[#FEFBEA] border-r-2 border-[#2c2a29] flex flex-col justify-between h-screen select-none">
       {/* Top Header & Navigation */}
@@ -47,19 +63,40 @@ export default function Sidebar({
           </div>
         </div>
 
-        {/* User Identity Pill */}
-        <div className="bg-white border-2 border-[#2c2a29] p-2 brutal-shadow-sm flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-full bg-[#8544FA] text-[#FEFBEA] font-anton flex items-center justify-center border border-[#2c2a29] text-xs">
-            AM
-          </div>
-          <div className="overflow-hidden">
-            <div className="text-xs font-bold text-[#2c2a29] truncate">Alex Mercer</div>
-            <div className="text-[10px] text-gray-500 truncate flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
-              alex@agentmail.to
+        {/* User Identity Pill or Sign In Button */}
+        {user ? (
+          <div className="bg-white border-2 border-[#2c2a29] p-2 brutal-shadow-sm flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 overflow-hidden">
+              <div className="w-7 h-7 rounded-full bg-[#8544FA] text-[#FEFBEA] font-anton flex items-center justify-center border border-[#2c2a29] text-xs flex-shrink-0">
+                {initials}
+              </div>
+              <div className="overflow-hidden min-w-0">
+                <div className="text-xs font-bold text-[#2c2a29] truncate">{displayName}</div>
+                <div className="text-[10px] text-gray-500 truncate flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block flex-shrink-0"></span>
+                  <span className="truncate">{displayEmail}</span>
+                </div>
+              </div>
             </div>
+            {onSignOut && (
+              <button
+                onClick={onSignOut}
+                className="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-black transition-colors"
+                title="Sign Out"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
-        </div>
+        ) : (
+          <Link
+            href="/auth/signin"
+            className="brutal-btn bg-[#8544FA] text-[#FEFBEA] p-2 flex items-center justify-center gap-1.5 text-xs font-bold hover:bg-[#7330ea]"
+          >
+            <LogIn className="w-3.5 h-3.5" />
+            <span>SIGN IN / CLAIM INBOX</span>
+          </Link>
+        )}
 
         {/* Big Compose Button */}
         <button

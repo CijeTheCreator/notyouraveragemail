@@ -1,16 +1,50 @@
 "use client";
 
 import React, { useState, useMemo, useCallback, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useQuery, useAction, useMutation, useConvexAuth } from "convex/react";
+import { useAuthActions } from "@convex-dev/auth/react";
+import { api } from "../convex/_generated/api";
 import Sidebar from "./components/Sidebar";
 import EmailList from "./components/EmailList";
 import EmailReader from "./components/EmailReader";
 import ComposeModal from "./components/ComposeModal";
 import KeyboardShortcutsModal from "./components/KeyboardShortcutsModal";
-import { INITIAL_EMAILS } from "./mockData";
 import { Email, FolderType } from "./types";
 
 export default function MailPage() {
-  const [emails, setEmails] = useState<Email[]>(INITIAL_EMAILS);
+  const router = useRouter();
+  const { isAuthenticated, isLoading } = useConvexAuth();
+  const { signOut } = useAuthActions();
+
+  // Redirect to sign in if not authenticated
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.replace("/auth/signin");
+    }
+  }, [isLoading, isAuthenticated, router]);
+
+  const currentUser = useQuery(
+    api.messages.getCurrentUser,
+    isAuthenticated ? {} : "skip"
+  );
+  const activeInboxId = currentUser?.inboxId || "chijioke-6638@agentmail.to";
+
+  // Real-time Convex messages subscription
+  const dbMessages = useQuery(
+    api.messages.listMessages,
+    isAuthenticated ? { inboxId: activeInboxId } : "skip"
+  );
+
+  // Convex actions and mutations
+  const sendEmailAction = useAction(api.agentmail.sendEmail);
+  const syncInboxMessagesAction = useAction(api.agentmail.syncInboxMessages);
+  const toggleStarMutation = useMutation(api.messages.toggleStar);
+  const toggleReadMutation = useMutation(api.messages.toggleRead);
+  const moveToTrashMutation = useMutation(api.messages.moveToTrash);
+
+  const [isSyncing, setIsSyncing] = useState(false);
+
   const [activeFolder, setActiveFolder] = useState<FolderType>("inbox");
   const [selectedEmailId, setSelectedEmailId] = useState<string | null>(null);
   const [isReadingEmail, setIsReadingEmail] = useState(false);
@@ -22,9 +56,44 @@ export default function MailPage() {
   const [composeInitialSubject, setComposeInitialSubject] = useState("");
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
 
+  // Auto-sync inbox messages from AgentMail on mount or inbox change
+  useEffect(() => {
+    if (isAuthenticated && activeInboxId) {
+      syncInboxMessagesAction({ inboxId: activeInboxId }).catch((err) => {
+        console.warn("Auto-sync AgentMail notice:", err?.message || err);
+      });
+    }
+  }, [isAuthenticated, activeInboxId, syncInboxMessagesAction]);
+
+  // Map real-time DB messages to frontend Email model
+  const allEmails = useMemo<Email[]>(() => {
+    if (!dbMessages) return [];
+
+    return dbMessages.map((m) => ({
+      id: m._id,
+      folder: m.folder as FolderType,
+      fromName: m.fromName,
+      fromEmail: m.fromEmail,
+      toName: m.toName,
+      toEmail: m.toEmail,
+      subject: m.subject,
+      preview: m.preview,
+      body: m.body,
+      htmlBody: m.htmlBody,
+      timestamp: m.timestamp.includes("T")
+        ? new Date(m.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+        : m.timestamp,
+      isRead: m.isRead,
+      isStarred: m.isStarred,
+      otpCode: m.otpCode,
+      actionCard: m.actionCard as any,
+      tags: m.labels?.map((l) => ({ label: l, bgColor: "#E2E8F0", textColor: "#334155" })),
+    }));
+  }, [dbMessages]);
+
   // Filtered emails based on folder, search query, and sub-filter
   const filteredEmails = useMemo(() => {
-    return emails.filter((email) => {
+    return allEmails.filter((email) => {
       // Folder check
       if (activeFolder === "action-cards") {
         if (!email.actionCard) return false;
@@ -60,25 +129,25 @@ export default function MailPage() {
 
       return true;
     });
-  }, [emails, activeFolder, filter, searchQuery]);
+  }, [allEmails, activeFolder, filter, searchQuery]);
 
   // Selected email object
   const selectedEmail = useMemo(() => {
-    return emails.find((e) => e.id === selectedEmailId) || null;
-  }, [emails, selectedEmailId]);
+    return allEmails.find((e) => e.id === selectedEmailId) || null;
+  }, [allEmails, selectedEmailId]);
 
   // Counters
   const inboxUnreadCount = useMemo(() => {
-    return emails.filter((e) => e.folder === "inbox" && !e.isRead).length;
-  }, [emails]);
+    return allEmails.filter((e) => e.folder === "inbox" && !e.isRead).length;
+  }, [allEmails]);
 
   const sentCount = useMemo(() => {
-    return emails.filter((e) => e.folder === "sent").length;
-  }, [emails]);
+    return allEmails.filter((e) => e.folder === "sent").length;
+  }, [allEmails]);
 
   const actionCardsCount = useMemo(() => {
-    return emails.filter((e) => !!e.actionCard).length;
-  }, [emails]);
+    return allEmails.filter((e) => !!e.actionCard).length;
+  }, [allEmails]);
 
   // Select folder handler
   const handleSelectFolder = (folder: FolderType) => {
@@ -89,12 +158,15 @@ export default function MailPage() {
   };
 
   // Select email & open full reader pane
-  const handleSelectEmail = (id: string) => {
+  const handleSelectEmail = async (id: string) => {
     setSelectedEmailId(id);
     setIsReadingEmail(true);
-    setEmails((prev) =>
-      prev.map((m) => (m.id === id ? { ...m, isRead: true } : m))
-    );
+
+    try {
+      await toggleReadMutation({ id: id as any });
+    } catch (err) {
+      console.warn("toggleRead error:", err);
+    }
   };
 
   // Back to email list
@@ -103,24 +175,30 @@ export default function MailPage() {
   };
 
   // Toggle Star
-  const handleToggleStar = (id: string) => {
-    setEmails((prev) =>
-      prev.map((m) => (m.id === id ? { ...m, isStarred: !m.isStarred } : m))
-    );
+  const handleToggleStar = async (id: string) => {
+    try {
+      await toggleStarMutation({ id: id as any });
+    } catch (err) {
+      console.warn("toggleStar error:", err);
+    }
   };
 
   // Toggle Read/Unread
-  const handleToggleRead = (id: string) => {
-    setEmails((prev) =>
-      prev.map((m) => (m.id === id ? { ...m, isRead: !m.isRead } : m))
-    );
+  const handleToggleRead = async (id: string) => {
+    try {
+      await toggleReadMutation({ id: id as any });
+    } catch (err) {
+      console.warn("toggleRead error:", err);
+    }
   };
 
   // Delete / Trash
-  const handleDeleteEmail = (id: string) => {
-    setEmails((prev) =>
-      prev.map((m) => (m.id === id ? { ...m, folder: "trash" } : m))
-    );
+  const handleDeleteEmail = async (id: string) => {
+    try {
+      await moveToTrashMutation({ id: id as any });
+    } catch (err) {
+      console.warn("moveToTrash error:", err);
+    }
     if (selectedEmailId === id) {
       setIsReadingEmail(false);
     }
@@ -144,31 +222,38 @@ export default function MailPage() {
     setIsComposeOpen(true);
   };
 
-  // Send Email Handler
-  const handleSendEmail = (data: Partial<Email>) => {
-    const newMail: Email = {
-      id: `mail-sent-${Date.now()}`,
-      folder: "sent",
-      fromName: "Alex Mercer",
-      fromEmail: "alex@agentmail.to",
-      toName: data.toName || data.toEmail?.split("@")[0] || "Recipient",
-      toEmail: data.toEmail || "",
-      subject: data.subject || "(No subject)",
-      preview: data.preview || "",
-      body: data.body || "",
-      timestamp: "Just now",
-      isRead: true,
-      isStarred: false,
-      tags: [{ label: "Outbound", bgColor: "#E2E8F0", textColor: "#334155" }],
-    };
+  // Live AgentMail Send Email Handler
+  const handleSendEmail = async (data: Partial<Email>) => {
+    try {
+      // Dispatch real email through AgentMail API
+      await sendEmailAction({
+        inboxId: activeInboxId,
+        to: data.toEmail || "",
+        subject: data.subject || "(No subject)",
+        text: data.body || "",
+        fromName: currentUser?.name || currentUser?.username || "Modern Mail User",
+      });
+    } catch (err: any) {
+      console.error("Live AgentMail dispatch error:", err);
+      alert(`Failed to send email: ${err.message || "Unknown error"}`);
+    }
+  };
 
-    setEmails((prev) => [newMail, ...prev]);
+  // Sync Mail from AgentMail
+  const handleSyncMail = async () => {
+    setIsSyncing(true);
+    try {
+      await syncInboxMessagesAction({ inboxId: activeInboxId });
+    } catch (err: any) {
+      console.error("Sync error:", err);
+    } finally {
+      setIsSyncing(false);
+    }
   };
 
   // Keyboard navigation
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      // If user is currently typing in an input or textarea, skip global shortcuts
       const activeTag = (document.activeElement?.tagName || "").toLowerCase();
       if (activeTag === "input" || activeTag === "textarea") {
         if (e.key === "Escape") {
@@ -191,7 +276,6 @@ export default function MailPage() {
           setIsReadingEmail(false);
         }
       } else if (isReadingEmail) {
-        // Reader shortcuts
         if (selectedEmail) {
           if (e.key === "r" || e.key === "R") {
             e.preventDefault();
@@ -211,7 +295,6 @@ export default function MailPage() {
           }
         }
       } else {
-        // List navigation shortcuts
         if (e.key === "j" || e.key === "ArrowDown") {
           e.preventDefault();
           if (filteredEmails.length > 0) {
@@ -262,6 +345,26 @@ export default function MailPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
+  if (isLoading) {
+    return (
+      <div className="h-screen w-screen flex flex-col items-center justify-center bg-[#FEFBEA] text-[#2c2a29]">
+        <div className="border-2 border-[#2c2a29] bg-white p-6 brutal-shadow-left flex flex-col items-center gap-3">
+          <h1 className="font-anton text-3xl tracking-wider">
+            MODERN<span className="text-[#8544FA]">MAIL</span>
+          </h1>
+          <div className="flex items-center gap-2 text-xs font-bold text-gray-600 font-mono">
+            <span className="w-2 h-2 rounded-full bg-[#8544FA] animate-ping" />
+            Verifying authentication...
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-[#FEFBEA] text-[#2c2a29] font-sans">
       {/* Pane 1: Left Sidebar */}
@@ -277,9 +380,11 @@ export default function MailPage() {
         inboxUnreadCount={inboxUnreadCount}
         sentCount={sentCount}
         actionCardsCount={actionCardsCount}
+        user={currentUser}
+        onSignOut={() => signOut()}
       />
 
-      {/* Pane 2: Main Pane (Displays Email List by default, switches to Full Email Reader on click) */}
+      {/* Pane 2: Main Pane (Email List or Full-Width Reader) */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden">
         {isReadingEmail && selectedEmail ? (
           <EmailReader
@@ -301,6 +406,8 @@ export default function MailPage() {
             onSearchChange={setSearchQuery}
             filter={filter}
             onFilterChange={setFilter}
+            onSync={handleSyncMail}
+            isSyncing={isSyncing}
           />
         )}
       </main>
