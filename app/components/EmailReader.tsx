@@ -10,15 +10,15 @@ import {
   Mail,
   Copy,
   Check,
-  Sparkles,
-  Zap,
-  Clock,
   Send,
+  Zap,
 } from "lucide-react";
 import { Email } from "../types";
+import TrustScoreBadge from "./TrustScoreBadge";
 
 interface EmailReaderProps {
   email: Email | null;
+  inboxId?: string;
   onBack: () => void;
   onToggleStar: (id: string) => void;
   onToggleRead: (id: string) => void;
@@ -29,6 +29,7 @@ interface EmailReaderProps {
 
 export default function EmailReader({
   email,
+  inboxId = "chijioke-6638@agentmail.to",
   onBack,
   onToggleStar,
   onToggleRead,
@@ -37,7 +38,6 @@ export default function EmailReader({
   onForward,
 }: EmailReaderProps) {
   const [copiedOtp, setCopiedOtp] = useState(false);
-  const [actionApproved, setActionApproved] = useState(false);
   const [quickReplyText, setQuickReplyText] = useState("");
   const [quickReplySent, setQuickReplySent] = useState(false);
 
@@ -66,10 +66,6 @@ export default function EmailReader({
       setCopiedOtp(true);
       setTimeout(() => setCopiedOtp(false), 2000);
     }
-  };
-
-  const handleApproveAction = () => {
-    setActionApproved(true);
   };
 
   const handleSendQuickReply = (e: React.FormEvent) => {
@@ -172,9 +168,15 @@ export default function EmailReader({
                 {email.fromName.substring(0, 2).toUpperCase()}
               </div>
               <div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className="font-bold text-sm text-[#2c2a29]">{email.fromName}</span>
                   <span className="text-xs text-gray-500 font-mono">&lt;{email.fromEmail}&gt;</span>
+                  <TrustScoreBadge
+                    domain={email.senderDomain || (email.fromEmail.includes("@") ? email.fromEmail.split("@")[1] : undefined)}
+                    trustScore={email.trustScore}
+                    ratingCategory={email.ratingCategory}
+                    isSuspicious={email.isSuspicious}
+                  />
                 </div>
                 <div className="text-xs text-gray-600 font-sans">
                   To: <span className="font-medium text-black">{email.toName}</span> &lt;
@@ -187,6 +189,7 @@ export default function EmailReader({
             </div>
           </div>
         </div>
+
 
         {/* OTP Companion Banner */}
         {email.otpCode && (
@@ -226,72 +229,6 @@ export default function EmailReader({
                 )}
               </button>
             </div>
-          </div>
-        )}
-
-        {/* AI Action Card Banner */}
-        {email.actionCard && (
-          <div className="bg-[#FEF08A] border-2 border-[#2c2a29] p-5 brutal-shadow flex flex-col gap-3">
-            <div className="flex items-center justify-between border-b border-[#2c2a29]/30 pb-2">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-[#8544FA]" />
-                <span className="font-anton text-lg tracking-wide text-[#854D0E]">
-                  AI ACTION: {email.actionCard.type.toUpperCase()}
-                </span>
-              </div>
-              {email.actionCard.autoTriggerDays && (
-                <div className="flex items-center gap-1 text-xs font-bold text-[#854D0E] bg-white/70 px-2 py-0.5 border border-[#2c2a29] rounded">
-                  <Clock className="w-3.5 h-3.5" />
-                  Auto-triggers in {email.actionCard.autoTriggerDays}d
-                </div>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-              <div className="bg-white border border-[#2c2a29] p-2.5">
-                <span className="text-gray-500 font-bold block mb-0.5">TARGET</span>
-                <span className="font-anton text-base text-[#2c2a29]">
-                  {email.actionCard.service}
-                </span>
-              </div>
-              {email.actionCard.costMonthly && (
-                <div className="bg-white border border-[#2c2a29] p-2.5">
-                  <span className="text-gray-500 font-bold block mb-0.5">EST. SAVINGS</span>
-                  <span className="font-anton text-base text-red-600">
-                    {email.actionCard.costMonthly}
-                  </span>
-                </div>
-              )}
-              <div className="bg-white border border-[#2c2a29] p-2.5 sm:col-span-2">
-                <span className="text-gray-500 font-bold block mb-0.5">RECOMMENDED ACTION</span>
-                <span className="font-sans text-gray-800">
-                  {email.actionCard.recommendedAction}
-                </span>
-              </div>
-            </div>
-
-            {actionApproved ? (
-              <div className="bg-emerald-100 border-2 border-emerald-600 p-3 flex items-center gap-2 text-emerald-800 font-bold text-sm">
-                <Check className="w-5 h-5 text-emerald-600" />
-                Workflow scheduled in Convex!
-              </div>
-            ) : (
-              <div className="flex items-center gap-3 pt-1">
-                <button
-                  onClick={handleApproveAction}
-                  className="button-primary bg-[#8544FA] text-[#FEFBEA] px-4 py-2 text-sm font-bold flex items-center gap-2 hover:bg-[#7330ea]"
-                >
-                  <Zap className="w-4 h-4" />
-                  APPROVE WORKFLOW
-                </button>
-                <button
-                  onClick={() => alert("Action dismissed")}
-                  className="brutal-btn bg-white hover:bg-gray-100 text-gray-700 px-3 py-2 text-sm font-bold"
-                >
-                  Dismiss
-                </button>
-              </div>
-            )}
           </div>
         )}
 

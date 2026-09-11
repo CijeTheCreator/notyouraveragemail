@@ -12,7 +12,13 @@ import type * as agentmail from "../agentmail.js";
 import type * as auth from "../auth.js";
 import type * as http from "../http.js";
 import type * as messages from "../messages.js";
+import type * as pipeline_actionCards from "../pipeline/actionCards.js";
+import type * as pipeline_domainReputation from "../pipeline/domainReputation.js";
+import type * as pipeline_orchestrator from "../pipeline/orchestrator.js";
+import type * as pipeline_otp from "../pipeline/otp.js";
+import type * as pipeline_subscriptionCancellation from "../pipeline/subscriptionCancellation.js";
 import type * as seed from "../seed.js";
+import type * as seedSubscriptions from "../seedSubscriptions.js";
 
 import type {
   ApiFromModules,
@@ -25,7 +31,13 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   http: typeof http;
   messages: typeof messages;
+  "pipeline/actionCards": typeof pipeline_actionCards;
+  "pipeline/domainReputation": typeof pipeline_domainReputation;
+  "pipeline/orchestrator": typeof pipeline_orchestrator;
+  "pipeline/otp": typeof pipeline_otp;
+  "pipeline/subscriptionCancellation": typeof pipeline_subscriptionCancellation;
   seed: typeof seed;
+  seedSubscriptions: typeof seedSubscriptions;
 }>;
 
 /**

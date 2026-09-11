@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useConvexAuth } from "convex/react";
+import { toast } from "sonner";
 
 export default function SignInForm() {
   const router = useRouter();
@@ -13,6 +14,7 @@ export default function SignInForm() {
   const [handle, setHandle] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isNewAccountNeeded, setIsNewAccountNeeded] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -24,6 +26,7 @@ export default function SignInForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setIsNewAccountNeeded(false);
     setLoading(true);
 
     try {
@@ -37,10 +40,25 @@ export default function SignInForm() {
         flow: "signIn",
       });
 
+      toast.success("Welcome back! Signing you in...");
       router.push("/");
       router.refresh();
     } catch (err: any) {
-      setError(err.message || "Invalid credentials. Please check your username and password.");
+      const rawMsg: string = err?.message || "";
+      let friendlyMsg = "Invalid credentials. Please check your username and password.";
+
+      if (rawMsg.includes("InvalidAccountId") || rawMsg.includes("Could not find account")) {
+        friendlyMsg =
+          "No account found with this username. Since you connected to your new Convex Cloud database, please Sign Up to initialize your account!";
+        setIsNewAccountNeeded(true);
+      } else if (rawMsg.includes("InvalidSecret") || rawMsg.includes("password")) {
+        friendlyMsg = "Incorrect password. Please verify your password.";
+      }
+
+      setError(friendlyMsg);
+      toast.error("Sign in failed", {
+        description: friendlyMsg,
+      });
     } finally {
       setLoading(false);
     }
@@ -65,8 +83,16 @@ export default function SignInForm() {
         </div>
 
         {error && (
-          <div className="bg-red-100 border-2 border-[#2c2a29] p-3 text-xs font-freeman text-red-800">
-            {error}
+          <div className="bg-red-100 border-2 border-[#2c2a29] p-3.5 text-xs font-sans text-red-900 brutal-shadow-sm space-y-2">
+            <p className="font-semibold">{error}</p>
+            {isNewAccountNeeded && (
+              <Link
+                href="/auth/signup"
+                className="brutal-btn inline-block bg-[#8544FA] text-white px-3 py-1.5 text-xs font-bold hover:bg-[#702ff3]"
+              >
+                Go to Sign Up →
+              </Link>
+            )}
           </div>
         )}
 

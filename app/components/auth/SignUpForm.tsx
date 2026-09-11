@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useAction, useConvexAuth } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import { toast } from "sonner";
 
 export default function SignUpForm() {
   const router = useRouter();
@@ -59,10 +60,23 @@ export default function SignUpForm() {
       });
 
       setStepStatus("3/3 Opening your inbox...");
+      toast.success("Inbox claimed successfully! Welcome to Modern Mail.");
       router.push("/");
       router.refresh();
     } catch (err: any) {
-      setError(err.message || "Failed to create account. That username may already be reserved.");
+      const rawMsg: string = err?.message || "";
+      let friendlyMsg = "Failed to create account. That username may already be reserved.";
+
+      if (rawMsg.includes("already exists") || rawMsg.includes("AccountAlreadyExists")) {
+        friendlyMsg = `The username "${cleanHandle}" is already registered. If it belongs to you, please Sign In instead.`;
+      } else if (rawMsg.includes("AgentMail")) {
+        friendlyMsg = `AgentMail provisioning error: ${rawMsg}`;
+      }
+
+      setError(friendlyMsg);
+      toast.error("Account creation failed", {
+        description: friendlyMsg,
+      });
     } finally {
       setLoading(false);
       setStepStatus("");

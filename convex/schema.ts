@@ -74,25 +74,85 @@ export default defineSchema({
         costMonthly: v.optional(v.string()),
         recommendedAction: v.string(),
         autoTriggerDays: v.optional(v.number()),
+        autoTriggerAt: v.optional(v.number()),
         status: v.optional(v.string()),
+        supportEmail: v.optional(v.string()),
+        portalUrl: v.optional(v.string()),
+        cancellationMethod: v.optional(v.string()),
+        policySummary: v.optional(v.string()),
+        recommendedTier: v.optional(v.string()),
+        executionStatus: v.optional(v.string()),
+        executionLog: v.optional(v.array(v.string())),
       })
     ),
+    senderDomain: v.optional(v.string()),
+    trustScore: v.optional(v.number()),
+    ratingCategory: v.optional(v.string()),
+    priority: v.optional(
+      v.union(v.literal("high"), v.literal("normal"), v.literal("low"))
+    ),
+    isSuspicious: v.optional(v.boolean()),
+    pipelineStatus: v.optional(v.string()),
   })
     .index("by_inboxId", ["inboxId"])
     .index("by_inbox_and_folder", ["inboxId", "folder"])
     .index("by_messageId", ["messageId"]),
 
+  // Domain Intelligence cache for Trustpilot reputation & phishing defense
+  domainIntelligence: defineTable({
+    domain: v.string(),
+    companyName: v.optional(v.string()),
+    trustScore: v.optional(v.number()),
+    stars: v.optional(v.number()),
+    ratingCategory: v.optional(v.string()),
+    reviewCount: v.optional(v.number()),
+    complaintKeywords: v.optional(v.array(v.string())),
+    summary: v.optional(v.string()),
+    trustpilotUrl: v.optional(v.string()),
+    status: v.union(
+      v.literal("pending"),
+      v.literal("completed"),
+      v.literal("unrated"),
+      v.literal("failed")
+    ),
+    isSuspicious: v.optional(v.boolean()),
+    updatedAt: v.number(),
+  }).index("by_domain", ["domain"]),
+
+  // Subscription Policies cache scraped via Firecrawl
+  subscriptionPolicies: defineTable({
+    domain: v.string(),
+    companyName: v.string(),
+    supportEmail: v.optional(v.string()),
+    portalUrl: v.optional(v.string()),
+    cancellationMethod: v.string(), // "email" | "portal" | "form" | "phone"
+    policySummary: v.string(),
+    termsSummary: v.optional(v.string()),
+    recommendedTier: v.string(), // "tier1_agentmail" | "tier2_web_agent"
+    updatedAt: v.number(),
+  }).index("by_domain", ["domain"]),
+
   // Action Cards (AI Agent Triage queue)
   actionCards: defineTable({
     userId: v.optional(v.id("users")),
+    inboxId: v.optional(v.string()),
     messageId: v.optional(v.string()),
     service: v.string(),
     type: v.string(), // "cancellation" | "data-removal" | "spam-takedown"
-    status: v.string(), // "pending" | "approved" | "executed" | "dismissed"
+    status: v.string(), // "pending" | "in-progress" | "completed" | "dismissed" | "requires-human-action"
     costMonthly: v.optional(v.string()),
     details: v.string(),
+    supportEmail: v.optional(v.string()),
+    portalUrl: v.optional(v.string()),
+    cancellationMethod: v.optional(v.string()),
+    policySummary: v.optional(v.string()),
+    recommendedTier: v.optional(v.string()),
     autoTriggerAt: v.optional(v.number()),
+    executionLog: v.optional(v.array(v.string())),
+    updatedAt: v.optional(v.number()),
   })
     .index("by_userId", ["userId"])
-    .index("by_status", ["status"]),
+    .index("by_inboxId", ["inboxId"])
+    .index("by_status", ["status"])
+    .index("by_messageId", ["messageId"]),
 });

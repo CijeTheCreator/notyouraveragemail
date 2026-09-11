@@ -11,8 +11,11 @@ import {
   Check,
   SlidersHorizontal,
   RefreshCw,
+  ArrowUpDown,
+  Zap,
 } from "lucide-react";
 import { Email, FolderType } from "../types";
+import TrustScoreBadge from "./TrustScoreBadge";
 
 interface EmailListProps {
   folder: FolderType;
@@ -21,8 +24,10 @@ interface EmailListProps {
   onSelectEmail: (id: string) => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  filter: "all" | "unread" | "starred" | "actions";
-  onFilterChange: (filter: "all" | "unread" | "starred" | "actions") => void;
+  filter: "all" | "unread" | "starred";
+  onFilterChange: (filter: "all" | "unread" | "starred") => void;
+  sortBy?: "priority" | "newest" | "oldest";
+  onSortChange?: (sort: "priority" | "newest" | "oldest") => void;
   onSync?: () => void;
   isSyncing?: boolean;
 }
@@ -36,16 +41,23 @@ export default function EmailList({
   onSearchChange,
   filter,
   onFilterChange,
+  sortBy = "priority",
+  onSortChange,
   onSync,
   isSyncing,
 }: EmailListProps) {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isSortOpen, setIsSortOpen] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
+  const sortRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
         setIsFilterOpen(false);
+      }
+      if (sortRef.current && !sortRef.current.contains(event.target as Node)) {
+        setIsSortOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -58,8 +70,8 @@ export default function EmailList({
         return "INBOX";
       case "sent":
         return "SENT";
-      case "action-cards":
-        return "ACTION CARDS";
+      case "subscriptions":
+        return "SUBSCRIPTIONS";
       case "drafts":
         return "DRAFTS";
       case "trash":
@@ -73,7 +85,6 @@ export default function EmailList({
     all: "All Mail",
     unread: "Unread Only",
     starred: "Starred",
-    actions: "AI Actions",
   };
 
   return (
@@ -161,18 +172,59 @@ export default function EmailList({
                 </span>
                 {filter === "starred" && <Check className="w-3.5 h-3.5 text-[#8544FA]" />}
               </button>
+            </div>
+          )}
+        </div>
+
+        {/* Sort Dropdown */}
+        <div className="relative" ref={sortRef}>
+          <button
+            onClick={() => setIsSortOpen(!isSortOpen)}
+            className="brutal-btn bg-white px-3 py-2 text-xs font-bold flex items-center gap-2"
+            title="Sort messages"
+          >
+            <ArrowUpDown className="w-3.5 h-3.5 text-[#8544FA]" />
+            <span className="hidden sm:inline">
+              {sortBy === "priority"
+                ? "Priority"
+                : sortBy === "newest"
+                ? "Newest"
+                : "Oldest"}
+            </span>
+            <ChevronDown className="w-3.5 h-3.5 text-gray-500" />
+          </button>
+
+          {isSortOpen && (
+            <div className="absolute right-0 mt-1.5 w-52 bg-white border-2 border-[#2c2a29] brutal-shadow-sm z-30 py-1 text-xs font-sans">
               <button
                 onClick={() => {
-                  onFilterChange("actions");
-                  setIsFilterOpen(false);
+                  onSortChange?.("priority");
+                  setIsSortOpen(false);
                 }}
                 className="w-full px-3 py-2 text-left hover:bg-[#FEFBEA] flex items-center justify-between"
               >
-                <span className="flex items-center gap-1.5">
-                  <Sparkles className="w-3 h-3 text-[#8544FA]" />
-                  AI Actions
-                </span>
-                {filter === "actions" && <Check className="w-3.5 h-3.5 text-[#8544FA]" />}
+                <span className="font-medium">⚡ Priority (Trust & Urgency)</span>
+                {sortBy === "priority" && <Check className="w-3.5 h-3.5 text-[#8544FA]" />}
+              </button>
+              <button
+                onClick={() => {
+                  onSortChange?.("newest");
+                  setIsSortOpen(false);
+                }}
+                className="w-full px-3 py-2 text-left hover:bg-[#FEFBEA] flex items-center justify-between"
+              >
+                <span>🕒 Newest First</span>
+                {sortBy === "newest" && <Check className="w-3.5 h-3.5 text-[#8544FA]" />}
+              </button>
+              <button
+                onClick={() => {
+                  onSortChange?.("oldest");
+                  setIsSortOpen(false);
+                }}
+                className="w-full px-3 py-2 text-left hover:bg-[#FEFBEA] flex items-center justify-between"
+              >
+                <span>⏳ Oldest First</span>
+                {sortBy === "oldest" && <Check className="w-3.5 h-3.5 text-[#8544FA]" />}
               </button>
             </div>
           )}
@@ -203,6 +255,8 @@ export default function EmailList({
                 className={`p-4 cursor-pointer transition-colors flex items-center justify-between gap-6 border-l-4 ${
                   isSelected
                     ? "bg-[#EDE9FE] border-l-[#8544FA]"
+                    : email.isSuspicious
+                    ? "bg-[#FFF1F2] border-l-[#E11D48] hover:bg-[#FFE4E6]"
                     : email.isRead
                     ? "bg-transparent border-l-transparent hover:bg-white/80"
                     : "bg-[#FEFBEA] border-l-[#8544FA] font-medium"
@@ -233,9 +287,6 @@ export default function EmailList({
                     {email.otpCode && (
                       <KeyRound className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
                     )}
-                    {email.actionCard && (
-                      <Sparkles className="w-3.5 h-3.5 text-[#8544FA] flex-shrink-0" />
-                    )}
                     <span
                       className={`text-sm truncate ${
                         !email.isRead ? "font-bold text-[#2c2a29]" : "text-gray-900 font-medium"
@@ -250,15 +301,21 @@ export default function EmailList({
                 </div>
 
                 {/* Right Section: Badges & Timestamp */}
-                <div className="flex items-center gap-3 flex-shrink-0">
+                <div className="flex items-center gap-2.5 flex-shrink-0">
+                  {/* TrustScore / Firecrawl Reputation Badge */}
+                  {(email.trustScore !== undefined || email.isSuspicious) && (
+                    <TrustScoreBadge
+                      domain={email.senderDomain || (email.fromEmail.includes("@") ? email.fromEmail.split("@")[1] : undefined)}
+                      trustScore={email.trustScore}
+                      ratingCategory={email.ratingCategory}
+                      isSuspicious={email.isSuspicious}
+                      compact={true}
+                    />
+                  )}
+
                   {email.otpCode && (
                     <span className="bg-amber-100 text-amber-900 border border-[#2c2a29] text-[10px] font-mono font-bold px-1.5 py-0.2 rounded-sm">
                       OTP
-                    </span>
-                  )}
-                  {email.actionCard && (
-                    <span className="bg-purple-100 text-[#8544FA] border border-[#2c2a29] text-[10px] font-bold px-1.5 py-0.2 rounded-sm hidden sm:inline">
-                      Action
                     </span>
                   )}
                   {email.isStarred && (

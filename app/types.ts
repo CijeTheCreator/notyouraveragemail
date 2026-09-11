@@ -1,4 +1,4 @@
-export type FolderType = "inbox" | "sent" | "drafts" | "trash" | "action-cards";
+export type FolderType = "inbox" | "sent" | "drafts" | "trash" | "subscriptions";
 
 export interface Attachment {
   id: string;
@@ -27,12 +27,26 @@ export interface Email {
     textColor: string;
   }>;
   otpCode?: string;
+  senderDomain?: string;
+  trustScore?: number;
+  ratingCategory?: string;
+  priority?: "high" | "normal" | "low";
+  isSuspicious?: boolean;
   actionCard?: {
     type: "cancellation" | "data-removal" | "spam-takedown";
     service: string;
     costMonthly?: string;
     recommendedAction: string;
     autoTriggerDays?: number;
+    autoTriggerAt?: number;
+    status?: string;
+    supportEmail?: string;
+    portalUrl?: string;
+    cancellationMethod?: string;
+    policySummary?: string;
+    recommendedTier?: string;
+    executionStatus?: string;
+    executionLog?: string[];
   };
   attachments?: Attachment[];
 }

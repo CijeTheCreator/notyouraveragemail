@@ -12,6 +12,7 @@ import {
   HelpCircle,
   LogIn,
   LogOut,
+  CreditCard,
 } from "lucide-react";
 import { FolderType } from "../types";
 
@@ -22,7 +23,7 @@ interface SidebarProps {
   onOpenShortcuts: () => void;
   inboxUnreadCount: number;
   sentCount: number;
-  actionCardsCount: number;
+  subscriptionsCount: number;
   user?: {
     name?: string;
     username?: string;
@@ -39,7 +40,7 @@ export default function Sidebar({
   onOpenShortcuts,
   inboxUnreadCount,
   sentCount,
-  actionCardsCount,
+  subscriptionsCount,
   user,
   onSignOut,
 }: SidebarProps) {
@@ -150,22 +151,22 @@ export default function Sidebar({
             </span>
           </button>
 
-          {/* Action Cards */}
+          {/* Subscriptions */}
           <button
-            onClick={() => onSelectFolder("action-cards")}
+            onClick={() => onSelectFolder("subscriptions")}
             className={`flex items-center justify-between px-3 py-2 border-2 text-sm font-bold transition-all rounded-sm ${
-              activeFolder === "action-cards"
-                ? "bg-[#FEF08A] border-[#2c2a29] brutal-shadow-sm text-[#854D0E]"
+              activeFolder === "subscriptions"
+                ? "bg-[#D0B4FF] border-[#2c2a29] brutal-shadow-sm text-[#2c2a29]"
                 : "bg-transparent border-transparent hover:border-[#2c2a29] hover:bg-white/80 text-[#2c2a29]"
             }`}
           >
             <div className="flex items-center gap-2.5">
-              <Sparkles className="w-4 h-4 text-[#8544FA]" />
-              <span>Action Cards</span>
+              <CreditCard className="w-4 h-4 text-[#8544FA]" />
+              <span>Subscriptions</span>
             </div>
-            {actionCardsCount > 0 && (
-              <span className="bg-[#EAB308] text-[#2c2a29] text-[10px] font-anton px-1.5 py-0.2 border border-[#2c2a29]">
-                {actionCardsCount}
+            {subscriptionsCount > 0 && (
+              <span className="bg-[#8544FA] text-[#FEFBEA] text-xs font-anton px-1.5 py-0.2 border border-[#2c2a29]">
+                {subscriptionsCount}
               </span>
             )}
           </button>

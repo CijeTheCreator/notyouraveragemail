@@ -10,7 +10,9 @@ import EmailList from "./components/EmailList";
 import EmailReader from "./components/EmailReader";
 import ComposeModal from "./components/ComposeModal";
 import KeyboardShortcutsModal from "./components/KeyboardShortcutsModal";
+import SubscriptionsView from "./components/SubscriptionsView";
 import { Email, FolderType } from "./types";
+import { toast } from "sonner";
 
 export default function MailPage() {
   const router = useRouter();
@@ -49,7 +51,8 @@ export default function MailPage() {
   const [selectedEmailId, setSelectedEmailId] = useState<string | null>(null);
   const [isReadingEmail, setIsReadingEmail] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filter, setFilter] = useState<"all" | "unread" | "starred" | "actions">("all");
+  const [filter, setFilter] = useState<"all" | "unread" | "starred">("all");
+  const [sortBy, setSortBy] = useState<"priority" | "newest" | "oldest">("priority");
 
   const [isComposeOpen, setIsComposeOpen] = useState(false);
   const [composeInitialTo, setComposeInitialTo] = useState("");
@@ -69,7 +72,7 @@ export default function MailPage() {
   const allEmails = useMemo<Email[]>(() => {
     if (!dbMessages) return [];
 
-    return dbMessages.map((m) => ({
+    return dbMessages.map((m: any) => ({
       id: m._id,
       folder: m.folder as FolderType,
       fromName: m.fromName,
@@ -86,8 +89,13 @@ export default function MailPage() {
       isRead: m.isRead,
       isStarred: m.isStarred,
       otpCode: m.otpCode,
+      senderDomain: m.senderDomain,
+      trustScore: m.trustScore,
+      ratingCategory: m.ratingCategory,
+      priority: m.priority || "normal",
+      isSuspicious: m.isSuspicious,
       actionCard: m.actionCard as any,
-      tags: m.labels?.map((l) => ({ label: l, bgColor: "#E2E8F0", textColor: "#334155" })),
+      tags: m.labels?.map((l: string) => ({ label: l, bgColor: "#E2E8F0", textColor: "#334155" })),
     }));
   }, [dbMessages]);
 
@@ -95,16 +103,13 @@ export default function MailPage() {
   const filteredEmails = useMemo(() => {
     return allEmails.filter((email) => {
       // Folder check
-      if (activeFolder === "action-cards") {
-        if (!email.actionCard) return false;
-      } else if (email.folder !== activeFolder) {
+      if (email.folder !== activeFolder) {
         return false;
       }
 
       // Sub-filter check
       if (filter === "unread" && email.isRead) return false;
       if (filter === "starred" && !email.isStarred) return false;
-      if (filter === "actions" && !email.actionCard) return false;
 
       // Search query check
       if (searchQuery.trim()) {
@@ -131,6 +136,33 @@ export default function MailPage() {
     });
   }, [allEmails, activeFolder, filter, searchQuery]);
 
+  // Sorted emails based on sortBy selection (Priority / Newest / Oldest)
+  const sortedEmails = useMemo(() => {
+    const list = [...filteredEmails];
+    if (sortBy === "priority") {
+      // Priority weighting: high (2) > normal (1) > low/suspicious (0)
+      const getPriorityWeight = (priority?: string, suspicious?: boolean) => {
+        if (suspicious || priority === "low") return 0;
+        if (priority === "high") return 2;
+        return 1; // normal
+      };
+
+      return list.sort((a, b) => {
+        const weightA = getPriorityWeight(a.priority, a.isSuspicious);
+        const weightB = getPriorityWeight(b.priority, b.isSuspicious);
+        if (weightA !== weightB) {
+          return weightB - weightA; // higher priority first
+        }
+        return b.timestamp.localeCompare(a.timestamp);
+      });
+    } else if (sortBy === "oldest") {
+      return list.sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+    } else {
+      // newest first
+      return list.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+    }
+  }, [filteredEmails, sortBy]);
+
   // Selected email object
   const selectedEmail = useMemo(() => {
     return allEmails.find((e) => e.id === selectedEmailId) || null;
@@ -145,8 +177,10 @@ export default function MailPage() {
     return allEmails.filter((e) => e.folder === "sent").length;
   }, [allEmails]);
 
-  const actionCardsCount = useMemo(() => {
-    return allEmails.filter((e) => !!e.actionCard).length;
+  const subscriptionsCount = useMemo(() => {
+    return allEmails.filter(
+      (e) => e.actionCard?.type === "cancellation" && e.actionCard.status !== "cancelled"
+    ).length;
   }, [allEmails]);
 
   // Select folder handler
@@ -196,8 +230,10 @@ export default function MailPage() {
   const handleDeleteEmail = async (id: string) => {
     try {
       await moveToTrashMutation({ id: id as any });
-    } catch (err) {
+      toast.info("Moved email to trash");
+    } catch (err: any) {
       console.warn("moveToTrash error:", err);
+      toast.error("Could not move email to trash", { description: err.message });
     }
     if (selectedEmailId === id) {
       setIsReadingEmail(false);
@@ -224,6 +260,7 @@ export default function MailPage() {
 
   // Live AgentMail Send Email Handler
   const handleSendEmail = async (data: Partial<Email>) => {
+    const toastId = toast.loading("Sending email via AgentMail...");
     try {
       // Dispatch real email through AgentMail API
       await sendEmailAction({
@@ -233,19 +270,33 @@ export default function MailPage() {
         text: data.body || "",
         fromName: currentUser?.name || currentUser?.username || "Modern Mail User",
       });
+      toast.success("Email sent successfully!", { id: toastId });
     } catch (err: any) {
       console.error("Live AgentMail dispatch error:", err);
-      alert(`Failed to send email: ${err.message || "Unknown error"}`);
+      toast.error("Failed to send email", {
+        id: toastId,
+        description: err.message || "Please check recipient and AgentMail status.",
+      });
     }
   };
 
   // Sync Mail from AgentMail
   const handleSyncMail = async () => {
     setIsSyncing(true);
+    const toastId = toast.loading("Syncing with AgentMail inbox...");
     try {
-      await syncInboxMessagesAction({ inboxId: activeInboxId });
+      const res = await syncInboxMessagesAction({ inboxId: activeInboxId });
+      const count = res?.syncedCount ?? 0;
+      toast.success(
+        count > 0 ? `Synced ${count} email${count === 1 ? "" : "s"}!` : "Inbox is up to date!",
+        { id: toastId }
+      );
     } catch (err: any) {
       console.error("Sync error:", err);
+      toast.error("Failed to sync emails", {
+        id: toastId,
+        description: err.message || "Could not retrieve messages from AgentMail.",
+      });
     } finally {
       setIsSyncing(false);
     }
@@ -379,16 +430,17 @@ export default function MailPage() {
         onOpenShortcuts={() => setIsShortcutsOpen(true)}
         inboxUnreadCount={inboxUnreadCount}
         sentCount={sentCount}
-        actionCardsCount={actionCardsCount}
+        subscriptionsCount={subscriptionsCount}
         user={currentUser}
         onSignOut={() => signOut()}
       />
 
-      {/* Pane 2: Main Pane (Email List or Full-Width Reader) */}
+      {/* Pane 2: Main Pane (Email List, Full-Width Reader, or Subscriptions View) */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden">
         {isReadingEmail && selectedEmail ? (
           <EmailReader
             email={selectedEmail}
+            inboxId={activeInboxId}
             onBack={handleBackToList}
             onToggleStar={handleToggleStar}
             onToggleRead={handleToggleRead}
@@ -396,16 +448,20 @@ export default function MailPage() {
             onReply={handleReply}
             onForward={handleForward}
           />
+        ) : activeFolder === "subscriptions" ? (
+          <SubscriptionsView inboxId={activeInboxId} />
         ) : (
           <EmailList
             folder={activeFolder}
-            emails={filteredEmails}
+            emails={sortedEmails}
             selectedEmailId={selectedEmailId}
             onSelectEmail={handleSelectEmail}
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
             filter={filter}
             onFilterChange={setFilter}
+            sortBy={sortBy}
+            onSortChange={setSortBy}
             onSync={handleSyncMail}
             isSyncing={isSyncing}
           />
