@@ -1,0 +1,379 @@
+@import "/adobe-css/feds.css";
+@import "/adobe-css/account-gnav.css";
+@import "/adobe-css/UniversalNav.css";
+@import "/adobe-css/am-app-f85e399a5c94edb8efc6.css";
+@import "/adobe-css/am-default-layout-ea786880868bf2edd5d9.css";
+@import "/adobe-css/am-plan-menu-e4806e4cfa9c8f5179ef.css";
+@import "/adobe-css/am-plans-902363065f3cf348824b.css";
+@import "/adobe-css/am-3c84dc04c886e1964db4.css";
+@import "/adobe-css/am-ad4a9f845497d2108b09.css";
+@import "/adobe-css/am-app-layout-4d74e585953c711199b1.css";
+
+:root {
+  --account-global-color-black: #1e1e1e;
+  --account-overlay-with-transparency: #2d2d2d99;
+  --account-global-border-color: #eaeaea;
+  --account-global-color-outline: #3b99fc;
+  --account-header-height: 4.0625rem;
+  --account-footer-height: 3.3rem;
+  --account-sidebar-width: 13rem;
+  --account-global-layout-width: 82rem;
+  --account-main-view-width: 61rem;
+  --account-drawer-width: 25.88rem;
+
+  --spectrum-global-color-static-gray-200: #e1e1e1;
+  --spectrum-global-color-static-gray-300: #f4f4f4;
+  --spectrum-global-color-static-gray-600: #6e6e6e;
+  --spectrum-global-color-static-gray-800: #2c2c2c;
+  --spectrum-global-color-static-blue-700: #0265dc;
+  --spectrum-global-color-static-blue-800: #0054b6;
+  --spectrum-global-color-static-red-600: #eb1000;
+  --spectrum-global-color-static-red-700: #c90000;
+  --spectrum-global-color-static-orange-600: #e68619;
+  --spectrum-global-dimension-size-200: 1rem;
+  --spectrum-alias-size-200: 1rem;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: adobe-clean, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #2c2c2c;
+  background-color: #fafafa;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit !important;
+  text-decoration: none !important;
+}
+
+a:hover {
+  color: inherit !important;
+  text-decoration: none !important;
+}
+
+/* Ensure secondary-nav and page-body-view align properly */
+.page-body-view {
+  display: flex !important;
+  max-width: 82rem;
+  margin: 0 auto;
+  padding: 1.5rem 2rem 4rem;
+  box-sizing: border-box;
+}
+
+.page-body-view .secondary-nav {
+  width: var(--account-sidebar-width);
+  position: static !important;
+  transform: none !important;
+  padding-top: 0 !important;
+  flex-shrink: 0;
+  margin-right: 2.5rem;
+}
+
+.page-body-view .main-view {
+  flex: 1;
+  max-width: 100%;
+  padding-left: 0 !important;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #1e1e1e;
+  margin: 0 0 1.5rem;
+  line-height: 1.2;
+}
+
+/* Custom Adobe Plan Pod Styling matching helpx screenshots */
+.plan-pod-card {
+  background: #ffffff;
+  border: 1px solid #e1e1e1;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease;
+}
+
+.plan-pod-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.plan-pod-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.plan-pod-brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.plan-app-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.plan-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.plan-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e1e1e;
+  margin: 0;
+}
+
+.plan-badge-tier {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  background: #f0f0f0;
+  color: #4a4a4a;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.plan-badge-status {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  border-radius: 12px;
+  letter-spacing: 0.02em;
+}
+
+.plan-badge-status.status-active {
+  background: #e6f6ec;
+  color: #0d6832;
+}
+
+.plan-badge-status.status-cancelled {
+  background: #fee7e7;
+  color: #c90000;
+}
+
+.plan-subtitle {
+  font-size: 0.8125rem;
+  color: #6e6e6e;
+  margin-top: 0.25rem;
+}
+
+.spectrum-btn-primary {
+  background-color: #0265dc;
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 700;
+  padding: 0.5rem 1.25rem;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.15s ease;
+  font-family: inherit;
+}
+
+.spectrum-btn-primary:hover {
+  background-color: #0054b6;
+}
+
+.plan-pod-body {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: #fafafa;
+}
+
+@media (max-width: 768px) {
+  .plan-pod-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+.plan-col-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #8e8e8e;
+  margin-bottom: 0.35rem;
+}
+
+.plan-col-val {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #2c2c2c;
+  line-height: 1.4;
+}
+
+.plan-col-price {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: #1e1e1e;
+}
+
+.plan-col-sub {
+  font-size: 0.75rem;
+  color: #6e6e6e;
+  margin-top: 0.25rem;
+}
+
+.plan-pod-footer {
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #f0f0f0;
+  background: #ffffff;
+  font-size: 0.8125rem;
+}
+
+.storage-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #6e6e6e;
+}
+
+.storage-bar {
+  width: 120px;
+  height: 6px;
+  background: #e1e1e1;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.storage-bar-fill {
+  height: 100%;
+  background: #0265dc;
+  border-radius: 3px;
+}
+
+.plan-quick-links {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.plan-link-action {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #0265dc;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: inherit;
+}
+
+.plan-link-action:hover {
+  text-decoration: underline;
+}
+
+.plan-link-danger {
+  color: #eb1000;
+}
+
+.plan-link-danger:hover {
+  color: #c90000;
+}
+
+.dot-sep {
+  color: #ccc;
+}
+
+/* Global Nav overrides to make header look clean */
+.feds-navBar-wrapper {
+  background: #ffffff;
+  border-bottom: 1px solid #eaeaea;
+  height: var(--account-header-height);
+  display: flex;
+  align-items: center;
+  padding: 0 2rem;
+  box-sizing: border-box;
+}
+
+.feds-navBar {
+  max-width: 82rem;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.feds-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+}
+
+.feds-brand img {
+  height: 22px;
+}
+
+.feds-brand-title {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: #1e1e1e;
+  letter-spacing: -0.01em;
+}
+
+.feds-nav-items {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.feds-nav-items a {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #4a4a4a;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.feds-nav-items a:hover,
+.feds-nav-items a.active {
+  color: #0265dc;
+  font-weight: 600;
+}
+
+.feds-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.feds-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #0265dc;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

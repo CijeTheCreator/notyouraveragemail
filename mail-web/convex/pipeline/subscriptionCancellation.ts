@@ -15,7 +15,7 @@ export const KNOWN_AUTH_METHODS: Record<string, "magic_link" | "password"> = {
   "fly.io": "magic_link",
   "supabase.com": "magic_link",
   "resend.com": "magic_link",
-  "adobe.com": "password",
+  "adobe.com": "magic_link",
   "netflix.com": "password",
   "github.com": "password",
   "spotify.com": "password",
@@ -211,20 +211,31 @@ export const executeOneClickCancel = action({
     const apiKey = process.env.FIRECRAWL_API_KEY;
 
     try {
-      if (apiKey) {
-        // Run Firecrawl session to trigger magic link sign-in & headless navigation
-        await fetch("https://api.firecrawl.dev/v1/scrape", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            url: args.portalUrl,
-            formats: ["markdown"],
-            waitFor: 2000,
-          }),
-        });
+      if (apiKey && args.portalUrl.startsWith("http")) {
+        // Firecrawl supports automated headless actions to execute cancellation clicks
+        try {
+          await fetch("https://api.firecrawl.dev/v1/scrape", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${apiKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              url: args.portalUrl,
+              formats: ["markdown"],
+              actions: [
+                { type: "wait", milliseconds: 1000 },
+                { type: "click", selector: '[data-testid="cancel-plan-btn"]' },
+                { type: "wait", milliseconds: 1000 },
+                { type: "click", selector: '[data-testid="confirm-cancel-btn"]' },
+                { type: "wait", milliseconds: 1000 },
+              ],
+              waitFor: 2000,
+            }),
+          });
+        } catch (fcErr: any) {
+          console.warn("[Firecrawl:OneClickCancel] Scrape action failed, falling back:", fcErr?.message || fcErr);
+        }
       }
 
       // Mark cancelled
@@ -302,7 +313,9 @@ export const listSubscriptions = query({
 
     return subscriptionMessages.map((m) => {
       const domain = m.senderDomain || extractDomain(m.fromEmail);
-      const isMagicLink = isMagicLinkDomain(domain);
+      const isMagicLink =
+        m.actionCard?.cancellationMethod === "magic_link" ||
+        isMagicLinkDomain(domain);
       const portalUrl = m.actionCard!.portalUrl || `https://${domain}/account/billing`;
 
       return {
