@@ -1,15 +1,32 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useSession } from '@/hooks/use-session';
 import { AdobeSidebar } from '@/components/adobe-sidebar';
 import { PlanCard } from '@/components/plan-card';
 import { CancelPlanModal } from '@/components/cancel-plan-modal';
+import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function PlansPage() {
-  const { subscription, cancelSubscription, subscribe, isLoaded } = useSession();
+  const router = useRouter();
+  const { user, subscription, cancelSubscription, subscribe, isLoaded, isAuthenticated } = useSession();
   const [isCancelOpen, setIsCancelOpen] = useState(false);
+
+  useEffect(() => {
+    if (isLoaded && (!isAuthenticated || !user)) {
+      router.replace('/login');
+    }
+  }, [isLoaded, isAuthenticated, user, router]);
+
+  if (!isLoaded || (!isAuthenticated && !user)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F5F5F5]">
+        <Loader2 className="w-8 h-8 animate-spin text-[#0265DC]" />
+      </div>
+    );
+  }
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#F5F5F5', color: '#000000' }}>

@@ -7,17 +7,17 @@ import { Loader2 } from 'lucide-react';
 
 export default function RootPage() {
   const router = useRouter();
-  const { subscription, isLoaded } = useSession();
+  const { user, isLoaded, isAuthenticated } = useSession();
 
   useEffect(() => {
     if (isLoaded) {
-      if (subscription) {
+      if (isAuthenticated && user) {
         router.replace('/plans');
       } else {
-        router.replace('/checkout');
+        router.replace('/login');
       }
     }
-  }, [isLoaded, subscription, router]);
+  }, [isLoaded, isAuthenticated, user, router]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F5F5F5]">

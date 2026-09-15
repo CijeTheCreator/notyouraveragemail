@@ -1,22 +1,28 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { convexClient, api } from '@/lib/convex';
+import { useAuthActions } from '@convex-dev/auth/react';
 import { useSession } from '@/hooks/use-session';
-import { Mail, Loader2, CheckCircle2, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Mail, Loader2, CheckCircle2, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useSession();
+  const { user, isAuthenticated, isLoaded } = useSession();
+  const { signIn } = useAuthActions();
 
-  const [email, setEmail] = useState('alex@agentmail.to');
+  const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [magicLinkSent, setMagicLinkSent] = useState(false);
-  const [verifyUrl, setVerifyUrl] = useState('');
-  const [otpCode, setOtpCode] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+
+  // If already authenticated, redirect straight to /plans
+  useEffect(() => {
+    if (isLoaded && isAuthenticated && user) {
+      router.replace('/plans');
+    }
+  }, [isLoaded, isAuthenticated, user, router]);
 
   const handleSendMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,26 +32,18 @@ export default function LoginPage() {
     setErrorMessage('');
 
     try {
-      const portalOrigin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3001';
-      const res: any = await convexClient.mutation(api.testCheckout.sendMagicLinkEmail, {
-        toEmail: email.trim(),
-        portalOrigin,
-      });
+      const formData = new FormData();
+      formData.set('email', email.trim().toLowerCase());
+      formData.set('redirectTo', '/plans');
 
-      setVerifyUrl(res.verifyUrl);
-      setOtpCode(res.otp);
+      await signIn('resend', formData);
       setMagicLinkSent(true);
     } catch (err: any) {
       console.error('Magic link error:', err);
-      setErrorMessage(err?.message || 'Failed to send magic link. Check Convex connection.');
+      setErrorMessage(err?.message || 'Failed to send magic link. Check Resend configuration.');
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleInstantSignIn = () => {
-    login(email);
-    router.push('/plans');
   };
 
   return (
@@ -79,39 +77,20 @@ export default function LoginPage() {
               </div>
               <h2 className="text-lg font-bold text-gray-900">Check your inbox</h2>
               <p className="text-xs text-gray-500 max-w-xs mx-auto">
-                We sent a secure magic sign-in link to <strong className="text-gray-900">{email}</strong> in Modern Mail.
+                We sent a secure magic sign-in link to <strong className="text-gray-900">{email}</strong>.
+              </p>
+              <p className="text-[11px] text-gray-400 max-w-xs mx-auto">
+                Click the button in your email to sign in directly to your Adobe Account.
               </p>
             </div>
 
-            {otpCode && (
-              <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-center space-y-1">
-                <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
-                  One-Time Passcode
-                </div>
-                <div className="font-mono text-2xl font-extrabold tracking-widest text-[#0265DC]">
-                  {otpCode}
-                </div>
-                <p className="text-[10px] text-gray-400">Extracted automatically by Modern Mail</p>
-              </div>
-            )}
-
             <div className="space-y-3 pt-2">
-              {verifyUrl && (
-                <Link
-                  href={verifyUrl}
-                  className="w-full py-2.5 rounded-full text-xs font-semibold bg-[#0265DC] hover:bg-blue-700 text-white transition-colors flex items-center justify-center space-x-2"
-                >
-                  <span>Click Magic Link Now</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              )}
-
               <button
                 type="button"
-                onClick={handleInstantSignIn}
-                className="w-full py-2 rounded-full text-xs font-semibold border border-gray-300 hover:bg-gray-50 text-gray-700 transition-colors"
+                onClick={() => setMagicLinkSent(false)}
+                className="w-full py-2.5 rounded-full text-xs font-semibold border border-gray-300 hover:bg-gray-50 text-gray-700 transition-colors"
               >
-                Instant Sign In (Bypass)
+                Use a different email
               </button>
             </div>
           </div>

@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { Analytics } from '@vercel/analytics/next';
 import { ToastContainer } from 'react-toastify';
 import { AdobeHeader } from '@/components/adobe-header';
+import { ConvexClientProvider } from '@/components/ConvexClientProvider';
 import 'react-toastify/dist/ReactToastify.css';
 import './globals.css';
 
@@ -25,8 +26,10 @@ export default function RootLayout({
         <link rel="stylesheet" href="/adobe-account.css" />
       </head>
       <body>
-        <AdobeHeader />
-        {children}
+        <ConvexClientProvider>
+          <AdobeHeader />
+          {children}
+        </ConvexClientProvider>
         <ToastContainer
           position="top-right"
           autoClose={3000}

@@ -155,4 +155,17 @@ export default defineSchema({
     .index("by_inboxId", ["inboxId"])
     .index("by_status", ["status"])
     .index("by_messageId", ["messageId"]),
+
+  // User Subscriptions for test-subscription portal
+  userSubscriptions: defineTable({
+    userId: v.optional(v.id("users")),
+    email: v.string(),
+    planName: v.string(),
+    status: v.union(v.literal("active"), v.literal("cancelled")),
+    costMonthly: v.string(),
+    renewalDate: v.string(),
+    subscribedAt: v.number(),
+  })
+    .index("by_email", ["email"])
+    .index("by_userId", ["userId"]),
 });

@@ -10,11 +10,11 @@ import { CheckCircle2, Loader2, Sparkles, Mail, ArrowRight } from 'lucide-react'
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { login, subscribe } = useSession();
+  const { user } = useSession();
   const { fire: fireConfetti } = useConfetti();
 
-  const [name, setName] = useState('Alex');
-  const [email, setEmail] = useState('alex@agentmail.to');
+  const [name, setName] = useState(user?.name || '');
+  const [email, setEmail] = useState(user?.email || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -33,18 +33,24 @@ export default function CheckoutPage() {
     setErrorMessage('');
 
     try {
-      login(email, name);
-      subscribe(planName, price);
-
       const portalUrl = typeof window !== 'undefined'
         ? `${window.location.origin}/plans`
         : 'http://localhost:3001/plans';
 
-      await convexClient.mutation(api.testCheckout.triggerSubscriptionEmail, {
-        toEmail: email.trim(),
-        toName: name.trim(),
-        costMonthly: price,
+      const nextMonth = new Date();
+      nextMonth.setMonth(nextMonth.getMonth() + 1);
+      const renewalDate = nextMonth.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      });
+
+      await convexClient.mutation(api.testCheckout.saveUserSubscription, {
+        email: email.trim(),
+        name: name.trim(),
         planName,
+        costMonthly: price,
+        renewalDate,
         portalUrl,
       });
 
@@ -52,8 +58,7 @@ export default function CheckoutPage() {
       fireConfetti();
     } catch (err: any) {
       console.error('Checkout error:', err);
-      setIsSuccess(true);
-      fireConfetti();
+      setErrorMessage(err?.message || 'Failed to complete subscription.');
     } finally {
       setIsSubmitting(false);
     }
