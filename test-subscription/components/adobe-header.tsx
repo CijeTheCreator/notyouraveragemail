@@ -1,11 +1,32 @@
 'use client';
 
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useSession } from '@/hooks/use-session';
-import { Bell, Grid } from 'lucide-react';
+import { Bell, Grid, LogOut } from 'lucide-react';
 
 export function AdobeHeader() {
-  const { user } = useSession();
+  const router = useRouter();
+  const { user, isLoaded, logout } = useSession();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleLogout = async () => {
+    setIsMenuOpen(false);
+    await logout();
+    router.push('/login');
+  };
 
   return (
     <header
@@ -138,58 +159,143 @@ export function AdobeHeader() {
           </nav>
         </div>
 
-        {/* Right Actions: Notifications, 9-dot app grid, Cyan Profile */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          <button
-            style={{
-              background: 'none',
-              border: 'none',
-              padding: '4px',
-              cursor: 'pointer',
-              color: '#4a4a4a',
-              display: 'flex',
-              alignItems: 'center',
-            }}
-            title="Notifications"
-          >
-            <Bell style={{ width: '20px', height: '20px', strokeWidth: 1.8 }} />
-          </button>
+        {/* Right Actions: If logged in, show notifications, apps, user button with logout dropdown. If not, show black Login button. */}
+        {isLoaded && (
+          user ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+              <button
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: '4px',
+                  cursor: 'pointer',
+                  color: '#4a4a4a',
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+                title="Notifications"
+              >
+                <Bell style={{ width: '20px', height: '20px', strokeWidth: 1.8 }} />
+              </button>
 
-          <button
-            style={{
-              background: 'none',
-              border: 'none',
-              padding: '4px',
-              cursor: 'pointer',
-              color: '#4a4a4a',
-              display: 'flex',
-              alignItems: 'center',
-            }}
-            title="Adobe Apps"
-          >
-            <Grid style={{ width: '20px', height: '20px', strokeWidth: 1.8 }} />
-          </button>
+              <button
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: '4px',
+                  cursor: 'pointer',
+                  color: '#4a4a4a',
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+                title="Adobe Apps"
+              >
+                <Grid style={{ width: '20px', height: '20px', strokeWidth: 1.8 }} />
+              </button>
 
-          <Link
-            href="/login"
-            style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: '50%',
-              backgroundColor: '#00A3E0',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#ffffff',
-              textDecoration: 'none',
-            }}
-            title={user ? `Signed in as ${user.email}` : 'Sign In'}
-          >
-            <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: '20px', height: '20px', marginTop: '4px' }}>
-              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-            </svg>
-          </Link>
-        </div>
+              <div ref={menuRef} style={{ position: 'relative' }}>
+                <button
+                  type="button"
+                  onClick={() => setIsMenuOpen((prev) => !prev)}
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    backgroundColor: '#00A3E0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#ffffff',
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
+                  title={`Signed in as ${user.email} (Click for options)`}
+                >
+                  <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: '20px', height: '20px', marginTop: '4px' }}>
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                  </svg>
+                </button>
+
+                {isMenuOpen && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      right: 0,
+                      top: '42px',
+                      backgroundColor: '#ffffff',
+                      borderRadius: '12px',
+                      boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+                      border: '1px solid #e1e1e1',
+                      padding: '16px',
+                      minWidth: '220px',
+                      zIndex: 100,
+                    }}
+                  >
+                    <div style={{ marginBottom: '12px' }}>
+                      <div style={{ fontWeight: 700, fontSize: '14px', color: '#111' }}>
+                        {user.name || 'Adobe User'}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '12px',
+                          color: '#666',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                          maxWidth: '190px',
+                        }}
+                        title={user.email}
+                      >
+                        {user.email}
+                      </div>
+                    </div>
+                    <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '8px 0 12px' }} />
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      style={{
+                        width: '100%',
+                        padding: '8px 16px',
+                        borderRadius: '9999px',
+                        border: '2px solid #000000',
+                        backgroundColor: '#000000',
+                        color: '#ffffff',
+                        fontSize: '13px',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '6px',
+                      }}
+                    >
+                      <LogOut style={{ width: '14px', height: '14px' }} />
+                      <span>Log out</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              style={{
+                padding: '8px 24px',
+                borderRadius: '9999px',
+                border: '2px solid #000000',
+                backgroundColor: '#000000',
+                color: '#ffffff',
+                fontSize: '14px',
+                fontWeight: 700,
+                textDecoration: 'none',
+                display: 'inline-block',
+                cursor: 'pointer',
+              }}
+            >
+              Log in
+            </Link>
+          )
+        )}
       </div>
     </header>
   );
