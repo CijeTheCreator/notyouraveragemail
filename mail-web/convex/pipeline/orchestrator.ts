@@ -35,32 +35,26 @@ export const processIncomingMessage = internalAction({
       return;
     }
 
-    // Stage 1: Domain Intelligence & Trustpilot Reputation (Firecrawl Powered)
-    try {
-      await ctx.runAction(
+    // 1. Schedule pure LLM classification (non-blocking)
+    await ctx.scheduler.runAfter(
+      0,
+      internal.pipeline.classifier.classifyIncomingEmail,
+      {
+        messageId: args.messageId,
+        inboxId: args.inboxId,
+      }
+    );
+
+    // 2. Schedule Domain Intelligence & Trustpilot Reputation (non-blocking)
+    if (msg.fromEmail) {
+      await ctx.scheduler.runAfter(
+        0,
         internal.pipeline.domainReputation.enrichSenderReputation,
         {
           messageId: args.messageId,
           fromEmail: msg.fromEmail,
         }
       );
-    } catch (err: any) {
-      console.error(`[Pipeline:DomainReputation] Error for ${args.messageId}:`, err?.message || err);
-    }
-
-    // Stage 2: RocketMoney Subscription Cancellation & Negotiation (Firecrawl Powered)
-    if (msg.actionCard?.type === "cancellation") {
-      try {
-        await ctx.runAction(
-          internal.pipeline.subscriptionCancellation.enrichSubscriptionPolicy,
-          {
-            messageId: args.messageId,
-            fromEmail: msg.fromEmail,
-          }
-        );
-      } catch (err: any) {
-        console.error(`[Pipeline:SubscriptionPolicy] Error for ${args.messageId}:`, err?.message || err);
-      }
     }
   },
 });

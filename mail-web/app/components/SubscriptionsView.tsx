@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { useQuery, useAction, useMutation } from "convex/react";
+import { useQuery, useAction } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { ArrowUpRight, RotateCw, Sparkles, Check } from "lucide-react";
+import { ArrowUpRight, RotateCw, Check } from "lucide-react";
 import { toast } from "sonner";
 
 interface SubscriptionsViewProps {
@@ -34,7 +34,6 @@ function ServiceLogo({ domain, name }: { domain: string; name: string }) {
 
 export default function SubscriptionsView({ inboxId }: SubscriptionsViewProps) {
   const [cancellingId, setCancellingId] = useState<string | null>(null);
-  const [isSeeding, setIsSeeding] = useState(false);
 
   const rawSubscriptions = useQuery(
     api.pipeline.subscriptionCancellation.listSubscriptions,
@@ -43,7 +42,6 @@ export default function SubscriptionsView({ inboxId }: SubscriptionsViewProps) {
   const oneClickCancelAction = useAction(
     api.pipeline.subscriptionCancellation.executeOneClickCancel
   );
-  const seedMutation = useMutation(api.seedSubscriptions.seedSampleSubscriptionEmails);
 
   const subscriptions = useMemo(() => rawSubscriptions || [], [rawSubscriptions]);
 
@@ -78,18 +76,6 @@ export default function SubscriptionsView({ inboxId }: SubscriptionsViewProps) {
     }
   };
 
-  const handleSeed = async () => {
-    setIsSeeding(true);
-    try {
-      const res = await seedMutation({ inboxId });
-      toast.success(`Seeded ${res.count} subscriptions!`);
-    } catch (err: any) {
-      toast.error(err?.message || "Failed to seed sample subscriptions");
-    } finally {
-      setIsSeeding(false);
-    }
-  };
-
   return (
     <div className="flex-1 bg-[#FEFBEA] flex flex-col h-screen overflow-hidden select-none">
       {/* Top Header Bar */}
@@ -103,19 +89,6 @@ export default function SubscriptionsView({ inboxId }: SubscriptionsViewProps) {
             Tracked Spend: ${totalTrackedSpend}/mo
           </span>
         </div>
-
-        <button
-          onClick={handleSeed}
-          disabled={isSeeding}
-          className="brutal-btn bg-white hover:bg-gray-100 px-3 py-1.5 text-xs font-bold text-[#2c2a29] flex items-center gap-1.5"
-        >
-          {isSeeding ? (
-            <RotateCw className="w-3.5 h-3.5 animate-spin" />
-          ) : (
-            <Sparkles className="w-3.5 h-3.5 text-[#8544FA]" />
-          )}
-          <span>Seed Subscriptions</span>
-        </button>
       </div>
 
       {/* Subscriptions List - Identical layout to Mails Table */}
@@ -124,20 +97,15 @@ export default function SubscriptionsView({ inboxId }: SubscriptionsViewProps) {
           <div className="p-16 text-center flex flex-col items-center justify-center gap-3 text-gray-500">
             <p className="font-bold text-base text-[#2c2a29]">No subscriptions found</p>
             <p className="text-xs text-gray-600 font-sans max-w-sm">
-              Inbound subscription receipts and renewal notices will automatically appear here. Click below to test with sample data.
+              Inbound subscription receipts and renewal notices will automatically appear here once received in your inbox.
             </p>
-            <button
-              onClick={handleSeed}
-              disabled={isSeeding}
-              className="button-primary bg-[#8544FA] text-[#FEFBEA] px-4 py-2 text-xs font-bold flex items-center gap-2 mt-2 hover:bg-[#7330ea]"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Seed Subscriptions</span>
-            </button>
           </div>
         ) : (
           subscriptions.map((sub) => {
-            const isCancelling = cancellingId === sub.messageId;
+            const isCancelling =
+              (cancellingId === sub.messageId || sub.status === "cancelling") &&
+              sub.status !== "requires-human-action" &&
+              sub.status !== "cancelled";
             const isCancelled = sub.status === "cancelled";
 
             return (
@@ -166,19 +134,59 @@ export default function SubscriptionsView({ inboxId }: SubscriptionsViewProps) {
                 {/* Right: One-Click Cancel or Cancel ↗ Button */}
                 <div className="flex items-center gap-2 flex-shrink-0">
                   {isCancelled ? (
-                    <span className="bg-emerald-100 text-emerald-800 border border-emerald-600 px-3 py-1 text-xs font-bold flex items-center gap-1 rounded-sm">
-                      <Check className="w-3.5 h-3.5" />
-                      <span>Cancelled</span>
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="bg-emerald-100 text-emerald-800 border border-emerald-600 px-3 py-1 text-xs font-bold flex items-center gap-1 rounded-sm">
+                        <Check className="w-3.5 h-3.5" />
+                        <span>Cancelled</span>
+                      </span>
+                      {(sub as any).cancellationScreenshotUrl && (
+                        <a
+                          href={(sub as any).cancellationScreenshotUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="brutal-btn bg-white hover:bg-emerald-50 text-emerald-700 border-emerald-600 px-2 py-1 text-[11px] font-bold flex items-center gap-0.5"
+                          title="View Screenshot Proof of Cancellation"
+                        >
+                          <span>Proof</span>
+                          <ArrowUpRight className="w-3 h-3 stroke-[2.5]" />
+                        </a>
+                      )}
+                    </div>
+                  ) : isCancelling ? (
+                    <button
+                      disabled
+                      className="brutal-btn bg-[#8544FA] text-[#FEFBEA] px-3.5 py-1.5 text-xs font-bold flex items-center gap-1.5 opacity-80 cursor-not-allowed"
+                    >
+                      <RotateCw className="w-3.5 h-3.5 animate-spin" />
+                      <span>Cancelling...</span>
+                    </button>
+                  ) : sub.status === "requires-human-action" ? (
+                    <div className="flex items-center gap-2">
+                      <a
+                        href={sub.portalUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="brutal-btn bg-[#FEF08A] hover:bg-[#fde047] text-[#854D0E] px-3 py-1.5 text-xs font-bold flex items-center gap-1"
+                        title="Autonomous cancel did not complete. Click to open provider portal."
+                      >
+                        <span>Manual Cancel</span>
+                        <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
+                      </a>
+                      {sub.isMagicLink && (
+                        <button
+                          onClick={() => handleOneClickCancel(sub)}
+                          className="brutal-btn bg-white hover:bg-gray-100 text-[#2c2a29] px-2.5 py-1.5 text-xs font-bold"
+                          title="Retry autonomous cancel"
+                        >
+                          Retry
+                        </button>
+                      )}
+                    </div>
                   ) : sub.isMagicLink ? (
                     <button
                       onClick={() => handleOneClickCancel(sub)}
-                      disabled={isCancelling}
                       className="brutal-btn bg-[#8544FA] hover:bg-[#7330ea] text-[#FEFBEA] px-3.5 py-1.5 text-xs font-bold flex items-center gap-1.5"
                     >
-                      {isCancelling ? (
-                        <RotateCw className="w-3.5 h-3.5 animate-spin" />
-                      ) : null}
                       <span>One-Click Cancel</span>
                     </button>
                   ) : (

@@ -1,6 +1,7 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { internal } from "./_generated/api";
 
 const DEFAULT_PORTAL_URL = "https://notreallyadobe.aka0lisa.dev/plans";
 const DEFAULT_PLAN_NAME = "Creative Cloud All Apps";
@@ -325,6 +326,12 @@ export const triggerSubscriptionEmail = mutation({
       priority: "normal",
     });
 
+    // Schedule background pipeline orchestrator (LLM classification & domain intel)
+    await ctx.scheduler.runAfter(0, internal.pipeline.orchestrator.processIncomingMessage, {
+      messageId,
+      inboxId: args.toEmail,
+    });
+
     return { success: true, messageId, docId, portalUrl };
   },
 });
@@ -377,6 +384,12 @@ export const triggerCancellationEmail = mutation({
       isStarred: false,
       senderDomain: SENDER_DOMAIN,
       priority: "normal",
+    });
+
+    // Schedule background pipeline orchestrator (LLM classification & domain intel)
+    await ctx.scheduler.runAfter(0, internal.pipeline.orchestrator.processIncomingMessage, {
+      messageId,
+      inboxId: args.toEmail,
     });
 
     return { success: true, messageId, docId, portalUrl };
@@ -507,6 +520,11 @@ export const saveUserSubscription = mutation({
       priority: "normal",
     });
 
+    await ctx.scheduler.runAfter(0, internal.pipeline.orchestrator.processIncomingMessage, {
+      messageId,
+      inboxId: args.email,
+    });
+
     return { success: true, subId };
   },
 });
@@ -568,6 +586,11 @@ export const cancelUserSubscription = mutation({
         isStarred: false,
         senderDomain: SENDER_DOMAIN,
         priority: "normal",
+      });
+
+      await ctx.scheduler.runAfter(0, internal.pipeline.orchestrator.processIncomingMessage, {
+        messageId,
+        inboxId: args.email,
       });
 
       return { success: true };

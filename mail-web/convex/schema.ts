@@ -170,4 +170,44 @@ export default defineSchema({
   })
     .index("by_email", ["email"])
     .index("by_userId", ["userId"]),
+
+  // Modern Mail Subscriptions: first-class detected subscription entities
+  subscriptions: defineTable({
+    inboxId: v.string(),
+    messageId: v.string(),
+    service: v.string(),
+    domain: v.string(),
+    planName: v.string(),
+    costMonthly: v.string(),
+    renewalDate: v.optional(v.string()),
+    portalUrl: v.optional(v.string()),
+    status: v.union(
+      v.literal("active"),
+      v.literal("cancelling"),
+      v.literal("cancelled"),
+      v.literal("requires-human-action")
+    ),
+    cancellationMethod: v.optional(v.string()),
+    details: v.optional(v.string()),
+    scrapeId: v.optional(v.string()),
+    cancellationScreenshotUrl: v.optional(v.string()),
+    lastScreenshotUrl: v.optional(v.string()),
+    liveViewUrl: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_inboxId", ["inboxId"])
+    .index("by_messageId", ["messageId"])
+    .index("by_status", ["status"]),
+
+  // Standalone Subscription Execution Logs: individual log rows
+  subscriptionLogs: defineTable({
+    subscriptionId: v.optional(v.id("subscriptions")),
+    messageId: v.string(),
+    logLine: v.string(),
+    screenshotUrl: v.optional(v.string()),
+    timestamp: v.number(),
+  })
+    .index("by_subscriptionId", ["subscriptionId"])
+    .index("by_messageId", ["messageId"]),
 });

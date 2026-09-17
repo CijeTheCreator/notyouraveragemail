@@ -229,12 +229,229 @@ export const executeOneClickCancel = action({
       portalUrl: args.portalUrl,
     });
 
+    // 3. Safety Watchdog: After 3 minutes (180,000ms), auto-rescue if still stuck in cancelling
+    await ctx.scheduler.runAfter(
+      180000,
+      internal.pipeline.cancellationAgent.cancellationWatchdog,
+      { messageId: args.messageId }
+    );
+
     return {
       success: true,
       message: `Autonomous cancellation agent started for ${args.service}`,
     };
   },
 });
+
+/**
+ * Internal Query: List all subscriptions for an inbox
+ */
+export const listSubscriptionsForInbox = internalQuery({
+  args: { inboxId: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("subscriptions")
+      .withIndex("by_inboxId", (q) => q.eq("inboxId", args.inboxId))
+      .collect();
+  },
+});
+
+/**
+ * Internal Mutation: Save or upsert a detected subscription entity (with deduplication)
+ */
+export const saveSubscriptionEntity = internalMutation({
+  args: {
+    inboxId: v.string(),
+    messageId: v.string(),
+    service: v.string(),
+    domain: v.string(),
+    planName: v.string(),
+    costMonthly: v.string(),
+    renewalDate: v.optional(v.string()),
+    portalUrl: v.optional(v.string()),
+    cancellationMethod: v.optional(v.string()),
+    details: v.optional(v.string()),
+    existingSubscriptionId: v.optional(v.id("subscriptions")),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    const cancellationMethod =
+      args.cancellationMethod ||
+      (isMagicLinkDomain(args.domain) ? "magic_link" : "portal");
+
+    // 1. If LLM matched an existing subscription ID, update that record
+    if (args.existingSubscriptionId) {
+      const existing = await ctx.db.get(args.existingSubscriptionId);
+      if (existing) {
+        await ctx.db.patch(existing._id, {
+          status: "active",
+          service: args.service,
+          domain: args.domain,
+          planName: args.planName,
+          costMonthly: args.costMonthly,
+          renewalDate: args.renewalDate || existing.renewalDate,
+          portalUrl: args.portalUrl || existing.portalUrl,
+          cancellationMethod: cancellationMethod || existing.cancellationMethod,
+          messageId: args.messageId, // update latest receipt reference
+          details: args.details || existing.details,
+          updatedAt: now,
+        });
+
+        await ctx.db.insert("subscriptionLogs", {
+          subscriptionId: existing._id,
+          messageId: args.messageId,
+          logLine: `[Subscription Active/Reactivated] Received subscription confirmation email. Status set to ACTIVE.`,
+          timestamp: now,
+        });
+
+        return existing._id;
+      }
+    }
+
+    // 2. Fallback check: find existing subscription for this inbox by domain or service
+    const existingByDomain = await ctx.db
+      .query("subscriptions")
+      .withIndex("by_inboxId", (q) => q.eq("inboxId", args.inboxId))
+      .filter((q) =>
+        q.or(
+          q.eq(q.field("domain"), args.domain),
+          q.eq(q.field("service"), args.service)
+        )
+      )
+      .first();
+
+    if (existingByDomain) {
+      await ctx.db.patch(existingByDomain._id, {
+        status: "active",
+        service: args.service,
+        domain: args.domain,
+        planName: args.planName,
+        costMonthly: args.costMonthly,
+        renewalDate: args.renewalDate || existingByDomain.renewalDate,
+        portalUrl: args.portalUrl || existingByDomain.portalUrl,
+        cancellationMethod: cancellationMethod || existingByDomain.cancellationMethod,
+        messageId: args.messageId,
+        details: args.details || existingByDomain.details,
+        updatedAt: now,
+      });
+
+      await ctx.db.insert("subscriptionLogs", {
+        subscriptionId: existingByDomain._id,
+        messageId: args.messageId,
+        logLine: `[Subscription Active/Reactivated] Received subscription confirmation email. Status set to ACTIVE.`,
+        timestamp: now,
+      });
+
+      return existingByDomain._id;
+    }
+
+    // 3. Fallback check: find by messageId
+    const byMsg = await ctx.db
+      .query("subscriptions")
+      .withIndex("by_messageId", (q) => q.eq("messageId", args.messageId))
+      .first();
+
+    if (byMsg) {
+      await ctx.db.patch(byMsg._id, {
+        status: "active",
+        service: args.service,
+        domain: args.domain,
+        planName: args.planName,
+        costMonthly: args.costMonthly,
+        renewalDate: args.renewalDate,
+        portalUrl: args.portalUrl || byMsg.portalUrl,
+        cancellationMethod,
+        details: args.details || byMsg.details,
+        updatedAt: now,
+      });
+      return byMsg._id;
+    }
+
+    // 4. Insert new subscription
+    return await ctx.db.insert("subscriptions", {
+      inboxId: args.inboxId,
+      messageId: args.messageId,
+      service: args.service,
+      domain: args.domain,
+      planName: args.planName,
+      costMonthly: args.costMonthly,
+      renewalDate: args.renewalDate,
+      portalUrl: args.portalUrl,
+      status: "active",
+      cancellationMethod,
+      details: args.details,
+      createdAt: now,
+      updatedAt: now,
+    });
+  },
+});
+
+/**
+ * Internal Mutation: Mark subscription as cancelled from provider confirmation email (LLM matched)
+ */
+export const markSubscriptionCancelledByMatch = internalMutation({
+  args: {
+    subscriptionId: v.id("subscriptions"),
+    messageId: v.string(),
+    details: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const sub = await ctx.db.get(args.subscriptionId);
+    if (sub) {
+      await ctx.db.patch(sub._id, {
+        status: "cancelled",
+        details: args.details,
+        updatedAt: Date.now(),
+      });
+
+      await ctx.db.insert("subscriptionLogs", {
+        subscriptionId: sub._id,
+        messageId: args.messageId,
+        logLine: `[Cancellation Confirmation] Received provider cancellation email. Status updated to CANCELLED. ${args.details}`,
+        timestamp: Date.now(),
+      });
+    }
+  },
+});
+
+/**
+ * Internal Mutation: Create an untracked subscription in CANCELLED state
+ */
+export const createUntrackedCancelledSubscription = internalMutation({
+  args: {
+    inboxId: v.string(),
+    messageId: v.string(),
+    service: v.string(),
+    domain: v.string(),
+    planName: v.string(),
+    details: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    const subId = await ctx.db.insert("subscriptions", {
+      inboxId: args.inboxId,
+      messageId: args.messageId,
+      service: args.service,
+      domain: args.domain,
+      planName: args.planName,
+      costMonthly: "$0.00/mo",
+      status: "cancelled",
+      details: args.details,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    await ctx.db.insert("subscriptionLogs", {
+      subscriptionId: subId,
+      messageId: args.messageId,
+      logLine: `[Cancellation Confirmation] Received cancellation confirmation for previously untracked service ${args.service} (${args.domain}). Created record in CANCELLED state.`,
+      timestamp: now,
+    });
+
+    return subId;
+  },
+});
+
 
 /**
  * Internal Mutation: Update subscription status
@@ -245,6 +462,18 @@ export const updateSubscriptionStatus = internalMutation({
     status: v.string(),
   },
   handler: async (ctx, args) => {
+    const sub = await ctx.db
+      .query("subscriptions")
+      .withIndex("by_messageId", (q) => q.eq("messageId", args.messageId))
+      .first();
+
+    if (sub) {
+      await ctx.db.patch(sub._id, {
+        status: args.status as any,
+        updatedAt: Date.now(),
+      });
+    }
+
     const msg = await ctx.db
       .query("messages")
       .withIndex("by_messageId", (q) => q.eq("messageId", args.messageId))
@@ -258,15 +487,30 @@ export const updateSubscriptionStatus = internalMutation({
         },
       });
     }
+  },
+});
 
-    const cardDoc = await ctx.db
-      .query("actionCards")
+/**
+ * Internal Mutation: Update subscription auth policy and portal URL
+ */
+export const updateSubscriptionAuthPolicy = internalMutation({
+  args: {
+    messageId: v.string(),
+    cancellationMethod: v.string(),
+    portalUrl: v.optional(v.string()),
+    details: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const sub = await ctx.db
+      .query("subscriptions")
       .withIndex("by_messageId", (q) => q.eq("messageId", args.messageId))
       .first();
 
-    if (cardDoc) {
-      await ctx.db.patch(cardDoc._id, {
-        status: args.status,
+    if (sub) {
+      await ctx.db.patch(sub._id, {
+        cancellationMethod: args.cancellationMethod,
+        portalUrl: args.portalUrl || sub.portalUrl,
+        details: args.details || sub.details,
         updatedAt: Date.now(),
       });
     }
@@ -274,37 +518,112 @@ export const updateSubscriptionStatus = internalMutation({
 });
 
 /**
- * Query: List clean subscriptions
+ * Query: List clean subscriptions directly from subscriptions table
  */
 export const listSubscriptions = query({
   args: {
     inboxId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const messages = await ctx.db.query("messages").collect();
+    let items;
+    if (args.inboxId) {
+      items = await ctx.db
+        .query("subscriptions")
+        .withIndex("by_inboxId", (q) => q.eq("inboxId", args.inboxId!))
+        .collect();
+    } else {
+      items = await ctx.db.query("subscriptions").collect();
+    }
 
-    const subscriptionMessages = messages.filter((m) => {
-      if (args.inboxId && m.inboxId !== args.inboxId) return false;
-      return m.actionCard && m.actionCard.type === "cancellation";
-    });
-
-    return subscriptionMessages.map((m) => {
-      const domain = m.senderDomain || extractDomain(m.fromEmail);
+    return items.map((sub) => {
+      const domain = sub.domain || extractDomain(sub.inboxId);
       const isMagicLink =
-        m.actionCard?.cancellationMethod === "magic_link" ||
+        sub.cancellationMethod === "magic_link" ||
         isMagicLinkDomain(domain);
-      const portalUrl = m.actionCard!.portalUrl || `https://${domain}/account/billing`;
+      const portalUrl = sub.portalUrl || `https://${domain}/account/billing`;
 
       return {
-        id: m._id,
-        messageId: m.messageId,
-        service: m.actionCard!.service,
-        domain,
-        costMonthly: m.actionCard!.costMonthly || "$0.00/mo",
+        id: sub._id,
+        messageId: sub.messageId,
+        service: sub.service,
+        domain: sub.domain,
+        costMonthly: sub.costMonthly || "$0.00/mo",
         portalUrl,
         isMagicLink,
-        status: m.actionCard!.status || "active",
+        status: sub.status,
       };
     });
+  },
+});
+
+/**
+ * Query: Get execution logs for a subscription from subscriptionLogs table
+ */
+export const getSubscriptionLogs = query({
+  args: {
+    messageId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("subscriptionLogs")
+      .withIndex("by_messageId", (q) => q.eq("messageId", args.messageId))
+      .order("asc")
+      .collect();
+  },
+});
+
+/**
+ * Mutation: Purge all legacy subscriptions, action cards, and reset for clean manual testing
+ */
+export const purgeAllSubscriptionData = mutation({
+  args: {},
+  handler: async (ctx) => {
+    // 1. Delete all userSubscriptions
+    const userSubs = await ctx.db.query("userSubscriptions").collect();
+    for (const s of userSubs) {
+      await ctx.db.delete(s._id);
+    }
+
+    // 2. Delete all actionCards
+    const actionCards = await ctx.db.query("actionCards").collect();
+    for (const c of actionCards) {
+      await ctx.db.delete(c._id);
+    }
+
+    // 3. Clear actionCard property on all messages
+    const messages = await ctx.db.query("messages").collect();
+    let clearedMessagesCount = 0;
+    for (const m of messages) {
+      if (m.actionCard) {
+        await ctx.db.patch(m._id, { actionCard: undefined });
+        clearedMessagesCount++;
+      }
+    }
+
+    // 4. Clear all modern mail subscriptions and logs
+    const subs = await ctx.db.query("subscriptions").collect();
+    for (const s of subs) {
+      await ctx.db.delete(s._id);
+    }
+
+    const logs = await ctx.db.query("subscriptionLogs").collect();
+    for (const l of logs) {
+      await ctx.db.delete(l._id);
+    }
+
+    // 5. Clear cached subscription policies
+    const policies = await ctx.db.query("subscriptionPolicies").collect();
+    for (const p of policies) {
+      await ctx.db.delete(p._id);
+    }
+
+    return {
+      deletedUserSubscriptions: userSubs.length,
+      deletedActionCards: actionCards.length,
+      clearedMessages: clearedMessagesCount,
+      deletedSubscriptions: subs.length,
+      deletedSubscriptionLogs: logs.length,
+      deletedPolicies: policies.length,
+    };
   },
 });

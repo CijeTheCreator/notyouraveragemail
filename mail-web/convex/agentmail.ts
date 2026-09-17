@@ -1,7 +1,6 @@
 import { action, mutation, query, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
-import { detectActionCard } from "./pipeline/actionCards";
 import { extractOtpCode } from "./pipeline/otp";
 import { extractDomain } from "./pipeline/domainReputation";
 
@@ -321,9 +320,6 @@ export const upsertInboundMessage = internalMutation({
       // Check for OTP code pattern using pipeline module
       const otpCode = extractOtpCode(args.subject, args.body);
 
-      // Check for Action Card pattern using pipeline module
-      const actionCard = detectActionCard(args.subject, args.body, args.fromEmail);
-
       // Extract sender domain
       const senderDomain = extractDomain(args.fromEmail);
 
@@ -344,25 +340,12 @@ export const upsertInboundMessage = internalMutation({
         isRead: false,
         isStarred: false,
         otpCode,
-        actionCard,
         senderDomain,
         priority: "normal",
         pipelineStatus: "processing",
       });
 
-      if (actionCard) {
-        await ctx.db.insert("actionCards", {
-          messageId: args.messageId,
-          service: actionCard.service,
-          type: actionCard.type,
-          status: "pending",
-          costMonthly: actionCard.costMonthly,
-          details: actionCard.recommendedAction,
-          autoTriggerAt: Date.now() + (actionCard.autoTriggerDays || 3) * 86400000,
-        });
-      }
-
-      // Trigger asynchronous background pipeline stages (Firecrawl Trustpilot, AI enrichments)
+      // Trigger asynchronous background pipeline stages (LLM Classifier & Domain Intel in parallel)
       await ctx.scheduler.runAfter(0, internal.pipeline.orchestrator.processIncomingMessage, {
         messageId: args.messageId,
         inboxId: args.inboxId,
