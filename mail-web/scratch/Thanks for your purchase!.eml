@@ -1,0 +1,1112 @@
+Delivered-To: osadebec98@gmail.com
+Received: by 2002:a05:6638:c021:b0:5ca:690e:6e0c with SMTP id q33csp2786614jaa;
+        Tue, 3 Feb 2026 13:40:57 -0800 (PST)
+X-Received: by 2002:ad4:5dec:0:b0:890:f15:25d4 with SMTP id 6a1803df08f44-895221dde17mr12367736d6.67.1770154857643;
+        Tue, 03 Feb 2026 13:40:57 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1770154857; cv=none;
+        d=google.com; s=arc-20240605;
+        b=RQ+YA9s4KkwjRnpmewq2pNhu47Chp9Q4Ryoc2apmv5OvIaaVEuavRhHQiRWhRuDDTZ
+         P6tb3VjiKCLgO2/EDEX37f5efqtpuOEu8rpMqesSRXS1prE19sH80OFGd6fKX4T57FgT
+         9QOmJkUoyYWzjM7xn2zKLbf7sc/0K1ScYQo3u+4uIQ4p6nrusI4lfPFifZMyEbSI6QHg
+         YOvrSR4iyYgc1mSdeqWWbz0Kgprw06QMAMell/tW0GUnn+cvgEzSYPAk1qJdOjzqCVe1
+         fpN2LlI/vr3+xItpLiNfHMnjiQP0Ey35gCSCgoUuspswzUEI8yPS429+ZvUyo3sETcwH
+         UmgA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=feedback-id:mime-version:errors-to:subject:message-id:to:reply-to
+         :from:date:dkim-signature:dkim-signature;
+        bh=4/I75xxHPPNkMtKPjifkC9cwh48bEDpfIElPimFVpMc=;
+        fh=BT38Ft/Iys31HX4YJsltIsRSvSOFBsuEQ5eXSJQ0s9M=;
+        b=FsJ3CoaeTbGgSjHF0CaZm5q8X4qnfJ9ZA3Fq6XmoMTSl3DrIwrS62XklcgPeq1+eyb
+         MH372qWU2SZ0ReC7W5FElfhkYSKaut2mo/I84fitvjV6mHeLmpKGPVX4IW6k6+Lz8daf
+         1gXXiMQ9jSP3D4UVE98W5RuWKnyXXGEOW4+7KAID74PmUdJfth1Nt49+reO9uV8p+HhA
+         yUwHuAU1VSUPYODLDjSC3fO1o1Bel5gnaxNF2X1giDsQg0zocbmF1KhXUbdzgTFDbDh5
+         CdmxoBOUykmtrCps7mb9gEhyGr58OZN8Oa+v2blAJO8YS9P6dEXMMy5kF2kKf50AMHDJ
+         xAUQ==;
+        dara=google.com
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=pass header.i=@adobe.com header.s=mgm6benxxyo55vgwgahkfejc7iffyvyn header.b=dFmA46hM;
+       dkim=pass header.i=@amazonses.com header.s=6gbrjpgwjskckoa6a5zn6fwqkn67xbtw header.b=VFPFXSDj;
+       spf=pass (google.com: domain of 0100019c25739362-02b82d66-810b-4a2d-8341-b6a787218139-000000@ses.adobe.com designates 76.223.139.185 as permitted sender) smtp.mailfrom=0100019c25739362-02b82d66-810b-4a2d-8341-b6a787218139-000000@ses.adobe.com;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=adobe.com
+Return-Path: <0100019c25739362-02b82d66-810b-4a2d-8341-b6a787218139-000000@ses.adobe.com>
+Received: from c139-185.smtp-out.amazonses.com (c139-185.smtp-out.amazonses.com. [76.223.139.185])
+        by mx.google.com with ESMTPS id af79cd13be357-8ca2fa653b7si73852085a.103.2026.02.03.13.40.57
+        for <osadebec98@gmail.com>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 Feb 2026 13:40:57 -0800 (PST)
+Received-SPF: pass (google.com: domain of 0100019c25739362-02b82d66-810b-4a2d-8341-b6a787218139-000000@ses.adobe.com designates 76.223.139.185 as permitted sender) client-ip=76.223.139.185;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@adobe.com header.s=mgm6benxxyo55vgwgahkfejc7iffyvyn header.b=dFmA46hM;
+       dkim=pass header.i=@amazonses.com header.s=6gbrjpgwjskckoa6a5zn6fwqkn67xbtw header.b=VFPFXSDj;
+       spf=pass (google.com: domain of 0100019c25739362-02b82d66-810b-4a2d-8341-b6a787218139-000000@ses.adobe.com designates 76.223.139.185 as permitted sender) smtp.mailfrom=0100019c25739362-02b82d66-810b-4a2d-8341-b6a787218139-000000@ses.adobe.com;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=adobe.com
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+	s=mgm6benxxyo55vgwgahkfejc7iffyvyn; d=adobe.com; t=1770154857;
+	h=Date:From:Reply-To:To:Message-ID:Subject:MIME-Version:Content-Type;
+	bh=RQYrvTQp9yW9FesSenhgtLUkCzUlg9Qm6JdwDlJSuPo=;
+	b=dFmA46hMwsw45yfMQuYOs326NCWanIEWWL+2I8EZEj9LFZ4OsMnpn7kV7j69F7UR
+	5H312dMgb//CSFD4RFDfAT+yPwciUK+t+tgYxaKP3IAU/OsmhPWO8kGtOnaCB2waNIt
+	QzOpq8nAEM79TCTVEo/WW58GJ1gMmYuR8gn+rmeo=
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+	s=6gbrjpgwjskckoa6a5zn6fwqkn67xbtw; d=amazonses.com; t=1770154857;
+	h=Date:From:Reply-To:To:Message-ID:Subject:MIME-Version:Content-Type:Feedback-ID;
+	bh=RQYrvTQp9yW9FesSenhgtLUkCzUlg9Qm6JdwDlJSuPo=;
+	b=VFPFXSDjzo2v8Urj1QqIPHxAtKVgB+Fb6rg+Im4cdOla2AzPPD+GaIPiJw+uGc6m
+	wJ/CqvuKu+sQG1b3Q9XKssu3CtCxjZbCBwqos68MvJ1QQc9xx8+DBjX+/olnMSdQEIP
+	9ZkCCcrmjY6VQ4Y0nxCBs0a3hC2wJp7bmbzuCeAE=
+Date: Tue, 3 Feb 2026 21:40:57 +0000
+From: Adobe <store@adobe.com>
+Reply-To: Adobe <message@adobe.com>
+To: osadebec98@gmail.com
+Message-ID: <0100019c25739362-02b82d66-810b-4a2d-8341-b6a787218139-000000@email.amazonses.com>
+Subject: Thanks for your purchase!
+Errors-To: Adobe <message@adobe.com>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_4559706_159091847.1770154857290"
+X-Report-Abuse: abuse@adobe.com
+Feedback-ID: ::1.us-east-1.4BVvjB29RcVWWoA9T/L9DGquaEnd6x9G7xLW1muBHKQ=:AmazonSES
+X-SES-Outgoing: 2026.02.03-76.223.139.185
+
+------=_Part_4559706_159091847.1770154857290
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+----------
+Adobe
+----------
+   Here=E2=80=99s more info about your Adobe free trial.=09
+ Chijioke, welcome to your free trial of=09Adobe Acrobat Pro!=20
+
+   After your free trial ends on Feb 11, 2026, =09you will be charged  US$2=
+9.99 (plus tax)   monthly .    Your   subscription will automatically renew=
+=09 monthly  until you cancel.   Price subject to change at renewal.   Canc=
+el  before the free trial ends and you won=E2=80=99t be charged .    Cancel=
+ =09before Feb 25, 2026 to get a full refund =09=09=09=09=09=09=09=09=09=09=
+. =09Cancel anytime via Adobe Account(https://www.adobe.com/go/my_subscript=
+ions) or Customer Support(https://www.adobe.com/go/support). You also agree=
+ to the Terms of Use(https://www.adobe.com/go/terms) and the Subscription a=
+nd Cancellation Terms(https://www.adobe.com/go/subscriptionterms). =20
+
+
+
+As a reminder, your Adobe ID is osadebec98@gmail.com. Use it to access all =
+your Adobe products and services.
+ If you have any questions, we=E2=80=99re here for you. Contact Adobe Custo=
+mer Support(https://www.adobe.com/go/support) to chat with a representative=
+.
+
+Order details=20
+Order number(https://www.adobe.com/go/account_orders)
+AE05244600068CUS
+Ordered
+February 3, 2026
+https://mcs.odin.adobe.com/content/dam/mcs/en/icons/raw/48x48/acrobat_reade=
+r_appicon_48x48.png
+Adobe Acrobat Pro
+ 7-day free trialSubscriptionMonthly plan
+US$29.99/mo  Subtotal
+US$29.99/mo Tax/VAT 0.00%
+US$0.00/mo Order Total
+US$29.99/mo    DUE NOW US$0.00/mo  Feb 11, 2026
+7 day free trial ends
+ Adobe Acrobat Pro US$29.99/mo Purchase Summary
+Recurring billing starts only after your free trial ends.Cancel within 14 d=
+ays of your annual subscription to get a full refund. Learn more.(https://w=
+ww.adobe.com/go/cancel_trial)----------------------------------------------=
+---------------------------------------------------------------------
+Manage your account(https://www.adobe.com/go/account)
+Visit Account Management to view your plans and products, security settings=
+, plus updates and helpful resources from Adobe. Learn more.
+
+Get answers=09to your questions(https://www.adobe.com/go/forums)
+Check out Adobe Forums to meet the experts behind the answers, learn about =
+our products, get inspiration, or pick up new tips and tricks. Learn more.
+
+Need help?(https://www.adobe.com/go/support)
+Don=E2=80=99t hesitate to call Customer Support if you need assistance. Lea=
+rn more.
+<b>Free Trial Terms:</b>=20
+<p>Your trial starts immediately after sign-up. At the end of your trial, y=
+our subscription begins, and Adobe will automatically charge your payment m=
+ethod at the rate stated at the time of purchase, including any applicable =
+taxes, on a recurring basis in accordance with the terms of your subscripti=
+on.
+<p>If you cancel before the end of your trial, your payment method won=E2=
+=80=99t be charged. You may cancel your trial by visiting your <a class=3D"=
+adobe_account" href=3D"https://www.adobe.com/go/acctmgmt_plan" target=3D"_b=
+lank">Adobe Account</a> page or by contacting <a class=3D"customer_support"=
+ href=3D"https://www.adobe.com/go/csupport_subscripterms" target=3D"_blank"=
+>Customer Support</a>.
+<p>Your eligibility to use an Adobe free trial offer is determined solely b=
+y Adobe. Your access to any free trial offer is provided at Adobe=E2=80=99s=
+ sole discretion.
+<p><b>Subscription Terms:</b>=20
+<p>Your subscription begins as soon as your initial payment is processed. Y=
+our subscription will automatically renew each month without notice until y=
+ou cancel. You authorize us to store your payment method(s) and to automati=
+cally charge your payment method(s) every month until you cancel. We will a=
+utomatically charge you the then-current rate for your plan, plus applicabl=
+e taxes (such as VAT or GST if the rate does not include it), every month u=
+pon renewal until you cancel.=20
+<p>We may change your plan=E2=80=99s rate each monthly renewal term, and we=
+ will notify you of any rate change with the option to cancel. If the appli=
+cable VAT or GST rate (or other included tax or duty) changes during your o=
+ne-month term, we will accordingly adjust the tax-inclusive price for your =
+plan on your next billing date.
+<p>If your primary payment method fails, you authorize us to charge any oth=
+er payment method in your account. If you have not provided us a backup pay=
+ment method(s) and you fail to provide payment, or if all payment methods i=
+n your account fail, we may suspend your subscription. You can edit your pa=
+yment information anytime in your <a class=3D"adobe_account" href=3D"https:=
+//www.adobe.com/go/acctmgmt_plan" target=3D"_blank">Adobe Account</a> page.=
+=20
+<p>For European Economic Area customers, your bank may require you to authe=
+nticate your initial purchase using a password, a one-time code sent to you=
+r mobile number, or biometric recognition. When you authenticate, you also =
+authorize us to charge your payment method for your additional purchases wi=
+thout providing us further payment information or other instructions (i.e.,=
+ we will initiate future payments independently). Such additional purchases=
+ may occur when we automatically charge your payment method in connection w=
+ith a recurring subscription or when you add or change licenses or products=
+.
+<p><b>Cancellation Terms:</b>
+<p>You can cancel your subscription anytime via your <a class=3D"adobe_acco=
+unt" href=3D"https://www.adobe.com/go/acctmgmt_plan" target=3D"_blank">Adob=
+e Account</a> page or by contacting <a class=3D"customer_support" href=3D"h=
+ttps://www.adobe.com/go/csupport_subscripterms" target=3D"_blank">Customer =
+Support*</a>. If you cancel within 14 days of your initial order, you=E2=80=
+=99ll be fully refunded. Should you cancel after 14 days, your payment is n=
+on-refundable, and your service will continue until the end of that month=
+=E2=80=99s billing period.
+<p>* Specific countries require cancellations to be made only by contacting=
+ <a class=3D"customer_support" href=3D"https://www.adobe.com/go/csupport_su=
+bscripterms" target=3D"_blank">Customer Support</a>. See the list of countr=
+ies <a class=3D"list_of_countries" href=3D"https://helpx.adobe.com/x-produc=
+tkb/policy-pricing/countries-served-by-digital-river.html" target=3D"_blank=
+">here</a>.
+
+Adobe, the Adobe logo, Creative Cloud, the Creative Cloud logo, and Documen=
+t Cloud are either registered trademarks or trademarks of Adobe in the Unit=
+ed States and/or other countries.
+This is not a comprehensive list of Adobe trademarks. For a full list, refe=
+r to the Adobe Trademark Guidelines(https://www.adobe.com/go/trademarks). A=
+ll other trademarks are the property of their respective owners.
+Adobe,345 Park Avenue, San Jose, CA 95110 USA.  <img src=3D"https://postoff=
+ice.adobe.com/po-server/link/open?source=3DeyJhbGciOiJIUzUxMiJ9.eyJ0ZW1wbGF=
+0ZSI6ImVjb21tX29yZGVyLWNvbmZpcm1lZC1pbmRpdmlkdWFsIiwiZW1haWxBZGRyZXNzIjoib3=
+NhZGViZWM5OEBnbWFpbC5jb20iLCJyZXF1ZXN0SWQiOiI4ZTM1MzFmMC00ZTgzLTQ1MTctOGU4M=
+y1kZDgwZDliM2RiNDUiLCJsb2NhbGUiOiJlbl9VUyJ9.Ybcnnp_wCXM8NnC-cEzLksjBUeZc_QJ=
+_iKIfj2OVkcOElCwFEoIC3ffrFVaQhD7vqvaVho6OrHLXHcAFivCaxQ" height=3D"1" width=
+=3D"1" />
+------=_Part_4559706_159091847.1770154857290
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<html lang=3D"en">
+  <head>
+=09=09<link rel=3D"icon" href=3D"https://www.adobe.com/favicon.ico" type=3D=
+"image/x-icon">
+=09=09<link rel=3D"shortcut icon" href=3D"https://www.adobe.com/favicon.ico=
+" type=3D"image/x-icon">
+=09=09<meta name=3D"x-apple-disable-message-reformatting">
+=09=09<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3DUTF=
+-8">
+=09=09<meta name=3D"viewport" content=3D"width=3Ddevice-width,initial-scale=
+=3D1.0">
+=09=09<meta name=3D"format-detection" content=3D"telephone=3Dno">
+=09=09<meta name=3D"format-detection" content=3D"date=3Dno">
+=09=09<meta name=3D"format-detection" content=3D"address=3Dno">
+=09=09<meta name=3D"format-detection" content=3D"email=3Dno">
+=09=09<title>Adobe</title>
+=09=09<!--[if mso]>
+<style type=3D"text/css">
+body, table, td {
+font-family:Helvetica Neue, Helvetica, Verdana, Arial, sans-serif !importan=
+t;
+}
+.button {
+background:transparent !important;
+}
+</style>
+<xml>
+  <o:OfficeDocumentSettings>
+    <o:AllowPNG/>
+    <o:PixelsPerInch>96</o:PixelsPerInch>
+  </o:OfficeDocumentSettings>
+</xml>
+<![endif]-->
+=09=09<style type=3D"text/css">
+=09=09=09@import url("https://use.typekit.net/onr8tbr.css");
+
+=09=09=09@media (prefers-color-scheme: dark) .ReadMsgBody {
+=09=09=09=09width: 100%;
+=09=09=09}
+
+=09=09=09.ExternalClass {
+=09=09=09=09width: 100%;
+=09=09=09}
+
+=09=09=09table {
+=09=09=09=09border-collapse: collapse;
+=09=09=09=09margin: 0 auto;
+=09=09=09}
+
+=09=09=09a,
+=09=09=09a:visited {
+=09=09=09=09color: #1473E6;
+=09=09=09=09text-decoration: none;
+=09=09=09}
+
+=09=09=09.legal a {
+=09=09=09=09color: #959595;
+=09=09=09=09text-decoration: underline;
+=09=09=09}
+
+=09=09=09/* iOS BLUE LINKS */
+=09=09=09a[x-apple-data-detectors] {
+=09=09=09=09color: inherit !important;
+=09=09=09=09text-decoration: none !important;
+=09=09=09=09font-size: inherit !important;
+=09=09=09=09font-family: inherit !important;
+=09=09=09=09font-weight: inherit !important;
+=09=09=09=09line-height: inherit !important;
+=09=09=09}
+
+=09=09=09.mobile {
+=09=09=09=09border-spacing: 0;
+=09=09=09=09display: none !important;
+=09=09=09=09height: 0;
+=09=09=09=09max-height: 0;
+=09=09=09=09mso-hide: all;
+=09=09=09=09overflow: hidden;
+=09=09=09=09visibility: hidden;
+=09=09=09=09width: 0;
+=09=09=09}
+
+=09=09=09@media only screen and (max-width:480px) {
+=09=09=09=09u~div {
+=09=09=09=09=09min-width: 100vw;
+=09=09=09=09}
+
+=09=09=09=09div>u~div {
+=09=09=09=09=09min-width: 100%;
+=09=09=09=09}
+
+=09=09=09=09.web {
+=09=09=09=09=09display: none !important;
+=09=09=09=09}
+
+=09=09=09=09.mobile {
+=09=09=09=09=09display: block !important;
+=09=09=09=09=09width: auto !important;
+=09=09=09=09=09overflow: visible !important;
+=09=09=09=09=09height: auto !important;
+=09=09=09=09=09max-height: inherit !important;
+=09=09=09=09=09font-size: 18px !important;
+=09=09=09=09=09line-height: 26px !important;
+=09=09=09=09=09visibility: visible !important;
+=09=09=09=09}
+
+=09=09=09=09.email-width {
+=09=09=09=09=09width: 84% !important;
+=09=09=09=09}
+
+=09=09=09=09.full-width {
+=09=09=09=09=09width: 100% !important;
+=09=09=09=09}
+
+=09=09=09=09.mobile-image {
+=09=09=09=09=09height: auto !important;
+=09=09=09=09=09width: 100% !important;
+=09=09=09=09}
+
+=09=09=09=09.social {
+=09=09=09=09=09float: left !important;
+=09=09=09=09=09padding-top: 66px !important;
+=09=09=09=09=09text-align: left !important;
+=09=09=09=09}
+=09=09=09}
+
+=09=09</style>
+=09</head>
+  <body bgcolor=3D"#E4E4E4" style=3D"background-color:#E4E4E4; margin:0; pa=
+dding:0;-webkit-font-smoothing:antialiased;width:100% !important;-webkit-te=
+xt-size-adjust:none;"
+=09=09topmargin=3D"0">
+    <!--Setting the variables to be used in the template-->  =09=09<!--Chec=
+k if the Ordered item is Trial or Paid and add them to the respective array=
+-->  =09=09=09=09<!--Email PreHeader Content-->
+=09=09<div style=3D"font-size:1px; color:#E4E4E4; display:none; overflow:hi=
+dden; visibility:hidden;"> Here=E2=80=99s more info about your Adobe free t=
+rial.
+=09=09=09=09=09=09&nbsp;=E2=80=8C&nbsp;=E2=80=8C&nbsp;=E2=80=8C&nbsp;=E2=80=
+=8C&nbsp;=E2=80=8C&nbsp;=E2=80=8C&nbsp;=E2=80=8C&nbsp;=E2=80=8C&nbsp;=E2=80=
+=8C&nbsp;=E2=80=8C&nbsp;=E2=80=8C&nbsp;=E2=80=8C&nbsp;=E2=80=8C&nbsp;&nbsp;=
+=E2=80=8C&nbsp;=E2=80=8C&nbsp;=E2=80=8C&nbsp;=E2=80=8C&nbsp;=E2=80=8C&nbsp;=
+=E2=80=8C&nbsp;=E2=80=8C&nbsp;=E2=80=8C&nbsp;=E2=80=8C&nbsp;=E2=80=8C&nbsp;=
+=E2=80=8C&nbsp;=E2=80=8C&nbsp;=E2=80=8C&nbsp;&nbsp;=E2=80=8C&nbsp;=E2=80=8C=
+&nbsp;=E2=80=8C&nbsp;=E2=80=8C&nbsp;=E2=80=8C&nbsp;=E2=80=8C&nbsp;=E2=80=8C=
+&nbsp;=E2=80=8C&nbsp;=E2=80=8C&nbsp;=E2=80=8C&nbsp;=E2=80=8C&nbsp;=E2=80=8C=
+&nbsp;=E2=80=8C&nbsp;&nbsp;=E2=80=8C&nbsp;=E2=80=8C&nbsp;=E2=80=8C&nbsp;=E2=
+=80=8C&nbsp;=E2=80=8C&nbsp;=E2=80=8C&nbsp;=E2=80=8C&nbsp;=E2=80=8C&nbsp;=E2=
+=80=8C&nbsp;=E2=80=8C&nbsp;=E2=80=8C&nbsp;=E2=80=8C&nbsp;=E2=80=8C&nbsp;
+=09=09</div>
+=09=09<!--END of Email PreHeader Content -->
+=09=09<table width=3D"100%" bgcolor=3D"#E4E4E4" style=3D"background-color:#=
+E4E4E4;" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" role=3D"presentat=
+ion">
+=09=09=09<tr>
+=09=09=09=09<td>
+=09=09=09=09=09<table class=3D"full-width" align=3D"center" width=3D"600" b=
+order=3D"0" cellpadding=3D"0" cellspacing=3D"0" role=3D"presentation" style=
+=3D"width:600px;">
+=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09<td bgcolor=3D"#ffffff" style=3D"border-top:4px solid =
+#EB1000; background-color:#ffffff; padding-bottom:60px;">
+=09=09=09=09=09=09=09=09<!-- pod1 -->
+=09=09=09=09=09=09=09=09<table class=3D"email-width" align=3D"center" width=
+=3D"500" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" role=3D"presentat=
+ion" style=3D"width:500px;">
+=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09<td
+=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#505050; font-family:adobe-=
+clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-serif; font-size:12p=
+x; line-height:18px; padding-top:50px;">
+=09=09=09=09=09=09=09=09=09=09=09<table align=3D"left" width=3D"auto" borde=
+r=3D"0" cellpadding=3D"0" cellspacing=3D"0" role=3D"presentation" style=3D"=
+float:left;">
+=09=09=09=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09<td valign=3D"middle"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#EB1000; font-fami=
+ly:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-serif; font=
+-size:12px; line-height:18px;">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09<img alt=3D"Adobe" src=3D"https:/=
+/landing.adobe.com/dam/global/images/adobe-logo.420x110.png" width=3D"108" =
+height=3D"auto"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09border=3D"0" hspace=3D"0" vspa=
+ce=3D"0"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#EB1000; font-f=
+amily:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-serif; f=
+ont-size:12px; line-height:18px; display:block; vertical-align:top;">
+=09=09=09=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09<!--CODE to display Mastercard and J=
+CB logo when network promo is available--> =09=09=09=09=09=09=09=09=09=09=
+=09=09=09<!--END of CODE to display Mastercard and JCB logo when network pr=
+omo is available-->
+=09=09=09=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09=09=09</table>
+=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09<!--EMAIL HEADER in BOLD displayed as first line=
+ of the email-->
+=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09<td
+=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#000000; font-family:adobe-=
+clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-serif; font-size:28p=
+x; line-height:30px; padding-top:66px;">
+=09=09=09=09=09=09=09=09=09=09=09<strong>  Chijioke, welcome to your free t=
+rial of
+=09=09=09=09=09=09=09=09=09=09=09=09Adobe Acrobat Pro! </strong>
+=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09<!--END of EMAIL HEADER in BOLD displayed as fir=
+st line of the email-->
+=09=09=09=09=09=09=09=09=09<!--ACCESS PASS is true, display below paragraph=
+--> =09=09=09=09=09=09=09=09=09<!--END of ACCESS PASS is true, display belo=
+w para-->
+=09=09=09=09=09=09=09=09=09<!--BEGIN LEGAL DISCLAIMER text  -->  <tr>
+=09=09=09=09=09=09=09=09=09=09<td
+=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#2C2C2C; font-family:adobe-=
+clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-serif; font-size:18p=
+x; line-height:26px; padding-top:40px;">
+=09=09=09=09=09=09=09=09=09=09=09<strong>   After your free trial ends on
+=09=09=09=09=09=09=09=09=09=09=09=09Feb 11, 2026, =09=09=09=09=09=09=09=09=
+=09=09=09=09you will be charged
+=09=09=09=09=09=09=09=09=09=09=09=09 =09=09=09=09=09=09=09=09=09=09=09=09US=
+$29.99 (plus tax)  =09=09=09=09=09=09=09=09=09=09=09=09 monthly .    Your  =
+ subscription will automatically renew
+=09=09=09=09=09=09=09=09=09=09=09=09 monthly
+=09=09=09=09=09=09=09=09=09=09=09=09 until you cancel.   Price subject to c=
+hange at renewal.   Cancel  before the free trial ends and you won=E2=80=99=
+t be charged .    Cancel =09=09=09=09=09=09=09=09=09=09=09=09before Feb 25,=
+ 2026 to get a full refund =09=09=09=09=09=09=09=09=09=09=09=09. =09=09=09=
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<!--LAST SEN=
+TENCES--> Cancel anytime via <a href=3D"https://postoffice.adobe.com/po-ser=
+ver/link/redirect?target=3DeyJhbGciOiJIUzUxMiJ9.eyJ0ZW1wbGF0ZSI6ImVjb21tX29=
+yZGVyLWNvbmZpcm1lZC1pbmRpdmlkdWFsIiwiZW1haWxBZGRyZXNzIjoib3NhZGViZWM5OEBnbW=
+FpbC5jb20iLCJyZXF1ZXN0SWQiOiI4ZTM1MzFmMC00ZTgzLTQ1MTctOGU4My1kZDgwZDliM2RiN=
+DUiLCJsaW5rIjoiaHR0cHM6Ly93d3cuYWRvYmUuY29tL2dvL215X3N1YnNjcmlwdGlvbnMiLCJs=
+YWJlbCI6IjEzIiwibG9jYWxlIjoiZW5fVVMifQ.qKHGSEBmjW6zRr5E8g04E1xQfYR7Fl4rBfEc=
+AwdpfsQL5rOVtXW_GftsKmM4bjYRA3jvQgi92Bve-6wxnrfXyA" target=3D"_blank"
+=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#1473e6; text-decorat=
+ion:none;">Adobe Account</a> or <a href=3D"https://postoffice.adobe.com/po-=
+server/link/redirect?target=3DeyJhbGciOiJIUzUxMiJ9.eyJ0ZW1wbGF0ZSI6ImVjb21t=
+X29yZGVyLWNvbmZpcm1lZC1pbmRpdmlkdWFsIiwiZW1haWxBZGRyZXNzIjoib3NhZGViZWM5OEB=
+nbWFpbC5jb20iLCJyZXF1ZXN0SWQiOiI4ZTM1MzFmMC00ZTgzLTQ1MTctOGU4My1kZDgwZDliM2=
+RiNDUiLCJsaW5rIjoiaHR0cHM6Ly93d3cuYWRvYmUuY29tL2dvL3N1cHBvcnQiLCJsYWJlbCI6I=
+jE0IiwibG9jYWxlIjoiZW5fVVMifQ.qh_5vEjV0qJQpefzGSuCCOHSS3uSF_pgr3g_LJVIBwrbl=
+qO1paAcmUetXRPxZHxfCrZWEVDmM07Be3Wbq7AqCA"
+=09=09=09=09=09=09=09=09=09=09=09=09=09target=3D"_blank" style=3D"color:#14=
+73e6; text-decoration:none;">Customer Support</a>.
+=09=09=09=09=09=09=09=09=09=09=09</strong> You also agree to the <a href=3D=
+"https://postoffice.adobe.com/po-server/link/redirect?target=3DeyJhbGciOiJI=
+UzUxMiJ9.eyJ0ZW1wbGF0ZSI6ImVjb21tX29yZGVyLWNvbmZpcm1lZC1pbmRpdmlkdWFsIiwiZW=
+1haWxBZGRyZXNzIjoib3NhZGViZWM5OEBnbWFpbC5jb20iLCJyZXF1ZXN0SWQiOiI4ZTM1MzFmM=
+C00ZTgzLTQ1MTctOGU4My1kZDgwZDliM2RiNDUiLCJsaW5rIjoiaHR0cHM6Ly93d3cuYWRvYmUu=
+Y29tL2dvL3Rlcm1zIiwibGFiZWwiOiIxNSIsImxvY2FsZSI6ImVuX1VTIn0.Ii4-CKm_fGwCp2d=
+dSF8TPwkKJ09cTg3OHc9qFF4IK3bfgFnVbS2eX0ZmRGrVqhlAYOYhK73g-I8RxsJbtOZ16Q" ta=
+rget=3D"_blank"
+=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#1473e6; text-decoration=
+:none;">Terms of Use</a> and the <a
+=09=09=09=09=09=09=09=09=09=09=09=09href=3D"https://postoffice.adobe.com/po=
+-server/link/redirect?target=3DeyJhbGciOiJIUzUxMiJ9.eyJ0ZW1wbGF0ZSI6ImVjb21=
+tX29yZGVyLWNvbmZpcm1lZC1pbmRpdmlkdWFsIiwiZW1haWxBZGRyZXNzIjoib3NhZGViZWM5OE=
+BnbWFpbC5jb20iLCJyZXF1ZXN0SWQiOiI4ZTM1MzFmMC00ZTgzLTQ1MTctOGU4My1kZDgwZDliM=
+2RiNDUiLCJsaW5rIjoiaHR0cHM6Ly93d3cuYWRvYmUuY29tL2dvL3N1YnNjcmlwdGlvbnRlcm1z=
+IiwibGFiZWwiOiIxNiIsImxvY2FsZSI6ImVuX1VTIn0.GZDEbtCctRshtmy13VrhtDjwzMA6snD=
+mp7_3v04WhmCPKVsBl8U_88ULTiN4FKkq81-AtvwMZ6hSF8V9EKgyKg" target=3D"_blank"
+=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#1473e6; text-decoration=
+:none;">Subscription and Cancellation Terms</a>.
+=09=09=09=09=09=09=09=09=09=09=09<!--Additional sentence for marget segment=
+ "EDU"--> =09=09=09=09=09=09=09=09=09=09=09<!--END OF LEGAL DISCLAIMER Text=
+-->
+=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09</tr> =09=09=09=09=09=09=09=09=09<!--VERMONT DIS=
+CLAIMER FOR AUTORENEW false-->
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<!--END OF VERMONT DI=
+SCLAIMER FOR AUTORENEW false-->
+=09=09=09=09=09=09=09=09=09<!--BRAZIL DISCLAIMER FOR AUTORENEW false--> =09=
+=09=09=09=09=09=09=09=09<!--END OF BRAZIL DISCLAIMER FOR AUTORENEW false-->
+=09=09=09=09=09=09=09=09=09<!-- BEGIN INCOMPLETE ACCOUNT --> =09=09=09=09=
+=09=09=09=09=09<!-- END INCOMPLETE ACCOUNT -->
+=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09<td
+=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#505050; font-family:adobe-=
+clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-serif; font-size:18p=
+x; line-height:26px; padding-top:40px;">
+=09=09=09=09=09=09=09=09=09=09=09As a reminder, your Adobe ID is <a href=3D=
+"mailto:osadebec98@gmail.com" target=3D"_blank"
+=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#505050; text-decoration=
+:none;">osadebec98@gmail.com</a>. Use it to access all your Adobe products =
+and services.</td>
+=09=09=09=09=09=09=09=09=09</tr>    <tr>
+=09=09=09=09=09=09=09=09=09=09<td
+=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#505050; font-family:adobe-=
+clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-serif; font-size:18p=
+x; line-height:26px; padding-top:20px;">
+=09=09=09=09=09=09=09=09=09=09=09&nbsp; </td>
+=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09<td
+=09=09=09=09=09=09=09=09=09=09=09style=3D"border-top:1px solid #e1e1e1; col=
+or:#505050; font-family:adobe-clean, Helvetica Neue, Helvetica, Verdana, Ar=
+ial, sans-serif; font-size:18px; line-height:26px;">
+=09=09=09=09=09=09=09=09=09=09=09<table class=3D"full-width" align=3D"left"=
+ width=3D"auto" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" role=3D"pr=
+esentation" style=3D"float:left;">
+=09=09=09=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09<td width=3D"24" valign=3D"top"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#2C2C2C; font-fami=
+ly:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-serif; font=
+-size:16px; line-height:20px; padding-top:30px; width:24px;">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09<img alt=3D"" src=3D"https://land=
+ing.adobe.com/dam/2019/images/ctir-8831.en.billing_boleto_renewal.50x50.png=
+" width=3D"24"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09height=3D"auto" border=3D"0" h=
+space=3D"0" vspace=3D"0" style=3D"display:block; vertical-align:top;">
+=09=09=09=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09<td width=3D"12" style=3D"width:12px=
+;">&nbsp;</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09<td valign=3D"top"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#2C2C2C; font-fami=
+ly:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-serif; font=
+-size:16px; line-height:20px; padding-top:24px;">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09<strong>If you have any questions=
+,</strong> we=E2=80=99re here for you. <a href=3D"https://postoffice.adobe.=
+com/po-server/link/redirect?target=3DeyJhbGciOiJIUzUxMiJ9.eyJ0ZW1wbGF0ZSI6I=
+mVjb21tX29yZGVyLWNvbmZpcm1lZC1pbmRpdmlkdWFsIiwiZW1haWxBZGRyZXNzIjoib3NhZGVi=
+ZWM5OEBnbWFpbC5jb20iLCJyZXF1ZXN0SWQiOiI4ZTM1MzFmMC00ZTgzLTQ1MTctOGU4My1kZDg=
+wZDliM2RiNDUiLCJsaW5rIjoiaHR0cHM6Ly93d3cuYWRvYmUuY29tL2dvL3N1cHBvcnQiLCJsYW=
+JlbCI6IjE3IiwibG9jYWxlIjoiZW5fVVMifQ.-POnKYfS85f3ieujl4nA430M_o6JxCScnd7P6T=
+vplmFawOaBSh_1dAbPq1MakjAmRsgqtK5EOLJE7vAFFVxP_A"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09target=3D"_blank" style=3D"col=
+or:#1473e6; text-decoration:none; white-space:nowrap;">Contact Adobe Custom=
+er Support</a> to
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09chat with a representative.
+=09=09=09=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09=09=09</table>
+=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09<td style=3D"padding-top:40px;">&nbsp;</td>
+=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09<td
+=09=09=09=09=09=09=09=09=09=09=09style=3D"background-color:#F5F5F5; border-=
+radius:8px; -moz-border-radius:8px; -webkit-border-radius:8px; color:#2C2C2=
+C; font-family:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans=
+-serif; font-size:18px; line-height:26px; padding-top:10px; padding-bottom:=
+60px;">
+=09=09=09=09=09=09=09=09=09=09=09<table class=3D"email-width" align=3D"cent=
+er" width=3D"80%" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" role=3D"=
+presentation">
+=09=09=09=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09<td
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#000000; font-fami=
+ly:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-serif; font=
+-size:18px; line-height:26px;  padding-top:30px; padding-bottom:20px">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09<strong>Order details</strong> =
+=09=09=09=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09<td
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#8E8E8E; font-fami=
+ly:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-serif; font=
+-size:16px; line-height:18px; padding-top:4px;">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09Order number</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09<td
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#505050; font-fami=
+ly:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-serif; font=
+-size:16px; line-height:26px; padding-top:4px;">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09<a href=3D"https://postoffice.ado=
+be.com/po-server/link/redirect?target=3DeyJhbGciOiJIUzUxMiJ9.eyJ0ZW1wbGF0ZS=
+I6ImVjb21tX29yZGVyLWNvbmZpcm1lZC1pbmRpdmlkdWFsIiwiZW1haWxBZGRyZXNzIjoib3NhZ=
+GViZWM5OEBnbWFpbC5jb20iLCJyZXF1ZXN0SWQiOiI4ZTM1MzFmMC00ZTgzLTQ1MTctOGU4My1k=
+ZDgwZDliM2RiNDUiLCJsaW5rIjoiaHR0cHM6Ly93d3cuYWRvYmUuY29tL2dvL2FjY291bnRfb3J=
+kZXJzIiwibGFiZWwiOiIxOCIsImxvY2FsZSI6ImVuX1VTIn0.Htql1qNNPUI6EipqydVV-oeKrE=
+H7_JUCb2oFLlqST9nGwJq_3nQdtwdJ6eVhJy8RxkotLZf0HKTQkgNdEPCWvQ" target=3D"_bl=
+ank"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#1473E6; font-w=
+eight:bold; text-decoration:none;">AE05244600068CUS</a>
+=09=09=09=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09=09=09=09<tr style=3D"border-bottom:1px solid #D=
+5D5D5;">
+=09=09=09=09=09=09=09=09=09=09=09=09=09<td
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#8E8E8E; font-fami=
+ly:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-serif; font=
+-size:16px; line-height:18px; padding-top:4px;padding-bottom:20px">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09Ordered</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09<td
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#505050; font-fami=
+ly:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-serif; font=
+-size:16px; line-height:26px; padding-top:4px;padding-bottom:20px">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09February 3, 2026</td>
+=09=09=09=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09=09=09</table>
+=09=09=09=09=09=09=09=09=09=09=09<!-- product table -->
+=09=09=09=09=09=09=09=09=09=09=09<table class=3D"email-width" align=3D"cent=
+er" width=3D"80%" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" role=3D"=
+presentation">  <tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09<td width=3D"32" valign=3D"top"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#2C2C2C; font-fami=
+ly:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-serif; font=
+-size:14px; line-height:18px; padding-top:10px; width:32px;">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09<img alt=3D"" src=3D"https://mcs.=
+odin.adobe.com/content/dam/mcs/en/icons/raw/48x48/acrobat_reader_appicon_48=
+x48.png" width=3D"32" height=3D"auto" border=3D"0" hspace=3D"0" vspace=3D"0=
+"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#2C2C2C; font-f=
+amily:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-serif; f=
+ont-size:14px; line-height:18px; display:block; vertical-align:top;">
+=09=09=09=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09<td width=3D"10" style=3D"width:10px=
+;">&nbsp;</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09<td valign=3D"top"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#2C2C2C; font-fami=
+ly:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-serif; font=
+-size:14px; line-height:18px; padding-top:10px;">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09<strong>Adobe Acrobat Pro</strong=
+>
+=09=09=09=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09<td width=3D"10" style=3D"width:10px=
+; padding-top:10px;">&nbsp;</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09<td valign=3D"top"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#2C2C2C; font-fami=
+ly:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-serif; font=
+-size:18px; line-height:18px; padding-top:10px;">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09 <table class=3D"email-width" ali=
+gn=3D"center" width=3D"100%" border=3D"0" cellpadding=3D"0"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09cellspacing=3D"0" role=3D"pres=
+entation"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"border:3px solid gree=
+n; border-radius:5px; -moz-border-radius:5px; -webkit-border-radius:5px; bo=
+rder-collapse:separate;">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td width=3D"8" style=3D"wi=
+dth:8px;">&nbsp;</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td align=3D"center"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:green ; f=
+ont-family:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-ser=
+if; font-size:12px; line-height:18px; padding-top:4px; padding-bottom:4px;"=
+>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=097-day=09=09=09=09=09=09=
+=09=09=09=09=09=09=09=09=09=09=09free trial</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09</table>  </td>
+=09=09=09=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09<td valign=3D"top" colspan=3D"3" sty=
+le=3D"color:#2C2C2C; font-family:adobe-clean, Helvetica Neue, Helvetica, Ve=
+rdana, Arial, sans-serif; font-size:14px;=20
+  =09=09=09=09=09=09=09=09=09=09=09=09=09=09line-height:18px; padding-top:1=
+0px;padding-bottom:10px; border-bottom:1px solid #D5D5D5;">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09<em style=3D"color:#909090; font-=
+size:12px;">Subscription</em>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br /> Monthly plan
+=09=09=09=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09<td width=3D"10"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"width:10px; padding-top:=
+10px; padding-bottom:10px; border-bottom:1px solid #D5D5D5;">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09&nbsp;</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09<td valign=3D"bottom" style=3D"text-=
+align:right; color:#2C2C2C; font-family:adobe-clean, Helvetica Neue, Helvet=
+ica, Verdana, Arial, sans-serif; font-size:14px;=20
+  =09=09=09=09=09=09=09=09=09=09=09=09=09=09line-height:18px; padding-top:1=
+0px; padding-bottom:10px;border-bottom:1px solid #D5D5D5;  =09=09=09=09=09=
+=09=09=09=09=09=09=09=09=09"> US$29.99/mo
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09 </td>
+=09=09=09=09=09=09=09=09=09=09=09=09</tr>  =09=09=09=09=09=09=09=09=09=09=
+=09</table>
+=09=09=09=09=09=09=09=09=09=09=09<!-- END product table -->
+=09=09=09=09=09=09=09=09=09=09=09<!-- Totals table -->
+=09=09=09=09=09=09=09=09=09=09=09<table class=3D"email-width" align=3D"cent=
+er" width=3D"80%" border=3D"0" cellpadding=3D"0" cellspacing=3D"0">
+=09=09=09=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09<td style=3D"padding-top:12px;paddin=
+g-right:5px;">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09<table class=3D"email-width" alig=
+n=3D"right" width=3D"80%" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" =
+role=3D"presentation">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09 <tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td valign=3D"top"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#2C2C2C; =
+font-family:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-se=
+rif; font-size:14px; line-height:20px; padding-top:8px; white-space:nowrap;=
+"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09nowrap=3D"TRUE"> Subtota=
+l</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td width=3D"10" style=3D"w=
+idth:10px;">&nbsp;</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td align=3D"right" valign=
+=3D"top"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#2C2C2C; =
+font-family:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-se=
+rif; font-size:14px; line-height:20px; padding-top:8px; white-space:nowrap;=
+"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09nowrap=3D"TRUE"> US$29.9=
+9/mo
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td valign=3D"top"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#2C2C2C; =
+font-family:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-se=
+rif; font-size:14px; line-height:20px; padding-top:8px; white-space:nowrap;=
+"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09nowrap=3D"TRUE"> Tax/VAT=
+ 0.00%</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td width=3D"10" style=3D"w=
+idth:10px;">&nbsp;</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td align=3D"right" valign=
+=3D"top"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#2C2C2C; =
+font-family:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-se=
+rif; font-size:14px; line-height:20px; padding-top:8px; white-space:nowrap;=
+"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09nowrap=3D"TRUE"> US$0.00=
+/mo
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</tr>  <tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td valign=3D"top"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#2C2C2C; =
+font-family:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-se=
+rif; font-size:14px; line-height:20px; padding-top:8px; white-space:nowrap;=
+"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09nowrap=3D"TRUE"> Order T=
+otal</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td width=3D"10" style=3D"w=
+idth:10px;">&nbsp;</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td align=3D"right" valign=
+=3D"top"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#2C2C2C; =
+font-family:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-se=
+rif; font-size:14px; line-height:20px; padding-top:8px; white-space:nowrap;=
+"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09nowrap=3D"TRUE"> US$29.9=
+9/mo
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</tr>   <tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td style=3D"width:10px; bo=
+rder-bottom:1px solid #E1E1E1; padding-top:16px; padding-bottom:16px;"></td=
+>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td style=3D"width:10px; bo=
+rder-bottom:1px solid #E1E1E1; padding-top:16px; padding-bottom:16px;"></td=
+>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td style=3D"width:10px; bo=
+rder-bottom:1px solid #E1E1E1; padding-top:16px; padding-bottom:16px;"></td=
+>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td valign=3D"middle"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#000000; =
+font-family:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-se=
+rif; font-size:22px; line-height:28px; padding-top:20px; white-space:nowrap=
+;"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09nowrap=3D"TRUE">  <stron=
+g>DUE NOW</strong>  </td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td width=3D"10" style=3D"w=
+idth:10px;">&nbsp;</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td align=3D"right" valign=
+=3D"middle"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#000000; =
+font-family:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-se=
+rif; font-size:22px; line-height:28px; padding-top:20px; white-space:nowrap=
+;"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09nowrap=3D"TRUE">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<strong>US$0.00/mo
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</strong>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</tr>  <tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td valign=3D"middle"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#000000; =
+font-family:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-se=
+rif; font-size:18px; line-height:28px; padding-top:20px; white-space:nowrap=
+;"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09nowrap=3D"TRUE">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<strong>Feb 11, 2026</st=
+rong>
+
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<span style=3D"color:#90=
+9090; font-size:12px;"> 7 day=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=
+=09=09=09 free trial ends</span>
+
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />  <span style=3D"d=
+isplay:block;font-size:12px;">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09Adobe Acrobat Pro</sp=
+an> =09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td width=3D"10" style=3D"w=
+idth:10px;">&nbsp;</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td align=3D"right" valign=
+=3D"top"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#000000; =
+font-family:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-se=
+rif; font-size:22px; line-height:28px; padding-top:20px; white-space:nowrap=
+;"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09nowrap=3D"TRUE">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<strong>US$29.99/mo
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</strong>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</tr> =09=09=09=09=09=09=09=09=
+=09=09=09=09=09=09</table>
+=09=09=09=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09=09=09=09<!-- Display Purchase Summary only for =
+Trial purchase -->  <tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09<td>
+
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />
+
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09<strong>Purchase Summary</strong>
+=09=09=09=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09<td
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#747474; font-fami=
+ly:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-serif; font=
+-size:18px; line-height:26px;">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09<table align=3D"left" width=3D"au=
+to" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" role=3D"presentation" =
+style=3D"float:left;">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td valign=3D"top"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#2C2C2C; =
+font-family:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-se=
+rif; font-size:16px; line-height:17px; padding-top:24px;">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<img alt=3D"" src=3D"htt=
+ps://landing.adobe.com/dam/2019/images/ctir-7652e.en.unified_order_received=
+.70x48.png"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09width=3D"36" height=
+=3D"auto" border=3D"0" hspace=3D"0" vspace=3D"0" style=3D"display:block; ve=
+rtical-align:top;">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td width=3D"18" style=3D"w=
+idth:18px;">&nbsp;</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td align=3D"top"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#2C2C2C; =
+font-family:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-se=
+rif; font-size:16px; line-height:17px; padding-top:24px;">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09Recurring billing starts=
+ <strong>only</strong> after your free trial ends.</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td valign=3D"top"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#2C2C2C; =
+font-family:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-se=
+rif; font-size:16px; line-height:17px; padding-top:24px;">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<img alt=3D"" src=3D"htt=
+ps://landing.adobe.com/dam/2019/images/ctir-7652e.en.unified_order_received=
+.70x64.png"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09width=3D"36" height=
+=3D"auto" border=3D"0" hspace=3D"0" vspace=3D"0" style=3D"display:block; ve=
+rtical-align:top;">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td width=3D"18" style=3D"w=
+idth:18px;">&nbsp;</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td align=3D"top"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#2C2C2C; =
+font-family:adobe-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-se=
+rif; font-size:16px; line-height:17px; padding-top:24px;">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09Cancel within 14 days of=
+ your annual subscription <strong>to get a
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09full refund.</strong>=
+ <a href=3D"https://postoffice.adobe.com/po-server/link/redirect?target=3De=
+yJhbGciOiJIUzUxMiJ9.eyJ0ZW1wbGF0ZSI6ImVjb21tX29yZGVyLWNvbmZpcm1lZC1pbmRpdml=
+kdWFsIiwiZW1haWxBZGRyZXNzIjoib3NhZGViZWM5OEBnbWFpbC5jb20iLCJyZXF1ZXN0SWQiOi=
+I4ZTM1MzFmMC00ZTgzLTQ1MTctOGU4My1kZDgwZDliM2RiNDUiLCJsaW5rIjoiaHR0cHM6Ly93d=
+3cuYWRvYmUuY29tL2dvL2NhbmNlbF90cmlhbCIsImxhYmVsIjoiMTkiLCJsb2NhbGUiOiJlbl9V=
+UyJ9.1p4C5rDMfTEctx6J1zXdkLsvBsli-fe3RR7wWtGPNrr8vzUFjNkQiPKvumuEq592OHr_Wm=
+z7NL-5RDxd8X7Iug" target=3D"_blank"
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#50505=
+0; text-decoration:underline; white-space:nowrap;">Learn more.</a>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09</table>
+=09=09=09=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09=09=09=09</tr> =09=09=09=09=09=09=09=09=09=09=09=
+=09<!--END of Display Purchase Summary only for Trial purchase -->
+=09=09=09=09=09=09=09=09=09=09=09</table>
+=09=09=09=09=09=09=09=09=09=09=09<!-- END of Totals table -->
+=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09</table>
+=09=09=09=09=09=09=09=09<!-- END pod1 -->
+=09=09=09=09=09=09=09=09<!-- END email content -->
+=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09<td bgcolor=3D"#F5F5F5" style=3D"background-color:#F5F=
+5F5;">
+=09=09=09=09=09=09=09=09<!-- logo, links & legal-->
+=09=09=09=09=09=09=09=09<table class=3D"email-width" align=3D"center" width=
+=3D"500" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" role=3D"presentat=
+ion" style=3D"width:500px;">
+=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09<td
+=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#EB1000; font-family:adobe-=
+clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-serif; font-size:12p=
+x; line-height:18px; padding-top:40px;">
+=09=09=09=09=09=09=09=09=09=09=09<img alt=3D"Adobe" src=3D"https://landing.=
+adobe.com/dam/global/images/adobe-logo.classic.160x222.png" width=3D"30" he=
+ight=3D"auto" border=3D"0"
+=09=09=09=09=09=09=09=09=09=09=09=09hspace=3D"0" vspace=3D"0"
+=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#EB1000; font-family:ado=
+be-clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-serif; font-size:=
+12px; line-height:18px; display:block; vertical-align:top;">
+=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09<td
+=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#505050; font-family:adobe-=
+clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-serif; font-size:14p=
+x; line-height:20px; padding-top:66px;">
+=09=09=09=09=09=09=09=09=09=09=09<a href=3D"https://www.adobe.com/go/accoun=
+t" target=3D"_blank" style=3D"color:#505050; text-decoration:none;"><strong=
+>Manage your
+=09=09=09=09=09=09=09=09=09=09=09=09=09account</strong></a>
+=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09<td
+=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#999999; font-family:adobe-=
+clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-serif; font-size:12p=
+x; line-height:16px; padding-top:4px;">
+=09=09=09=09=09=09=09=09=09=09=09Visit Account Management to view your plan=
+s and products, security settings, plus updates and helpful resources from =
+Adobe. <a
+=09=09=09=09=09=09=09=09=09=09=09=09href=3D"https://www.adobe.com/go/accoun=
+t" target=3D"_blank" style=3D"color:#999999; text-decoration:underline; whi=
+te-space:nowrap;">Learn
+=09=09=09=09=09=09=09=09=09=09=09=09more.</a></td>
+=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09<td
+=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#505050; font-family:adobe-=
+clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-serif; font-size:14p=
+x; line-height:20px; padding-top:24px;">
+=09=09=09=09=09=09=09=09=09=09=09<a href=3D"https://postoffice.adobe.com/po=
+-server/link/redirect?target=3DeyJhbGciOiJIUzUxMiJ9.eyJ0ZW1wbGF0ZSI6ImVjb21=
+tX29yZGVyLWNvbmZpcm1lZC1pbmRpdmlkdWFsIiwiZW1haWxBZGRyZXNzIjoib3NhZGViZWM5OE=
+BnbWFpbC5jb20iLCJyZXF1ZXN0SWQiOiI4ZTM1MzFmMC00ZTgzLTQ1MTctOGU4My1kZDgwZDliM=
+2RiNDUiLCJsaW5rIjoiaHR0cHM6Ly93d3cuYWRvYmUuY29tL2dvL2ZvcnVtcyIsImxhYmVsIjoi=
+MjAiLCJsb2NhbGUiOiJlbl9VUyJ9.3RT5y-ROSPcGFg3xusCA27j0zKLLZfeJ3-WG51tjryR66C=
+234qJ7tVC8F50a2Lwh4s4BTKHrb1YzhKmVpfCRug" target=3D"_blank" style=3D"color:=
+#505050; text-decoration:none;"><strong>Get answers
+=09=09=09=09=09=09=09=09=09=09=09=09=09to your questions</strong></a>
+=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09<td
+=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#999999; font-family:adobe-=
+clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-serif; font-size:12p=
+x; line-height:16px; padding-top:4px;">
+=09=09=09=09=09=09=09=09=09=09=09Check out Adobe Forums to meet the experts=
+ behind the answers, learn about our products, get inspiration, or pick up =
+new tips and
+=09=09=09=09=09=09=09=09=09=09=09tricks. <a href=3D"https://postoffice.adob=
+e.com/po-server/link/redirect?target=3DeyJhbGciOiJIUzUxMiJ9.eyJ0ZW1wbGF0ZSI=
+6ImVjb21tX29yZGVyLWNvbmZpcm1lZC1pbmRpdmlkdWFsIiwiZW1haWxBZGRyZXNzIjoib3NhZG=
+ViZWM5OEBnbWFpbC5jb20iLCJyZXF1ZXN0SWQiOiI4ZTM1MzFmMC00ZTgzLTQ1MTctOGU4My1kZ=
+DgwZDliM2RiNDUiLCJsaW5rIjoiaHR0cHM6Ly93d3cuYWRvYmUuY29tL2dvL2ZvcnVtcyIsImxh=
+YmVsIjoiMjEiLCJsb2NhbGUiOiJlbl9VUyJ9.2RFcF2yKUIOIXdvR4JtSqnDgIT2seuytvIAAp5=
+vbot_ZYHt4DDkRWmnIwxaEyNjirE_RGzPuANSH_ENeJFPeVg" target=3D"_blank"
+=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#999999; text-decoration=
+:underline; white-space:nowrap;">Learn more.</a></td>
+=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09<td
+=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#505050; font-family:adobe-=
+clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-serif; font-size:14p=
+x; line-height:20px; padding-top:24px;">
+=09=09=09=09=09=09=09=09=09=09=09<a href=3D"https://postoffice.adobe.com/po=
+-server/link/redirect?target=3DeyJhbGciOiJIUzUxMiJ9.eyJ0ZW1wbGF0ZSI6ImVjb21=
+tX29yZGVyLWNvbmZpcm1lZC1pbmRpdmlkdWFsIiwiZW1haWxBZGRyZXNzIjoib3NhZGViZWM5OE=
+BnbWFpbC5jb20iLCJyZXF1ZXN0SWQiOiI4ZTM1MzFmMC00ZTgzLTQ1MTctOGU4My1kZDgwZDliM=
+2RiNDUiLCJsaW5rIjoiaHR0cHM6Ly93d3cuYWRvYmUuY29tL2dvL3N1cHBvcnQiLCJsYWJlbCI6=
+IjIyIiwibG9jYWxlIjoiZW5fVVMifQ.PCfmmyU1WdbgCTfNFf3FqQsufSXxfgokFeA6dG3R7lOs=
+mNQCy4vKVhou286Jo3oZI-1iKVHJr3MA3KoeFD4q-Q" target=3D"_blank" style=3D"colo=
+r:#505050; text-decoration:none;"><strong>Need
+=09=09=09=09=09=09=09=09=09=09=09=09=09help?</strong></a>
+=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09<td
+=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#999999; font-family:adobe-=
+clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-serif; font-size:12p=
+x; line-height:16px; padding-top:4px;">
+=09=09=09=09=09=09=09=09=09=09=09Don=E2=80=99t hesitate to call Customer Su=
+pport if you need assistance. <a href=3D"https://postoffice.adobe.com/po-se=
+rver/link/redirect?target=3DeyJhbGciOiJIUzUxMiJ9.eyJ0ZW1wbGF0ZSI6ImVjb21tX2=
+9yZGVyLWNvbmZpcm1lZC1pbmRpdmlkdWFsIiwiZW1haWxBZGRyZXNzIjoib3NhZGViZWM5OEBnb=
+WFpbC5jb20iLCJyZXF1ZXN0SWQiOiI4ZTM1MzFmMC00ZTgzLTQ1MTctOGU4My1kZDgwZDliM2Ri=
+NDUiLCJsaW5rIjoiaHR0cHM6Ly93d3cuYWRvYmUuY29tL2dvL3N1cHBvcnQiLCJsYWJlbCI6IjI=
+zIiwibG9jYWxlIjoiZW5fVVMifQ.0LlWv_ks8iWdGFCuwan0rweCOnmPH_h1x_vC89PT2PXC8PB=
+kjVdB5dzYD5WPdvaNiGYbquLfmJNCkpG-jbQuhw" target=3D"_blank"
+=09=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#999999; text-decoration=
+:underline; white-space:nowrap;">Learn more.</a></td>
+=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09<td class=3D"legal"
+=09=09=09=09=09=09=09=09=09=09=09style=3D"color:#959595; font-family:adobe-=
+clean, Helvetica Neue, Helvetica, Verdana, Arial, sans-serif; font-size:11p=
+x; line-height:18px; padding-top:50px; padding-bottom:100px;">
+=09=09=09=09=09=09=09=09=09=09=09<b>Free Trial Terms:</b>=20
+<p>Your trial starts immediately after sign-up. At the end of your trial, y=
+our subscription begins, and Adobe will automatically charge your payment m=
+ethod at the rate stated at the time of purchase, including any applicable =
+taxes, on a recurring basis in accordance with the terms of your subscripti=
+on.
+<p>If you cancel before the end of your trial, your payment method won=E2=
+=80=99t be charged. You may cancel your trial by visiting your <a class=3D"=
+adobe_account" href=3D"https://www.adobe.com/go/acctmgmt_plan" target=3D"_b=
+lank">Adobe Account</a> page or by contacting <a class=3D"customer_support"=
+ href=3D"https://www.adobe.com/go/csupport_subscripterms" target=3D"_blank"=
+>Customer Support</a>.
+<p>Your eligibility to use an Adobe free trial offer is determined solely b=
+y Adobe. Your access to any free trial offer is provided at Adobe=E2=80=99s=
+ sole discretion.
+<p><b>Subscription Terms:</b>=20
+<p>Your subscription begins as soon as your initial payment is processed. Y=
+our subscription will automatically renew each month without notice until y=
+ou cancel. You authorize us to store your payment method(s) and to automati=
+cally charge your payment method(s) every month until you cancel. We will a=
+utomatically charge you the then-current rate for your plan, plus applicabl=
+e taxes (such as VAT or GST if the rate does not include it), every month u=
+pon renewal until you cancel.=20
+<p>We may change your plan=E2=80=99s rate each monthly renewal term, and we=
+ will notify you of any rate change with the option to cancel. If the appli=
+cable VAT or GST rate (or other included tax or duty) changes during your o=
+ne-month term, we will accordingly adjust the tax-inclusive price for your =
+plan on your next billing date.
+<p>If your primary payment method fails, you authorize us to charge any oth=
+er payment method in your account. If you have not provided us a backup pay=
+ment method(s) and you fail to provide payment, or if all payment methods i=
+n your account fail, we may suspend your subscription. You can edit your pa=
+yment information anytime in your <a class=3D"adobe_account" href=3D"https:=
+//www.adobe.com/go/acctmgmt_plan" target=3D"_blank">Adobe Account</a> page.=
+=20
+<p>For European Economic Area customers, your bank may require you to authe=
+nticate your initial purchase using a password, a one-time code sent to you=
+r mobile number, or biometric recognition. When you authenticate, you also =
+authorize us to charge your payment method for your additional purchases wi=
+thout providing us further payment information or other instructions (i.e.,=
+ we will initiate future payments independently). Such additional purchases=
+ may occur when we automatically charge your payment method in connection w=
+ith a recurring subscription or when you add or change licenses or products=
+.
+<p><b>Cancellation Terms:</b>
+<p>You can cancel your subscription anytime via your <a class=3D"adobe_acco=
+unt" href=3D"https://www.adobe.com/go/acctmgmt_plan" target=3D"_blank">Adob=
+e Account</a> page or by contacting <a class=3D"customer_support" href=3D"h=
+ttps://www.adobe.com/go/csupport_subscripterms" target=3D"_blank">Customer =
+Support*</a>. If you cancel within 14 days of your initial order, you=E2=80=
+=99ll be fully refunded. Should you cancel after 14 days, your payment is n=
+on-refundable, and your service will continue until the end of that month=
+=E2=80=99s billing period.
+<p>* Specific countries require cancellations to be made only by contacting=
+ <a class=3D"customer_support" href=3D"https://www.adobe.com/go/csupport_su=
+bscripterms" target=3D"_blank">Customer Support</a>. See the list of countr=
+ies <a class=3D"list_of_countries" href=3D"https://helpx.adobe.com/x-produc=
+tkb/policy-pricing/countries-served-by-digital-river.html" target=3D"_blank=
+">here</a>.
+
+=09=09=09=09=09=09=09=09=09=09=09<br />
+
+=09=09=09=09=09=09=09=09=09=09=09<br /> Adobe, the Adobe logo, Creative Clo=
+ud, the Creative Cloud logo, and Document Cloud are either registered trade=
+marks or trademarks
+=09=09=09=09=09=09=09=09=09=09=09of Adobe in the United States and/or other=
+ countries.
+
+=09=09=09=09=09=09=09=09=09=09=09<br />
+
+=09=09=09=09=09=09=09=09=09=09=09<br /> This is not a comprehensive list of=
+ Adobe trademarks. For a full list, refer to the <a
+=09=09=09=09=09=09=09=09=09=09=09=09href=3D"https://postoffice.adobe.com/po=
+-server/link/redirect?target=3DeyJhbGciOiJIUzUxMiJ9.eyJ0ZW1wbGF0ZSI6ImVjb21=
+tX29yZGVyLWNvbmZpcm1lZC1pbmRpdmlkdWFsIiwiZW1haWxBZGRyZXNzIjoib3NhZGViZWM5OE=
+BnbWFpbC5jb20iLCJyZXF1ZXN0SWQiOiI4ZTM1MzFmMC00ZTgzLTQ1MTctOGU4My1kZDgwZDliM=
+2RiNDUiLCJsaW5rIjoiaHR0cHM6Ly93d3cuYWRvYmUuY29tL2dvL3RyYWRlbWFya3MiLCJsYWJl=
+bCI6IjI0IiwibG9jYWxlIjoiZW5fVVMifQ.VB6PGZulbbRP0xmMtBMNwUTPxeGWHWeReXOpLVVG=
+yuDY5-EJYSdsnniGgz42w0iTyQxDhbTCY-zPt2gNrhhKRQ" target=3D"_blank" style=3D"=
+color:#959595;">Adobe Trademark Guidelines</a>. All
+=09=09=09=09=09=09=09=09=09=09=09other trademarks are the property of their=
+ respective owners.
+
+=09=09=09=09=09=09=09=09=09=09=09<br />
+
+=09=09=09=09=09=09=09=09=09=09=09<br /> Adobe,
+=09=09=09=09=09=09=09=09=09=09=09345 Park Avenue, San Jose, CA 95110 USA.  =
+=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09</table>
+=09=09=09=09=09=09=09=09<!-- END logo, links & legal-->
+=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09</tr>
+=09=09=09=09=09</table>
+=09=09=09=09</td>
+=09=09=09</tr>
+=09=09</table> <img src=3D"https://postoffice.adobe.com/po-server/link/open=
+?source=3DeyJhbGciOiJIUzUxMiJ9.eyJ0ZW1wbGF0ZSI6ImVjb21tX29yZGVyLWNvbmZpcm1l=
+ZC1pbmRpdmlkdWFsIiwiZW1haWxBZGRyZXNzIjoib3NhZGViZWM5OEBnbWFpbC5jb20iLCJyZXF=
+1ZXN0SWQiOiI4ZTM1MzFmMC00ZTgzLTQ1MTctOGU4My1kZDgwZDliM2RiNDUiLCJsb2NhbGUiOi=
+Jlbl9VUyJ9.Ybcnnp_wCXM8NnC-cEzLksjBUeZc_QJ_iKIfj2OVkcOElCwFEoIC3ffrFVaQhD7v=
+qvaVho6OrHLXHcAFivCaxQ" height=3D"1" width=3D"1" />=09=09<!-- ecomm_order-c=
+onfirmed-individual -->
+  </body>
+</html>
+------=_Part_4559706_159091847.1770154857290--

@@ -81,6 +81,7 @@ export default defineSchema({
         cancellationMethod: v.optional(v.string()),
         policySummary: v.optional(v.string()),
         recommendedTier: v.optional(v.string()),
+        scrapeId: v.optional(v.string()),
         executionStatus: v.optional(v.string()),
         executionLog: v.optional(v.array(v.string())),
       })
@@ -147,6 +148,7 @@ export default defineSchema({
     cancellationMethod: v.optional(v.string()),
     policySummary: v.optional(v.string()),
     recommendedTier: v.optional(v.string()),
+    scrapeId: v.optional(v.string()),
     autoTriggerAt: v.optional(v.number()),
     executionLog: v.optional(v.array(v.string())),
     updatedAt: v.optional(v.number()),

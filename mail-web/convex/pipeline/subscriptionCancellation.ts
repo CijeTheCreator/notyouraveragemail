@@ -200,62 +200,39 @@ export const executeOneClickCancel = action({
     service: v.string(),
     domain: v.string(),
     portalUrl: v.string(),
+    inboxId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    let inboxId = args.inboxId;
+    if (!inboxId) {
+      const msg: any = await ctx.runQuery(
+        internal.pipeline.orchestrator.getMessageByMessageId,
+        { messageId: args.messageId }
+      );
+      inboxId = msg?.inboxId || "user@modernmail.to";
+    }
+
+    const resolvedInboxId: string = inboxId || "user@modernmail.to";
+
     // 1. Mark as cancelling
     await ctx.runMutation(internal.pipeline.subscriptionCancellation.updateSubscriptionStatus, {
       messageId: args.messageId,
       status: "cancelling",
     });
 
-    const apiKey = process.env.FIRECRAWL_API_KEY;
+    // 2. Schedule autonomous cancellation agent
+    await ctx.scheduler.runAfter(0, internal.pipeline.cancellationAgent.runCancellationAgent, {
+      messageId: args.messageId,
+      inboxId: resolvedInboxId,
+      service: args.service,
+      domain: args.domain,
+      portalUrl: args.portalUrl,
+    });
 
-    try {
-      if (apiKey && args.portalUrl.startsWith("http")) {
-        // Firecrawl supports automated headless actions to execute cancellation clicks
-        try {
-          await fetch("https://api.firecrawl.dev/v1/scrape", {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${apiKey}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              url: args.portalUrl,
-              formats: ["markdown"],
-              actions: [
-                { type: "wait", milliseconds: 1000 },
-                { type: "click", selector: '[data-testid="cancel-plan-btn"]' },
-                { type: "wait", milliseconds: 1000 },
-                { type: "click", selector: '[data-testid="confirm-cancel-btn"]' },
-                { type: "wait", milliseconds: 1000 },
-              ],
-              waitFor: 2000,
-            }),
-          });
-        } catch (fcErr: any) {
-          console.warn("[Firecrawl:OneClickCancel] Scrape action failed, falling back:", fcErr?.message || fcErr);
-        }
-      }
-
-      // Mark cancelled
-      await ctx.runMutation(internal.pipeline.subscriptionCancellation.updateSubscriptionStatus, {
-        messageId: args.messageId,
-        status: "cancelled",
-      });
-
-      return {
-        success: true,
-        message: `Successfully cancelled subscription for ${args.service}`,
-      };
-    } catch (err: any) {
-      await ctx.runMutation(internal.pipeline.subscriptionCancellation.updateSubscriptionStatus, {
-        messageId: args.messageId,
-        status: "active",
-      });
-
-      throw new Error(err?.message || `Failed to cancel ${args.service}`);
-    }
+    return {
+      success: true,
+      message: `Autonomous cancellation agent started for ${args.service}`,
+    };
   },
 });
 

@@ -13,6 +13,7 @@ import type * as auth from "../auth.js";
 import type * as http from "../http.js";
 import type * as messages from "../messages.js";
 import type * as pipeline_actionCards from "../pipeline/actionCards.js";
+import type * as pipeline_cancellationAgent from "../pipeline/cancellationAgent.js";
 import type * as pipeline_domainReputation from "../pipeline/domainReputation.js";
 import type * as pipeline_orchestrator from "../pipeline/orchestrator.js";
 import type * as pipeline_otp from "../pipeline/otp.js";
@@ -33,6 +34,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   messages: typeof messages;
   "pipeline/actionCards": typeof pipeline_actionCards;
+  "pipeline/cancellationAgent": typeof pipeline_cancellationAgent;
   "pipeline/domainReputation": typeof pipeline_domainReputation;
   "pipeline/orchestrator": typeof pipeline_orchestrator;
   "pipeline/otp": typeof pipeline_otp;
@@ -68,4 +70,6 @@ export declare const internal: FilterApi<
   FunctionReference<any, "internal">
 >;
 
-export declare const components: {};
+export declare const components: {
+  agent: import("@convex-dev/agent/_generated/component.js").ComponentApi<"agent">;
+};
