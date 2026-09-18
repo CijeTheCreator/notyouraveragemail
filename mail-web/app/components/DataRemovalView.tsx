@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { ArrowUpRight, Check, Search, Filter, ShieldAlert, Sparkles, Clock, Send, AlertCircle } from "lucide-react";
+import { ArrowUpRight, Check, Search, Filter, ShieldAlert, Sparkles, Clock, Send, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 
 interface DataRemovalViewProps {
@@ -37,6 +37,8 @@ function BrokerLogo({ domain, name }: { domain?: string; name: string }) {
 }
 
 export default function DataRemovalView({ inboxId }: DataRemovalViewProps) {
+  const PAGE_SIZE = 20;
+  const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -56,6 +58,29 @@ export default function DataRemovalView({ inboxId }: DataRemovalViewProps) {
   const seedBrokersAction = useAction(api.dataBrokers.seedAllBrokers);
 
   const brokers = useMemo(() => rawBrokers || [], [rawBrokers]);
+
+  const totalPages = Math.max(1, Math.ceil(brokers.length / PAGE_SIZE));
+  const activePage = Math.min(currentPage, totalPages);
+
+  const paginatedBrokers = useMemo(() => {
+    const start = (activePage - 1) * PAGE_SIZE;
+    return brokers.slice(start, start + PAGE_SIZE);
+  }, [brokers, activePage]);
+
+  const handleSearchChange = (val: string) => {
+    setSearch(val);
+    setCurrentPage(1);
+  };
+
+  const handleCategoryChange = (val: string) => {
+    setCategoryFilter(val);
+    setCurrentPage(1);
+  };
+
+  const handleStatusChange = (val: string) => {
+    setStatusFilter(val);
+    setCurrentPage(1);
+  };
 
   const handleStartCampaign = async () => {
     setIsPreparing(true);
@@ -153,7 +178,7 @@ export default function DataRemovalView({ inboxId }: DataRemovalViewProps) {
               type="text"
               placeholder="Search brokers by name, website, or email..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
               className="w-full pl-9 pr-3 py-1.5 border-2 border-[#2c2a29] text-xs font-bold bg-white focus:outline-none focus:ring-2 focus:ring-[#8544FA]"
             />
           </div>
@@ -167,7 +192,7 @@ export default function DataRemovalView({ inboxId }: DataRemovalViewProps) {
             {["all", "people-search", "marketing", "background-check"].map((cat) => (
               <button
                 key={cat}
-                onClick={() => setCategoryFilter(cat)}
+                onClick={() => handleCategoryChange(cat)}
                 className={`px-2 py-1 border-2 text-[11px] font-bold transition-all rounded-sm ${
                   categoryFilter === cat
                     ? "bg-[#D0B4FF] border-[#2c2a29] brutal-shadow-sm text-[#2c2a29]"
@@ -191,7 +216,7 @@ export default function DataRemovalView({ inboxId }: DataRemovalViewProps) {
             ].map((st) => (
               <button
                 key={st.id}
-                onClick={() => setStatusFilter(st.id)}
+                onClick={() => handleStatusChange(st.id)}
                 className={`px-2 py-1 border-2 text-[11px] font-bold transition-all rounded-sm ${
                   statusFilter === st.id
                     ? "bg-[#2c2a29] text-white border-[#2c2a29]"
@@ -215,7 +240,7 @@ export default function DataRemovalView({ inboxId }: DataRemovalViewProps) {
             </p>
           </div>
         ) : (
-          brokers.map((broker: any) => {
+          paginatedBrokers.map((broker: any) => {
             const isCompleted = broker.status === "completed";
             const isQueued = broker.status === "queued";
             const isSent = broker.status === "sent";
@@ -360,6 +385,74 @@ export default function DataRemovalView({ inboxId }: DataRemovalViewProps) {
           })
         )}
       </div>
+
+      {/* Pagination Footer */}
+      {brokers.length > 0 && (
+        <div className="px-4 py-3 border-t-2 border-[#2c2a29] bg-white/90 flex items-center justify-between gap-4 flex-wrap flex-shrink-0">
+          <div className="text-xs font-mono font-bold text-gray-600">
+            Showing <span className="text-[#2c2a29]">{(activePage - 1) * PAGE_SIZE + 1}</span>–
+            <span className="text-[#2c2a29]">{Math.min(activePage * PAGE_SIZE, brokers.length)}</span> of{" "}
+            <span className="text-[#2c2a29]">{brokers.length}</span> brokers
+          </div>
+
+          <div className="flex items-center gap-1.5 font-mono text-xs">
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={activePage <= 1}
+              className={`brutal-btn px-2.5 py-1 text-xs font-bold flex items-center gap-1 ${
+                activePage <= 1
+                  ? "bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed shadow-none"
+                  : "bg-white hover:bg-gray-100 text-[#2c2a29]"
+              }`}
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+              <span>Prev</span>
+            </button>
+
+            {/* Page Buttons / Numbers */}
+            <div className="flex items-center gap-1">
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter((p) => {
+                  if (totalPages <= 7) return true;
+                  if (p === 1 || p === totalPages) return true;
+                  return Math.abs(p - activePage) <= 1;
+                })
+                .map((p, idx, arr) => {
+                  const prev = arr[idx - 1];
+                  const showEllipsis = prev && p - prev > 1;
+                  return (
+                    <React.Fragment key={p}>
+                      {showEllipsis && <span className="px-1 text-gray-400 font-bold">...</span>}
+                      <button
+                        onClick={() => setCurrentPage(p)}
+                        className={`px-2.5 py-1 border-2 text-xs font-bold transition-all rounded-sm ${
+                          activePage === p
+                            ? "bg-[#8544FA] text-white border-[#2c2a29] brutal-shadow-sm"
+                            : "bg-white border-[#2c2a29] text-[#2c2a29] hover:bg-gray-50"
+                        }`}
+                      >
+                        {p}
+                      </button>
+                    </React.Fragment>
+                  );
+                })}
+            </div>
+
+            <button
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={activePage >= totalPages}
+              className={`brutal-btn px-2.5 py-1 text-xs font-bold flex items-center gap-1 ${
+                activePage >= totalPages
+                  ? "bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed shadow-none"
+                  : "bg-white hover:bg-gray-100 text-[#2c2a29]"
+              }`}
+            >
+              <span>Next</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

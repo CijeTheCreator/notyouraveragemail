@@ -164,6 +164,13 @@ export const listBrokers = query({
       );
     }
 
+    // 5. Ensure "notreallydatabroker" is always first
+    results.sort((a, b) => {
+      if (a.brokerId === "notreallydatabroker") return -1;
+      if (b.brokerId === "notreallydatabroker") return 1;
+      return 0;
+    });
+
     return results;
   },
 });
