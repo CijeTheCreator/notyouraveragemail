@@ -10,22 +10,27 @@
 
 import type * as agentmail from "../agentmail.js";
 import type * as auth from "../auth.js";
+import type * as dataBrokers from "../dataBrokers.js";
 import type * as http from "../http.js";
 import type * as messages from "../messages.js";
 import type * as pipeline_actionCards from "../pipeline/actionCards.js";
 import type * as pipeline_authDiscoveryAgent from "../pipeline/authDiscoveryAgent.js";
 import type * as pipeline_cancellationAgent from "../pipeline/cancellationAgent.js";
 import type * as pipeline_classifier from "../pipeline/classifier.js";
+import type * as pipeline_dataRemovalAgent from "../pipeline/dataRemovalAgent.js";
+import type * as pipeline_dataRemovalHandler from "../pipeline/dataRemovalHandler.js";
 import type * as pipeline_domainReputation from "../pipeline/domainReputation.js";
 import type * as pipeline_orchestrator from "../pipeline/orchestrator.js";
 import type * as pipeline_otp from "../pipeline/otp.js";
 import type * as pipeline_otpHandler from "../pipeline/otpHandler.js";
+import type * as pipeline_removalTemplates from "../pipeline/removalTemplates.js";
 import type * as pipeline_subscriptionCancellation from "../pipeline/subscriptionCancellation.js";
 import type * as pipeline_subscriptionHandler from "../pipeline/subscriptionHandler.js";
 import type * as playground from "../playground.js";
 import type * as seed from "../seed.js";
 import type * as seedSubscriptions from "../seedSubscriptions.js";
 import type * as testCheckout from "../testCheckout.js";
+import type * as testRemoval from "../testRemoval.js";
 
 import type {
   ApiFromModules,
@@ -36,22 +41,27 @@ import type {
 declare const fullApi: ApiFromModules<{
   agentmail: typeof agentmail;
   auth: typeof auth;
+  dataBrokers: typeof dataBrokers;
   http: typeof http;
   messages: typeof messages;
   "pipeline/actionCards": typeof pipeline_actionCards;
   "pipeline/authDiscoveryAgent": typeof pipeline_authDiscoveryAgent;
   "pipeline/cancellationAgent": typeof pipeline_cancellationAgent;
   "pipeline/classifier": typeof pipeline_classifier;
+  "pipeline/dataRemovalAgent": typeof pipeline_dataRemovalAgent;
+  "pipeline/dataRemovalHandler": typeof pipeline_dataRemovalHandler;
   "pipeline/domainReputation": typeof pipeline_domainReputation;
   "pipeline/orchestrator": typeof pipeline_orchestrator;
   "pipeline/otp": typeof pipeline_otp;
   "pipeline/otpHandler": typeof pipeline_otpHandler;
+  "pipeline/removalTemplates": typeof pipeline_removalTemplates;
   "pipeline/subscriptionCancellation": typeof pipeline_subscriptionCancellation;
   "pipeline/subscriptionHandler": typeof pipeline_subscriptionHandler;
   playground: typeof playground;
   seed: typeof seed;
   seedSubscriptions: typeof seedSubscriptions;
   testCheckout: typeof testCheckout;
+  testRemoval: typeof testRemoval;
 }>;
 
 /**

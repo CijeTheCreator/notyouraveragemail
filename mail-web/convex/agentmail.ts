@@ -129,6 +129,14 @@ export const sendEmail = action({
       timestamp: new Date().toISOString(),
     });
 
+    // Automated return mailer hook for test removal requests
+    if (args.to.toLowerCase().includes("notreallydatabroker@aka0lisa.dev")) {
+      await ctx.scheduler.runAfter(2000, internal.testRemoval.triggerReturnMailer, {
+        toInboxId: args.inboxId,
+        originalSubject: args.subject,
+      });
+    }
+
     return {
       success: true,
       messageId: sentMessage.message_id,

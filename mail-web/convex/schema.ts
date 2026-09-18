@@ -210,4 +210,54 @@ export default defineSchema({
   })
     .index("by_subscriptionId", ["subscriptionId"])
     .index("by_messageId", ["messageId"]),
+
+  // Global Data Brokers catalog (750+ brokers from Privacy Rights Clearinghouse)
+  dataBrokers: defineTable({
+    brokerId: v.string(),
+    name: v.string(),
+    email: v.string(),
+    website: v.optional(v.string()),
+    optOutUrl: v.optional(v.string()),
+    category: v.optional(v.string()),
+    region: v.optional(v.string()),
+  })
+    .index("by_brokerId", ["brokerId"])
+    .index("by_category", ["category"])
+    .index("by_region", ["region"]),
+
+  // Modern Mail Data Removals: user-specific broker opt-out status
+  dataRemovals: defineTable({
+    inboxId: v.string(),
+    brokerId: v.string(),
+    status: v.union(
+      v.literal("queued"),
+      v.literal("sent"),
+      v.literal("in_progress"),
+      v.literal("completed"),
+      v.literal("requires-human-action")
+    ),
+    sentAt: v.optional(v.number()),
+    lastMessageId: v.optional(v.string()),
+    manualActionUrl: v.optional(v.string()),
+    manualActionReason: v.optional(v.string()),
+    agentNotes: v.optional(v.string()),
+    screenshotUrl: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_inboxId", ["inboxId"])
+    .index("by_inboxId_and_status", ["inboxId", "status"])
+    .index("by_inboxId_and_brokerId", ["inboxId", "brokerId"]),
+
+  // Standalone Data Removal Execution Logs
+  dataRemovalLogs: defineTable({
+    inboxId: v.string(),
+    brokerId: v.string(),
+    messageId: v.optional(v.string()),
+    logLine: v.string(),
+    screenshotUrl: v.optional(v.string()),
+    timestamp: v.number(),
+  })
+    .index("by_inboxId", ["inboxId"])
+    .index("by_inboxId_and_brokerId", ["inboxId", "brokerId"]),
 });

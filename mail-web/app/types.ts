@@ -1,4 +1,4 @@
-export type FolderType = "inbox" | "sent" | "drafts" | "trash" | "subscriptions";
+export type FolderType = "inbox" | "sent" | "drafts" | "trash" | "subscriptions" | "data-removal";
 
 export interface Attachment {
   id: string;

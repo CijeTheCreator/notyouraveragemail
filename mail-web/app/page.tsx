@@ -11,6 +11,7 @@ import EmailReader from "./components/EmailReader";
 import ComposeModal from "./components/ComposeModal";
 import KeyboardShortcutsModal from "./components/KeyboardShortcutsModal";
 import SubscriptionsView from "./components/SubscriptionsView";
+import DataRemovalView from "./components/DataRemovalView";
 import { Email, FolderType } from "./types";
 import { toast } from "sonner";
 
@@ -450,6 +451,8 @@ export default function MailPage() {
           />
         ) : activeFolder === "subscriptions" ? (
           <SubscriptionsView inboxId={activeInboxId} />
+        ) : activeFolder === "data-removal" ? (
+          <DataRemovalView inboxId={activeInboxId} />
         ) : (
           <EmailList
             folder={activeFolder}
