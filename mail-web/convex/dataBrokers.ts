@@ -423,6 +423,61 @@ export const findBrokerByDomainOrEmail = internalQuery({
 });
 
 /**
+ * Internal Query: Get user's removal record for a specific broker
+ */
+export const getUserRemoval = internalQuery({
+  args: {
+    inboxId: v.string(),
+    brokerId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("dataRemovals")
+      .withIndex("by_inboxId_and_brokerId", (q) =>
+        q.eq("inboxId", args.inboxId).eq("brokerId", args.brokerId)
+      )
+      .first();
+  },
+});
+
+/**
+ * Internal Mutation: Store screenshot proof on data removal
+ */
+export const updateRemovalScreenshot = internalMutation({
+  args: {
+    inboxId: v.string(),
+    brokerId: v.string(),
+    screenshotUrl: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db
+      .query("dataRemovals")
+      .withIndex("by_inboxId_and_brokerId", (q) =>
+        q.eq("inboxId", args.inboxId).eq("brokerId", args.brokerId)
+      )
+      .first();
+
+    const now = Date.now();
+    if (existing) {
+      await ctx.db.patch(existing._id, {
+        screenshotUrl: args.screenshotUrl,
+        updatedAt: now,
+      });
+      return existing._id;
+    } else {
+      return await ctx.db.insert("dataRemovals", {
+        inboxId: args.inboxId,
+        brokerId: args.brokerId,
+        status: "in_progress",
+        screenshotUrl: args.screenshotUrl,
+        createdAt: now,
+        updatedAt: now,
+      });
+    }
+  },
+});
+
+/**
  * Internal Query: Get broker by brokerId
  */
 export const getBroker = internalQuery({

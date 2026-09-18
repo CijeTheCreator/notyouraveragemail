@@ -260,10 +260,24 @@ export default function DataRemovalView({ inboxId }: DataRemovalViewProps) {
                 {/* Middle: Status Badge */}
                 <div className="flex-shrink-0">
                   {isCompleted && (
-                    <span className="bg-emerald-100 text-emerald-800 border border-emerald-600 px-3 py-1 text-xs font-bold flex items-center gap-1 rounded-sm">
-                      <Check className="w-3.5 h-3.5" />
-                      <span>Data Erased</span>
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="bg-emerald-100 text-emerald-800 border border-emerald-600 px-3 py-1 text-xs font-bold flex items-center gap-1 rounded-sm">
+                        <Check className="w-3.5 h-3.5" />
+                        <span>Data Erased</span>
+                      </span>
+                      {broker.screenshotUrl && (
+                        <a
+                          href={broker.screenshotUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="brutal-btn bg-white hover:bg-emerald-50 text-emerald-700 border-emerald-600 px-2 py-1 text-[11px] font-bold flex items-center gap-0.5"
+                          title="View Screenshot Proof of Data Erasure"
+                        >
+                          <span>Proof</span>
+                          <ArrowUpRight className="w-3 h-3 stroke-[2.5]" />
+                        </a>
+                      )}
+                    </div>
                   )}
                   {isActionNeeded && (
                     <span className="bg-amber-100 text-amber-800 border border-amber-600 px-3 py-1 text-xs font-bold flex items-center gap-1 rounded-sm">
@@ -306,6 +320,17 @@ export default function DataRemovalView({ inboxId }: DataRemovalViewProps) {
                       className="brutal-btn bg-[#FEF08A] hover:bg-[#fde047] text-[#854D0E] px-3 py-1.5 text-xs font-bold flex items-center gap-1"
                     >
                       <span>Complete Action</span>
+                      <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
+                    </a>
+                  ) : isCompleted && broker.screenshotUrl ? (
+                    <a
+                      href={broker.screenshotUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="brutal-btn bg-[#8544FA] text-[#FEFBEA] hover:bg-[#7330ea] px-3 py-1.5 text-xs font-bold flex items-center gap-1"
+                      title="View Erasure Proof Screenshot"
+                    >
+                      <span>View Proof</span>
                       <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
                     </a>
                   ) : isNotStarted ? (
