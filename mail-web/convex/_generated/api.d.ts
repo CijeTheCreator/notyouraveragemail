@@ -22,6 +22,7 @@ import type * as pipeline_otp from "../pipeline/otp.js";
 import type * as pipeline_otpHandler from "../pipeline/otpHandler.js";
 import type * as pipeline_subscriptionCancellation from "../pipeline/subscriptionCancellation.js";
 import type * as pipeline_subscriptionHandler from "../pipeline/subscriptionHandler.js";
+import type * as playground from "../playground.js";
 import type * as seed from "../seed.js";
 import type * as seedSubscriptions from "../seedSubscriptions.js";
 import type * as testCheckout from "../testCheckout.js";
@@ -47,6 +48,7 @@ declare const fullApi: ApiFromModules<{
   "pipeline/otpHandler": typeof pipeline_otpHandler;
   "pipeline/subscriptionCancellation": typeof pipeline_subscriptionCancellation;
   "pipeline/subscriptionHandler": typeof pipeline_subscriptionHandler;
+  playground: typeof playground;
   seed: typeof seed;
   seedSubscriptions: typeof seedSubscriptions;
   testCheckout: typeof testCheckout;

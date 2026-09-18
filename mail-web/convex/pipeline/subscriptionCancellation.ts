@@ -229,9 +229,9 @@ export const executeOneClickCancel = action({
       portalUrl: args.portalUrl,
     });
 
-    // 3. Safety Watchdog: After 3 minutes (180,000ms), auto-rescue if still stuck in cancelling
+    // 3. Safety Watchdog: After 8 minutes (480,000ms), auto-rescue if still stuck in cancelling
     await ctx.scheduler.runAfter(
-      180000,
+      480000,
       internal.pipeline.cancellationAgent.cancellationWatchdog,
       { messageId: args.messageId }
     );
@@ -551,6 +551,7 @@ export const listSubscriptions = query({
         portalUrl,
         isMagicLink,
         status: sub.status,
+        cancellationScreenshotUrl: sub.cancellationScreenshotUrl,
       };
     });
   },
