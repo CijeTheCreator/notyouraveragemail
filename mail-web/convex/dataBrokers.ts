@@ -1,6 +1,7 @@
 import { action, internalAction, internalMutation, internalQuery, mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-import { internal } from "./_generated/api";
+import { internal, api } from "./_generated/api";
+import { renderGenericRemovalRequest } from "./pipeline/removalTemplates";
 import brokersData from "./brokers.json";
 
 export interface BrokerData {
@@ -299,6 +300,107 @@ export const queueSingleBroker = mutation({
         updatedAt: now,
       });
     }
+  },
+});
+
+/**
+ * Internal Query: Get user profile by inboxId
+ */
+export const getUserByInboxId = internalQuery({
+  args: {
+    inboxId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("users")
+      .withIndex("by_inboxId", (q) => q.eq("inboxId", args.inboxId))
+      .first();
+  },
+});
+
+/**
+ * Action: Starts the data removal process for an individual broker
+ * Sends formal GDPR/CCPA removal request email or initiates autonomous opt-out
+ */
+export const startRemoval = action({
+  args: {
+    inboxId: v.string(),
+    brokerId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const broker = await ctx.runQuery(internal.dataBrokers.getBroker, {
+      brokerId: args.brokerId,
+    });
+
+    if (!broker) {
+      throw new Error(`Data broker "${args.brokerId}" not found in catalog.`);
+    }
+
+    const user = await ctx.runQuery(internal.dataBrokers.getUserByInboxId, {
+      inboxId: args.inboxId,
+    });
+
+    const userName = user?.name || args.inboxId.split("@")[0];
+    const now = Date.now();
+
+    // 1. Mark status as "sent"
+    await ctx.runMutation(internal.dataBrokers.updateRemovalStatus, {
+      inboxId: args.inboxId,
+      brokerId: args.brokerId,
+      status: "sent",
+      sentAt: now,
+      agentNotes: `Removal request initiated for ${broker.name}.`,
+    });
+
+    await ctx.runMutation(internal.dataBrokers.appendRemovalLog, {
+      inboxId: args.inboxId,
+      brokerId: args.brokerId,
+      logLine: `[Removal Initiated] Starting removal workflow for ${broker.name}...`,
+    });
+
+    // 2. Dispatch GDPR/CCPA removal request email if broker has email
+    if (broker.email) {
+      const { subject, body } = renderGenericRemovalRequest({
+        brokerName: broker.name,
+        fullName: userName,
+        email: args.inboxId,
+      });
+
+      try {
+        const sentRes: any = await ctx.runAction(api.agentmail.sendEmail, {
+          inboxId: args.inboxId,
+          to: broker.email,
+          subject,
+          text: body,
+          fromName: userName,
+        });
+
+        await ctx.runMutation(internal.dataBrokers.appendRemovalLog, {
+          inboxId: args.inboxId,
+          brokerId: args.brokerId,
+          messageId: sentRes?.messageId,
+          logLine: `[Removal Request Sent] Dispatched formal GDPR/CCPA privacy opt-out email to ${broker.email}`,
+        });
+      } catch (err: any) {
+        console.warn(`[startRemoval] Failed to send email to ${broker.email}:`, err);
+        await ctx.runMutation(internal.dataBrokers.appendRemovalLog, {
+          inboxId: args.inboxId,
+          brokerId: args.brokerId,
+          logLine: `[Removal Warning] Could not dispatch email directly: ${err?.message}`,
+        });
+      }
+    } else if (broker.optOutUrl) {
+      await ctx.runMutation(internal.dataBrokers.appendRemovalLog, {
+        inboxId: args.inboxId,
+        brokerId: args.brokerId,
+        logLine: `[Web Opt-Out] Direct opt-out portal available at ${broker.optOutUrl}.`,
+      });
+    }
+
+    return {
+      success: true,
+      message: `Started data removal process for ${broker.name}.`,
+    };
   },
 });
 

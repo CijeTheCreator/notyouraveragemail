@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>LSUIElement</key>
+	<true/>
+	<key>SUFeedURL</key>
+	<string>https://raw.githubusercontent.com/julianjear/makesomething-mac-app/main/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>/l3d2rw5ZZFRU3AadP/w2Zf8FHfhA6bKv16BQOV5OSk=</string>
+	<key>VoiceTranscriptionProvider</key>
+	<string>openai</string>
+	<key>CFBundleDisplayName</key>
+	<string>NotYourAverageMail</string>
+	<key>CFBundleName</key>
+	<string>NotYourAverageMail</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>NotYourAverageMail uses your microphone so you can talk to it</string>
+	<key>NSScreenCaptureUsageDescription</key>
+	<string>NotYourAverageMail needs screen recording access to see your screen and help you.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>NotYourAverageMail uses speech recognition to transcribe your voice when you talk to it</string>
+	<key>NSAppleEventsUsageDescription</key>
+	<string>NotYourAverageMail needs permission to detect active documents in Pages, Keynote, web tabs in Safari and Chrome, and files in Finder when drafting emails.</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>to.notyouraveragemail.companion</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>notyouraveragemail</string>
+				<string>modernmail</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

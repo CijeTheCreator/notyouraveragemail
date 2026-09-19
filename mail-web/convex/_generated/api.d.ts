@@ -10,6 +10,7 @@
 
 import type * as agentmail from "../agentmail.js";
 import type * as auth from "../auth.js";
+import type * as companion from "../companion.js";
 import type * as dataBrokers from "../dataBrokers.js";
 import type * as http from "../http.js";
 import type * as messages from "../messages.js";
@@ -41,6 +42,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   agentmail: typeof agentmail;
   auth: typeof auth;
+  companion: typeof companion;
   dataBrokers: typeof dataBrokers;
   http: typeof http;
   messages: typeof messages;

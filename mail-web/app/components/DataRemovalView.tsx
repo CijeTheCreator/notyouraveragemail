@@ -42,7 +42,7 @@ export default function DataRemovalView({ inboxId }: DataRemovalViewProps) {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [isPreparing, setIsPreparing] = useState(false);
+  const [startingBrokerIds, setStartingBrokerIds] = useState<Set<string>>(new Set());
   const [isSeeding, setIsSeeding] = useState(false);
 
   const rawBrokers = useQuery(api.dataBrokers.listBrokers, {
@@ -53,8 +53,7 @@ export default function DataRemovalView({ inboxId }: DataRemovalViewProps) {
   });
 
   const metrics = useQuery(api.dataBrokers.getRemovalMetrics, { inboxId });
-  const prepareCampaignMutation = useMutation(api.dataBrokers.prepareCampaign);
-  const queueSingleMutation = useMutation(api.dataBrokers.queueSingleBroker);
+  const startRemovalAction = useAction(api.dataBrokers.startRemoval);
   const seedBrokersAction = useAction(api.dataBrokers.seedAllBrokers);
 
   const brokers = useMemo(() => rawBrokers || [], [rawBrokers]);
@@ -82,15 +81,19 @@ export default function DataRemovalView({ inboxId }: DataRemovalViewProps) {
     setCurrentPage(1);
   };
 
-  const handleStartCampaign = async () => {
-    setIsPreparing(true);
+  const handleStartRemoval = async (brokerId: string, name: string) => {
+    setStartingBrokerIds((prev) => new Set(prev).add(brokerId));
     try {
-      const res = await prepareCampaignMutation({ inboxId, count: 30 });
+      const res = await startRemovalAction({ inboxId, brokerId });
       toast.success(res.message);
     } catch (err: any) {
-      toast.error(err?.message || "Failed to start removal campaign");
+      toast.error(err?.message || `Failed to start removal for ${name}`);
     } finally {
-      setIsPreparing(false);
+      setStartingBrokerIds((prev) => {
+        const next = new Set(prev);
+        next.delete(brokerId);
+        return next;
+      });
     }
   };
 
@@ -103,15 +106,6 @@ export default function DataRemovalView({ inboxId }: DataRemovalViewProps) {
       toast.error(err?.message || "Failed to seed brokers catalog");
     } finally {
       setIsSeeding(false);
-    }
-  };
-
-  const handleQueueBroker = async (brokerId: string, name: string) => {
-    try {
-      await queueSingleMutation({ inboxId, brokerId });
-      toast.success(`Queued removal request for ${name}`);
-    } catch (err: any) {
-      toast.error(err?.message || `Failed to queue request for ${name}`);
     }
   };
 
@@ -158,14 +152,6 @@ export default function DataRemovalView({ inboxId }: DataRemovalViewProps) {
                 <span>{isSeeding ? "Seeding..." : "Seed 750+ Catalog"}</span>
               </button>
             )}
-            <button
-              onClick={handleStartCampaign}
-              disabled={isPreparing}
-              className="button-primary bg-[#8544FA] hover:bg-[#7330ea] text-[#FEFBEA] px-4 py-2 text-xs font-bold flex items-center gap-2"
-            >
-              <Send className="w-3.5 h-3.5" />
-              <span>{isPreparing ? "Preparing..." : "Start Removal Campaign (Top 30)"}</span>
-            </button>
           </div>
         </div>
 
@@ -247,6 +233,7 @@ export default function DataRemovalView({ inboxId }: DataRemovalViewProps) {
             const isInProgress = broker.status === "in_progress";
             const isActionNeeded = broker.status === "requires-human-action";
             const isNotStarted = broker.status === "not_started";
+            const isStarting = startingBrokerIds.has(broker.brokerId);
 
             const domainDisplay = broker.website
               ? broker.website.replace(/https?:\/\/(www\.)?/, "").split("/")[0]
@@ -358,26 +345,35 @@ export default function DataRemovalView({ inboxId }: DataRemovalViewProps) {
                       <span>View Proof</span>
                       <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
                     </a>
-                  ) : isNotStarted ? (
+                  ) : isStarting ? (
                     <button
-                      onClick={() => handleQueueBroker(broker.brokerId, broker.name)}
-                      className="brutal-btn bg-white hover:bg-gray-100 text-[#2c2a29] px-3 py-1.5 text-xs font-bold flex items-center gap-1"
+                      disabled
+                      className="brutal-btn bg-[#8544FA] text-white px-3.5 py-1.5 text-xs font-bold flex items-center gap-1.5 opacity-80 cursor-not-allowed"
                     >
-                      <span>Queue Request</span>
+                      <Clock className="w-3.5 h-3.5 animate-spin" />
+                      <span>Starting...</span>
                     </button>
                   ) : (
-                    broker.optOutUrl && (
-                      <a
-                        href={broker.optOutUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="brutal-btn bg-white hover:bg-gray-100 text-[#2c2a29] px-2.5 py-1 text-[11px] font-bold flex items-center gap-1 opacity-70 hover:opacity-100"
-                        title="Direct Opt-Out Page"
-                      >
-                        <span>Opt-Out URL</span>
-                        <ArrowUpRight className="w-3 h-3" />
-                      </a>
-                    )
+                    <button
+                      onClick={() => handleStartRemoval(broker.brokerId, broker.name)}
+                      className="brutal-btn bg-[#8544FA] hover:bg-[#7330ea] text-[#FEFBEA] px-3.5 py-1.5 text-xs font-bold flex items-center gap-1.5 brutal-shadow-sm transition-transform active:translate-x-0.5 active:translate-y-0.5"
+                      title={`Start autonomous removal process for ${broker.name}`}
+                    >
+                      <Send className="w-3 h-3" />
+                      <span>{isSent ? "Resend" : "Start Removal"}</span>
+                    </button>
+                  )}
+                  {broker.optOutUrl && !isActionNeeded && (
+                    <a
+                      href={broker.optOutUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="brutal-btn bg-white hover:bg-gray-100 text-[#2c2a29] px-2 py-1 text-[11px] font-bold flex items-center gap-1 opacity-70 hover:opacity-100"
+                      title="Direct Opt-Out Portal"
+                    >
+                      <span>Portal</span>
+                      <ArrowUpRight className="w-3 h-3" />
+                    </a>
                   )}
                 </div>
               </div>
