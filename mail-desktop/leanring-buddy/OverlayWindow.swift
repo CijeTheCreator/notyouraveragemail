@@ -308,7 +308,7 @@ struct BlueCursorView: View {
                 .rotationEffect(.degrees(triangleRotationDegrees))
                 .shadow(color: DS.Colors.overlayCursorBlue, radius: 8 + (buddyFlightScale - 1.0) * 20, x: 0, y: 0)
                 .scaleEffect(buddyFlightScale)
-                .opacity(buddyIsVisibleOnThisScreen && (companionManager.voiceState == .idle || companionManager.voiceState == .responding) ? cursorOpacity : 0)
+                .opacity(buddyIsVisibleOnThisScreen && !companionManager.isScanningForOtp && (companionManager.voiceState == .idle || companionManager.voiceState == .responding) ? cursorOpacity : 0)
                 .position(cursorPosition)
                 .animation(
                     buddyNavigationMode == .followingCursor
@@ -317,6 +317,7 @@ struct BlueCursorView: View {
                     value: cursorPosition
                 )
                 .animation(.easeIn(duration: 0.25), value: companionManager.voiceState)
+                .animation(.easeIn(duration: 0.2), value: companionManager.isScanningForOtp)
                 .animation(
                     buddyNavigationMode == .navigatingToTarget ? nil : .easeInOut(duration: 0.3),
                     value: triangleRotationDegrees
@@ -335,6 +336,13 @@ struct BlueCursorView: View {
                 .position(cursorPosition)
                 .animation(.spring(response: 0.2, dampingFraction: 0.6, blendDuration: 0), value: cursorPosition)
                 .animation(.easeIn(duration: 0.15), value: companionManager.voiceState)
+
+            // Animated 👀 eyes — shown while scanning screen for OTP input field
+            BlueCursorScanningEyesView()
+                .opacity(buddyIsVisibleOnThisScreen && companionManager.isScanningForOtp ? cursorOpacity : 0)
+                .position(cursorPosition)
+                .animation(.spring(response: 0.2, dampingFraction: 0.6, blendDuration: 0), value: cursorPosition)
+                .animation(.easeIn(duration: 0.2), value: companionManager.isScanningForOtp)
 
         }
         .frame(width: screenFrame.width, height: screenFrame.height)
@@ -373,6 +381,10 @@ struct BlueCursorView: View {
             // that position so it points at the element.
             guard let screenLocation = newLocation,
                   let displayFrame = companionManager.detectedElementDisplayFrame else {
+                // When location is cleared (nil), immediately fly back to the mouse cursor!
+                if self.buddyNavigationMode != .followingCursor && !self.isReturningToCursor {
+                    self.startFlyingBackToCursor()
+                }
                 return
             }
 
@@ -575,6 +587,18 @@ struct BlueCursorView: View {
         // Rotate back to default pointer angle now that we've arrived
         triangleRotationDegrees = -35.0
 
+        // If custom bubble is explicitly empty, suppress the bubble completely
+        if let customBubble = companionManager.detectedElementBubbleText, customBubble.isEmpty {
+            navigationBubbleText = ""
+            navigationBubbleOpacity = 0.0
+            // Fallback safety timeout: fly back after typing window if not already returned
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                guard self.buddyNavigationMode == .pointingAtTarget && !self.isReturningToCursor else { return }
+                self.startFlyingBackToCursor()
+            }
+            return
+        }
+
         // Reset navigation bubble state — start small for the scale-bounce entrance
         navigationBubbleText = ""
         navigationBubbleOpacity = 1.0
@@ -769,6 +793,48 @@ private struct BlueCursorSpinnerView: View {
                 withAnimation(.linear(duration: 0.8).repeatForever(autoreverses: false)) {
                     isSpinning = true
                 }
+            }
+    }
+}
+
+// MARK: - Blue Cursor Scanning Eyes
+
+/// Animated 👀 eyes that replace the triangle cursor while
+/// the companion is automatically scanning the screen for an OTP field.
+/// Features a gentle, natural blinking animation without flipping or rotating.
+private struct BlueCursorScanningEyesView: View {
+    @State private var isBlinking = false
+    @State private var subtleDrift = false
+    @State private var blinkTimer: Timer?
+
+    var body: some View {
+        Text("👀")
+            .font(.system(size: 20))
+            .scaleEffect(x: 1.0, y: isBlinking ? 0.08 : 1.0, anchor: .center)
+            .offset(x: subtleDrift ? 2.0 : -2.0)
+            .shadow(color: DS.Colors.overlayCursorBlue.opacity(0.4), radius: 6, x: 0, y: 0)
+            .onAppear {
+                // Calm, gentle ambient float (no flipping or rotation)
+                withAnimation(.easeInOut(duration: 1.4).repeatForever(autoreverses: true)) {
+                    subtleDrift = true
+                }
+
+                // Natural periodic blink cycle: quick 80ms blink every ~1.3s
+                blinkTimer?.invalidate()
+                blinkTimer = Timer.scheduledTimer(withTimeInterval: 1.3, repeats: true) { _ in
+                    withAnimation(.easeOut(duration: 0.08)) {
+                        isBlinking = true
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.09) {
+                        withAnimation(.easeIn(duration: 0.09)) {
+                            isBlinking = false
+                        }
+                    }
+                }
+            }
+            .onDisappear {
+                blinkTimer?.invalidate()
+                blinkTimer = nil
             }
     }
 }

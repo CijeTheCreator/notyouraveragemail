@@ -18,15 +18,17 @@ final class OtpAlertOverlayManager: ObservableObject {
     @Published var currentAlert: OtpAlertItem?
     @Published var isAutoFilling: Bool = false
     @Published var isCopied: Bool = false
+    @Published var isCopyOnly: Bool = false
 
     private var panel: NSPanel?
     private var trackingTimer: Timer?
 
-    func showAlert(for alert: OtpAlertItem) {
+    func showAlert(for alert: OtpAlertItem, copyOnly: Bool = false) {
         self.currentAlert = alert
         self.isShowingAlert = true
         self.isCopied = false
         self.isAutoFilling = false
+        self.isCopyOnly = copyOnly
 
         createPanelIfNeeded()
         positionNearCursorOnce()
@@ -159,7 +161,7 @@ struct OtpAlertOverlayView: View {
                     .pointerCursor()
                 }
 
-                Text("Click Auto-Fill to fly & type code, or Copy to clipboard")
+                Text(manager.isCopyOnly ? "Click to copy verification code" : "Click Auto-Fill to fly & type code, or Copy to clipboard")
                     .font(.system(size: 9.5))
                     .foregroundColor(DS.Colors.textTertiary)
                     .lineLimit(1)
@@ -176,51 +178,53 @@ struct OtpAlertOverlayView: View {
                             manager.hideAlert()
                         }
                     }) {
-                        HStack(spacing: 4) {
+                        HStack(spacing: 5) {
                             Image(systemName: manager.isCopied ? "checkmark" : "doc.on.doc")
-                                .font(.system(size: 10))
-                            Text(manager.isCopied ? "Copied!" : "Copy")
-                                .font(.system(size: 11, weight: .medium))
+                                .font(.system(size: 11, weight: .semibold))
+                            Text(manager.isCopied ? "Copied to Clipboard!" : "Copy Verification Code")
+                                .font(.system(size: 11, weight: .semibold))
                         }
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 6)
-                        .background(Color.white.opacity(0.12))
+                        .padding(.vertical, 7)
+                        .background(manager.isCopyOnly ? DS.Colors.overlayCursorBlue : Color.white.opacity(0.12))
                         .cornerRadius(6)
                     }
                     .buttonStyle(.plain)
                     .pointerCursor()
 
-                    // Auto-Fill button
-                    Button(action: {
-                        guard let code = manager.currentAlert?.otpCode else { return }
-                        manager.isAutoFilling = true
-                        NotificationCenter.default.post(
-                            name: NSNotification.Name("TriggerOtpAutoFill"),
-                            object: nil,
-                            userInfo: ["otpCode": code]
-                        )
-                    }) {
-                        HStack(spacing: 4) {
-                            if manager.isAutoFilling {
-                                ProgressView()
-                                    .controlSize(.mini)
-                            } else {
-                                Image(systemName: "wand.and.stars")
-                                    .font(.system(size: 10))
-                                Text("Auto-Fill")
-                                    .font(.system(size: 11, weight: .semibold))
+                    if !manager.isCopyOnly {
+                        // Auto-Fill button
+                        Button(action: {
+                            guard let code = manager.currentAlert?.otpCode else { return }
+                            manager.isAutoFilling = true
+                            NotificationCenter.default.post(
+                                name: NSNotification.Name("TriggerOtpAutoFill"),
+                                object: nil,
+                                userInfo: ["otpCode": code]
+                            )
+                        }) {
+                            HStack(spacing: 4) {
+                                if manager.isAutoFilling {
+                                    ProgressView()
+                                        .controlSize(.mini)
+                                } else {
+                                    Image(systemName: "wand.and.stars")
+                                        .font(.system(size: 10))
+                                    Text("Auto-Fill")
+                                        .font(.system(size: 11, weight: .semibold))
+                                }
                             }
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 6)
+                            .background(DS.Colors.overlayCursorBlue)
+                            .cornerRadius(6)
                         }
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 6)
-                        .background(DS.Colors.overlayCursorBlue)
-                        .cornerRadius(6)
+                        .buttonStyle(.plain)
+                        .pointerCursor()
+                        .disabled(manager.isAutoFilling)
                     }
-                    .buttonStyle(.plain)
-                    .pointerCursor()
-                    .disabled(manager.isAutoFilling)
                 }
             }
             .padding(10)
