@@ -327,7 +327,7 @@ export const startRemoval = action({
     inboxId: v.string(),
     brokerId: v.string(),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<any> => {
     const broker = await ctx.runQuery(internal.dataBrokers.getBroker, {
       brokerId: args.brokerId,
     });

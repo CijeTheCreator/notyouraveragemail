@@ -31,6 +31,7 @@ import type * as playground from "../playground.js";
 import type * as seed from "../seed.js";
 import type * as seedSubscriptions from "../seedSubscriptions.js";
 import type * as testCheckout from "../testCheckout.js";
+import type * as testOtp from "../testOtp.js";
 import type * as testRemoval from "../testRemoval.js";
 
 import type {
@@ -63,6 +64,7 @@ declare const fullApi: ApiFromModules<{
   seed: typeof seed;
   seedSubscriptions: typeof seedSubscriptions;
   testCheckout: typeof testCheckout;
+  testOtp: typeof testOtp;
   testRemoval: typeof testRemoval;
 }>;
 

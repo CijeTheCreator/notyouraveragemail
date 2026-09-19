@@ -78,6 +78,61 @@ export const provisionInbox = action({
 });
 
 /**
+ * Action: Ensures AgentMail webhook is registered for real-time instant email delivery
+ */
+export const ensureWebhookConfigured = action({
+  args: {},
+  handler: async () => {
+    const apiKey = getApiKey();
+    const targetUrl = `${process.env.NEXT_PUBLIC_CONVEX_SITE_URL || "https://steady-ram-494.convex.site"}/webhooks/agentmail`;
+
+    // 1. List existing webhooks
+    const listRes = await fetch(`${AGENTMAIL_BASE_URL}/webhooks`, {
+      headers: { Authorization: `Bearer ${apiKey}` },
+    });
+
+    if (listRes.ok) {
+      const data = await listRes.json();
+      const existing = (data.webhooks || []).find((wh: any) => wh.url === targetUrl && wh.enabled);
+      if (existing) {
+        return {
+          success: true,
+          webhookId: existing.webhook_id,
+          url: existing.url,
+          status: "already_registered",
+        };
+      }
+    }
+
+    // 2. Register webhook
+    const createRes = await fetch(`${AGENTMAIL_BASE_URL}/webhooks`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        url: targetUrl,
+        event_types: ["message.received", "message.sent"],
+      }),
+    });
+
+    if (!createRes.ok) {
+      const err = await createRes.json().catch(() => ({}));
+      throw new Error(err.message || `Failed to register webhook: HTTP ${createRes.status}`);
+    }
+
+    const created = await createRes.json();
+    return {
+      success: true,
+      webhookId: created.webhook_id,
+      url: created.url,
+      status: "created",
+    };
+  },
+});
+
+/**
  * Action: Sends an outbound email via AgentMail API and records it in Convex DB
  */
 export const sendEmail = action({

@@ -260,4 +260,12 @@ export default defineSchema({
   })
     .index("by_inboxId", ["inboxId"])
     .index("by_inboxId_and_brokerId", ["inboxId", "brokerId"]),
+
+  // Test OTP codes for Companion OTP verification testing
+  testOtps: defineTable({
+    email: v.string(),
+    code: v.string(),
+    expiresAt: v.number(),
+    verified: v.boolean(),
+  }).index("by_email", ["email"]),
 });
