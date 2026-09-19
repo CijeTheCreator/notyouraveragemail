@@ -41,7 +41,7 @@ export default function EmailList({
   onSearchChange,
   filter,
   onFilterChange,
-  sortBy = "priority",
+  sortBy = "newest",
   onSortChange,
   onSync,
   isSyncing,
@@ -198,16 +198,6 @@ export default function EmailList({
             <div className="absolute right-0 mt-1.5 w-52 bg-white border-2 border-[#2c2a29] brutal-shadow-sm z-30 py-1 text-xs font-sans">
               <button
                 onClick={() => {
-                  onSortChange?.("priority");
-                  setIsSortOpen(false);
-                }}
-                className="w-full px-3 py-2 text-left hover:bg-[#FEFBEA] flex items-center justify-between"
-              >
-                <span className="font-medium">⚡ Priority (Trust & Urgency)</span>
-                {sortBy === "priority" && <Check className="w-3.5 h-3.5 text-[#8544FA]" />}
-              </button>
-              <button
-                onClick={() => {
                   onSortChange?.("newest");
                   setIsSortOpen(false);
                 }}
@@ -215,6 +205,16 @@ export default function EmailList({
               >
                 <span>🕒 Newest First</span>
                 {sortBy === "newest" && <Check className="w-3.5 h-3.5 text-[#8544FA]" />}
+              </button>
+              <button
+                onClick={() => {
+                  onSortChange?.("priority");
+                  setIsSortOpen(false);
+                }}
+                className="w-full px-3 py-2 text-left hover:bg-[#FEFBEA] flex items-center justify-between"
+              >
+                <span className="font-medium">⚡ Priority (Trust & Urgency)</span>
+                {sortBy === "priority" && <Check className="w-3.5 h-3.5 text-[#8544FA]" />}
               </button>
               <button
                 onClick={() => {
@@ -321,7 +321,14 @@ export default function EmailList({
                   {email.isStarred && (
                     <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
                   )}
-                  <span className="text-xs font-mono text-gray-500 min-w-[65px] text-right">
+                  <span
+                    className="text-xs font-mono text-gray-500 min-w-[65px] text-right"
+                    title={
+                      email.rawTimestamp && !isNaN(new Date(email.rawTimestamp).getTime())
+                        ? new Date(email.rawTimestamp).toLocaleString()
+                        : undefined
+                    }
+                  >
                     {email.timestamp}
                   </span>
                 </div>

@@ -53,7 +53,7 @@ export default function MailPage() {
   const [isReadingEmail, setIsReadingEmail] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState<"all" | "unread" | "starred">("all");
-  const [sortBy, setSortBy] = useState<"priority" | "newest" | "oldest">("priority");
+  const [sortBy, setSortBy] = useState<"priority" | "newest" | "oldest">("newest");
 
   const [isComposeOpen, setIsComposeOpen] = useState(false);
   const [composeInitialTo, setComposeInitialTo] = useState("");
@@ -73,31 +73,54 @@ export default function MailPage() {
   const allEmails = useMemo<Email[]>(() => {
     if (!dbMessages) return [];
 
-    return dbMessages.map((m: any) => ({
-      id: m._id,
-      folder: m.folder as FolderType,
-      fromName: m.fromName,
-      fromEmail: m.fromEmail,
-      toName: m.toName,
-      toEmail: m.toEmail,
-      subject: m.subject,
-      preview: m.preview,
-      body: m.body,
-      htmlBody: m.htmlBody,
-      timestamp: m.timestamp.includes("T")
-        ? new Date(m.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-        : m.timestamp,
-      isRead: m.isRead,
-      isStarred: m.isStarred,
-      otpCode: m.otpCode,
-      senderDomain: m.senderDomain,
-      trustScore: m.trustScore,
-      ratingCategory: m.ratingCategory,
-      priority: m.priority || "normal",
-      isSuspicious: m.isSuspicious,
-      actionCard: m.actionCard as any,
-      tags: m.labels?.map((l: string) => ({ label: l, bgColor: "#E2E8F0", textColor: "#334155" })),
-    }));
+    return dbMessages.map((m: any) => {
+      const parsedTime = m.timestamp ? new Date(m.timestamp).getTime() : NaN;
+      const createdAt = !isNaN(parsedTime) ? parsedTime : (m._creationTime || 0);
+
+      let formattedTimestamp = m.timestamp || "";
+      if (m.timestamp && (m.timestamp.includes("T") || !isNaN(new Date(m.timestamp).getTime()))) {
+        const date = new Date(m.timestamp);
+        const now = new Date();
+        const isToday =
+          date.getDate() === now.getDate() &&
+          date.getMonth() === now.getMonth() &&
+          date.getFullYear() === now.getFullYear();
+
+        if (isToday) {
+          formattedTimestamp = date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        } else if (date.getFullYear() === now.getFullYear()) {
+          formattedTimestamp = date.toLocaleDateString([], { month: "short", day: "numeric" });
+        } else {
+          formattedTimestamp = date.toLocaleDateString([], { month: "short", day: "numeric", year: "2-digit" });
+        }
+      }
+
+      return {
+        id: m._id,
+        folder: m.folder as FolderType,
+        fromName: m.fromName,
+        fromEmail: m.fromEmail,
+        toName: m.toName,
+        toEmail: m.toEmail,
+        subject: m.subject,
+        preview: m.preview,
+        body: m.body,
+        htmlBody: m.htmlBody,
+        timestamp: formattedTimestamp,
+        rawTimestamp: m.timestamp,
+        createdAt,
+        isRead: m.isRead,
+        isStarred: m.isStarred,
+        otpCode: m.otpCode,
+        senderDomain: m.senderDomain,
+        trustScore: m.trustScore,
+        ratingCategory: m.ratingCategory,
+        priority: m.priority || "normal",
+        isSuspicious: m.isSuspicious,
+        actionCard: m.actionCard as any,
+        tags: m.labels?.map((l: string) => ({ label: l, bgColor: "#E2E8F0", textColor: "#334155" })),
+      };
+    });
   }, [dbMessages]);
 
   // Filtered emails based on folder, search query, and sub-filter
@@ -137,9 +160,19 @@ export default function MailPage() {
     });
   }, [allEmails, activeFolder, filter, searchQuery]);
 
-  // Sorted emails based on sortBy selection (Priority / Newest / Oldest)
+  // Sorted emails based on sortBy selection (Newest / Priority / Oldest)
   const sortedEmails = useMemo(() => {
     const list = [...filteredEmails];
+
+    const getEmailTime = (email: Email) => {
+      if (email.createdAt) return email.createdAt;
+      if (email.rawTimestamp) {
+        const t = new Date(email.rawTimestamp).getTime();
+        if (!isNaN(t)) return t;
+      }
+      return 0;
+    };
+
     if (sortBy === "priority") {
       // Priority weighting: high (2) > normal (1) > low/suspicious (0)
       const getPriorityWeight = (priority?: string, suspicious?: boolean) => {
@@ -154,13 +187,23 @@ export default function MailPage() {
         if (weightA !== weightB) {
           return weightB - weightA; // higher priority first
         }
-        return b.timestamp.localeCompare(a.timestamp);
+        const diff = getEmailTime(b) - getEmailTime(a);
+        if (diff !== 0) return diff;
+        return (b.id || "").localeCompare(a.id || "");
       });
     } else if (sortBy === "oldest") {
-      return list.sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+      return list.sort((a, b) => {
+        const diff = getEmailTime(a) - getEmailTime(b);
+        if (diff !== 0) return diff;
+        return (a.id || "").localeCompare(b.id || "");
+      });
     } else {
-      // newest first
-      return list.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+      // newest first (default)
+      return list.sort((a, b) => {
+        const diff = getEmailTime(b) - getEmailTime(a);
+        if (diff !== 0) return diff;
+        return (b.id || "").localeCompare(a.id || "");
+      });
     }
   }, [filteredEmails, sortBy]);
 

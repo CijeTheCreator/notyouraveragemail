@@ -19,6 +19,8 @@ export interface Email {
   body: string;
   htmlBody?: string;
   timestamp: string;
+  rawTimestamp?: string;
+  createdAt?: number;
   isRead: boolean;
   isStarred: boolean;
   tags?: Array<{

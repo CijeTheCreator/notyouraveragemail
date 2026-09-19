@@ -185,7 +185,12 @@ export default function EmailReader({
               </div>
             </div>
             <div className="text-xs font-mono font-bold text-gray-500">
-              {email.timestamp}
+              {email.rawTimestamp && !isNaN(new Date(email.rawTimestamp).getTime())
+                ? new Date(email.rawTimestamp).toLocaleString([], {
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                  })
+                : email.timestamp}
             </div>
           </div>
         </div>
