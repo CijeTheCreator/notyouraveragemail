@@ -18,12 +18,11 @@ final class LiveTranscriptBarManager: ObservableObject {
     @Published private(set) var transcriptText: String = ""
 
     private static let barSize = NSSize(width: 380, height: 46)
-    private static let lingerAfterFinalTranscriptSeconds = 0.6
+    private static let lingerAfterFinalTranscriptSeconds = 1.2
 
     private var panel: NSPanel?
     private var pendingHideWorkItem: DispatchWorkItem?
-    /// Once the utterance is over, stop accepting updates so the end-of-session
-    /// reset to "" doesn't blank the bar while it is fading out.
+    /// Once the utterance is over, stop accepting updates while the bar lingers and fades.
     private var isEnding = false
 
     func show() {
@@ -47,6 +46,10 @@ final class LiveTranscriptBarManager: ObservableObject {
 
     func update(text: String) {
         guard !isEnding else { return }
+        // Empty updates are the dictation manager resetting its state at the end
+        // of an utterance (show() already clears the text at the start of one).
+        // Applying them would wipe the final words before they can be read.
+        guard !text.isEmpty else { return }
         transcriptText = text
     }
 
