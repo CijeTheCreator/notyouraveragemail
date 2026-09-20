@@ -160,6 +160,7 @@ struct ComposeHUDView: View {
     @State private var editableSubject: String = ""
     @State private var editableBody: String = ""
     @State private var isAddingAttachment: Bool = false
+    @State private var recipientValidationError: String? = nil
 
     var body: some View {
         ZStack {
@@ -254,14 +255,37 @@ struct ComposeHUDView: View {
                 if isEditing {
                     // Inline Editing Mode
                     VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Text("To:")
-                                .font(.system(size: 11, weight: .semibold))
-                                .foregroundColor(.secondary)
-                                .frame(width: 48, alignment: .leading)
-                            TextField("Recipient", text: $editableTo)
-                                .textFieldStyle(.roundedBorder)
-                                .font(.system(size: 12))
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack {
+                                Text("To:")
+                                    .font(.system(size: 11, weight: .semibold))
+                                    .foregroundColor(recipientValidationError != nil ? .red : .secondary)
+                                    .frame(width: 48, alignment: .leading)
+                                TextField("Recipient email (e.g. name@example.com)", text: $editableTo)
+                                    .textFieldStyle(.roundedBorder)
+                                    .font(.system(size: 12))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 5)
+                                            .stroke(recipientValidationError != nil ? Color.red.opacity(0.8) : Color.clear, lineWidth: 1.5)
+                                    )
+                                    .onChange(of: editableTo) { newValue in
+                                        if recipientValidationError != nil && isValidEmail(newValue) {
+                                            recipientValidationError = nil
+                                        }
+                                    }
+                            }
+
+                            if let errorMsg = recipientValidationError {
+                                HStack(spacing: 4) {
+                                    Image(systemName: "exclamationmark.triangle.fill")
+                                        .font(.system(size: 9))
+                                        .foregroundColor(.orange)
+                                    Text(errorMsg)
+                                        .font(.system(size: 10, weight: .medium))
+                                        .foregroundColor(.orange)
+                                }
+                                .padding(.leading, 54)
+                            }
                         }
 
                         HStack {
@@ -289,9 +313,29 @@ struct ComposeHUDView: View {
                                 .font(.system(size: 11, weight: .semibold))
                                 .foregroundColor(.secondary)
                                 .frame(width: 48, alignment: .leading)
-                            Text(manager.currentDraft?.to.isEmpty == false ? manager.currentDraft!.to : "(No recipient specified)")
-                                .font(.system(size: 12, weight: .medium))
-                                .foregroundColor(manager.currentDraft?.to.isEmpty == false ? .primary : .secondary)
+
+                            let toTrimmed = manager.currentDraft?.to.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+                            if !toTrimmed.isEmpty {
+                                Text(toTrimmed)
+                                    .font(.system(size: 12, weight: .medium))
+                                    .foregroundColor(.primary)
+                            } else {
+                                HStack(spacing: 5) {
+                                    Image(systemName: "exclamationmark.circle.fill")
+                                        .font(.system(size: 10))
+                                        .foregroundColor(.orange)
+                                    Text("No recipient specified (click to add)")
+                                        .font(.system(size: 11, weight: .medium))
+                                        .foregroundColor(.orange)
+                                }
+                                .onTapGesture {
+                                    editableTo = ""
+                                    editableSubject = manager.currentDraft?.subject ?? ""
+                                    editableBody = manager.currentDraft?.body ?? ""
+                                    isEditing = true
+                                    recipientValidationError = "Please enter a recipient email before sending"
+                                }
+                            }
                         }
 
                         HStack {
@@ -409,14 +453,47 @@ struct ComposeHUDView: View {
         }
     }
 
+    private func isValidEmail(_ email: String) -> Bool {
+        let trimmed = email.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return false }
+        let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+        let predicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
+        return predicate.evaluate(with: trimmed)
+    }
+
     private func approveAndSend() {
         guard var draft = manager.currentDraft else { return }
+
+        let targetTo = (isEditing ? editableTo : draft.to).trimmingCharacters(in: .whitespacesAndNewlines)
+        if targetTo.isEmpty {
+            editableTo = ""
+            editableSubject = isEditing ? editableSubject : draft.subject
+            editableBody = isEditing ? editableBody : draft.body
+            isEditing = true
+            recipientValidationError = "Recipient required before sending"
+            return
+        }
+
+        if !isValidEmail(targetTo) {
+            editableTo = targetTo
+            editableSubject = isEditing ? editableSubject : draft.subject
+            editableBody = isEditing ? editableBody : draft.body
+            isEditing = true
+            recipientValidationError = "Please enter a valid email address (e.g. name@domain.com)"
+            return
+        }
+
+        recipientValidationError = nil
+
         if isEditing {
-            draft.to = editableTo
+            draft.to = targetTo
             draft.subject = editableSubject
             draft.body = editableBody
             manager.currentDraft = draft
             isEditing = false
+        } else {
+            draft.to = targetTo
+            manager.currentDraft = draft
         }
 
         Task {
