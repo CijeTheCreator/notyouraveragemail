@@ -258,10 +258,83 @@ struct CompanionPanelView: View {
                 }
                 .buttonStyle(.plain)
                 .pointerCursor()
+
+                figmaConnectionRow
             }
             .padding(10)
             .background(Color.white.opacity(0.03))
             .cornerRadius(8)
+        }
+    }
+
+    // MARK: - Figma Connection
+
+    private func openFigmaConnect() {
+        let encoded = convexService.activeInboxId.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        if let url = URL(string: "http://localhost:3000/api/auth/figma/start?inboxId=\(encoded)") {
+            NSWorkspace.shared.open(url)
+        }
+    }
+
+    @ViewBuilder
+    private var figmaConnectionRow: some View {
+        if let status = convexService.figmaStatus, status.connected {
+            HStack(spacing: 6) {
+                Text("🎨")
+                    .font(.system(size: 11))
+                Circle()
+                    .fill(DS.Colors.success)
+                    .frame(width: 6, height: 6)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("Figma Connected")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(DS.Colors.textPrimary)
+                    if let handle = status.figmaHandle ?? status.figmaEmail {
+                        Text(handle)
+                            .font(.system(size: 10))
+                            .foregroundColor(DS.Colors.textTertiary)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                    }
+                }
+                Spacer()
+                // A workspace-wide token isn't tied to this inbox, so there is nothing to disconnect.
+                if status.isGlobal != true {
+                    Button(action: { convexService.disconnectFigma() }) {
+                        Text("Disconnect")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundColor(DS.Colors.textTertiary)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 3)
+                            .background(Color.white.opacity(0.08))
+                            .cornerRadius(4)
+                    }
+                    .buttonStyle(.plain)
+                    .pointerCursor()
+                }
+            }
+            .padding(.vertical, 4)
+            .padding(.horizontal, 6)
+            .background(Color.white.opacity(0.04))
+            .cornerRadius(6)
+        } else {
+            Button(action: openFigmaConnect) {
+                HStack(spacing: 6) {
+                    Text("🎨")
+                        .font(.system(size: 11))
+                    Text("Connect Figma via OAuth ↗")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(DS.Colors.overlayCursorBlue)
+                    Spacer()
+                }
+                .padding(.vertical, 4)
+                .padding(.horizontal, 6)
+                .background(Color.white.opacity(0.04))
+                .cornerRadius(6)
+            }
+            .buttonStyle(.plain)
+            .pointerCursor()
+            .disabled(convexService.activeInboxId.isEmpty)
         }
     }
 

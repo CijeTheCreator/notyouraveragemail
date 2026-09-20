@@ -12,6 +12,7 @@ import type * as agentmail from "../agentmail.js";
 import type * as auth from "../auth.js";
 import type * as companion from "../companion.js";
 import type * as dataBrokers from "../dataBrokers.js";
+import type * as figma from "../figma.js";
 import type * as http from "../http.js";
 import type * as messages from "../messages.js";
 import type * as pipeline_actionCards from "../pipeline/actionCards.js";
@@ -22,6 +23,7 @@ import type * as pipeline_dataRemovalAgent from "../pipeline/dataRemovalAgent.js
 import type * as pipeline_dataRemovalHandler from "../pipeline/dataRemovalHandler.js";
 import type * as pipeline_domainReputation from "../pipeline/domainReputation.js";
 import type * as pipeline_draftingAgent from "../pipeline/draftingAgent.js";
+import type * as pipeline_figmaAgent from "../pipeline/figmaAgent.js";
 import type * as pipeline_orchestrator from "../pipeline/orchestrator.js";
 import type * as pipeline_otp from "../pipeline/otp.js";
 import type * as pipeline_otpHandler from "../pipeline/otpHandler.js";
@@ -46,6 +48,7 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   companion: typeof companion;
   dataBrokers: typeof dataBrokers;
+  figma: typeof figma;
   http: typeof http;
   messages: typeof messages;
   "pipeline/actionCards": typeof pipeline_actionCards;
@@ -56,6 +59,7 @@ declare const fullApi: ApiFromModules<{
   "pipeline/dataRemovalHandler": typeof pipeline_dataRemovalHandler;
   "pipeline/domainReputation": typeof pipeline_domainReputation;
   "pipeline/draftingAgent": typeof pipeline_draftingAgent;
+  "pipeline/figmaAgent": typeof pipeline_figmaAgent;
   "pipeline/orchestrator": typeof pipeline_orchestrator;
   "pipeline/otp": typeof pipeline_otp;
   "pipeline/otpHandler": typeof pipeline_otpHandler;

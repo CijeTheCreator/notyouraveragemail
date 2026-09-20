@@ -304,5 +304,18 @@ export default defineSchema({
   })
     .index("by_inboxId", ["inboxId"])
     .index("by_status", ["status"]),
+
+  // Figma OAuth connections associated with inboxes
+  figmaConnections: defineTable({
+    inboxId: v.string(),
+    accessToken: v.string(),
+    refreshToken: v.optional(v.string()),
+    expiresAt: v.optional(v.number()),
+    figmaUserId: v.optional(v.string()),
+    figmaEmail: v.optional(v.string()),
+    figmaHandle: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }).index("by_inboxId", ["inboxId"]),
 });
 

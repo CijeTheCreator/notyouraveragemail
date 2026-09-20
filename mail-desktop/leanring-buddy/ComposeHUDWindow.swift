@@ -359,6 +359,29 @@ struct ComposeHUDView: View {
                                 .cornerRadius(8)
                         }
                         .frame(height: 105)
+
+                        if let body = manager.currentDraft?.body, body.contains("figma.com") {
+                            HStack(spacing: 5) {
+                                Text("🎨")
+                                    .font(.system(size: 10))
+                                Text("Figma link included")
+                                    .font(.system(size: 10, weight: .medium))
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                                Button(action: {
+                                    if let url = URL(string: "http://localhost:3000/auth/figma") {
+                                        NSWorkspace.shared.open(url)
+                                    }
+                                }) {
+                                    Text("Figma Settings ↗")
+                                        .font(.system(size: 10, weight: .semibold))
+                                        .foregroundColor(.blue)
+                                }
+                                .buttonStyle(.plain)
+                                .pointerCursor()
+                            }
+                            .padding(.horizontal, 2)
+                        }
                     }
                 }
 
