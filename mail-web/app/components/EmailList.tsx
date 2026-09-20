@@ -14,6 +14,7 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import { Email, FolderType } from "../types";
+import JudgesButton from "./JudgesButton";
 
 interface EmailListProps {
   folder: FolderType;
@@ -28,6 +29,7 @@ interface EmailListProps {
   onSortChange?: (sort: "priority" | "newest" | "oldest") => void;
   onSync?: () => void;
   isSyncing?: boolean;
+  onOpenJudges?: () => void;
 }
 
 interface DateGroup {
@@ -48,6 +50,7 @@ export default function EmailList({
   onSortChange,
   onSync,
   isSyncing,
+  onOpenJudges,
 }: EmailListProps) {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isSortOpen, setIsSortOpen] = useState(false);
@@ -307,6 +310,11 @@ export default function EmailList({
             >
               <RefreshCw className={`size-3.5 ${isSyncing ? "animate-spin text-[#111114]" : "text-[#797981]"}`} />
             </button>
+          )}
+
+          {/* For Judges Button */}
+          {onOpenJudges && (
+            <JudgesButton onClick={onOpenJudges} />
           )}
         </div>
       </header>

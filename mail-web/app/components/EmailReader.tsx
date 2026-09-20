@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Email } from "../types";
 import TrustScoreBadge from "./TrustScoreBadge";
+import JudgesButton from "./JudgesButton";
 
 interface EmailReaderProps {
   email: Email | null;
@@ -25,6 +26,7 @@ interface EmailReaderProps {
   onDelete: (id: string) => void;
   onReply: (email: Email) => void;
   onForward: (email: Email) => void;
+  onOpenJudges?: () => void;
 }
 
 export default function EmailReader({
@@ -36,6 +38,7 @@ export default function EmailReader({
   onDelete,
   onReply,
   onForward,
+  onOpenJudges,
 }: EmailReaderProps) {
   const [copiedOtp, setCopiedOtp] = useState(false);
   const [quickReplyText, setQuickReplyText] = useState("");
@@ -133,6 +136,11 @@ export default function EmailReader({
           >
             <Trash2 className="size-3.5" />
           </button>
+
+          {/* For Judges Button */}
+          {onOpenJudges && (
+            <JudgesButton onClick={onOpenJudges} className="ml-1" />
+          )}
         </div>
       </header>
 

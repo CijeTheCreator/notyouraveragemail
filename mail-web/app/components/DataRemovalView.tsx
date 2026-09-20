@@ -18,9 +18,11 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { getBrokerLogoUrl } from "../utils/brokerLogos";
+import JudgesButton from "./JudgesButton";
 
 interface DataRemovalViewProps {
   inboxId: string;
+  onOpenJudges?: () => void;
 }
 
 /**
@@ -54,7 +56,7 @@ function BrokerLogoCell({ broker }: { broker: { brokerId?: string; id?: string; 
   );
 }
 
-export default function DataRemovalView({ inboxId }: DataRemovalViewProps) {
+export default function DataRemovalView({ inboxId, onOpenJudges }: DataRemovalViewProps) {
   const PAGE_SIZE = 20;
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -300,6 +302,11 @@ export default function DataRemovalView({ inboxId }: DataRemovalViewProps) {
               <Sparkles className="size-3" />
               <span>{isSeeding ? "Seeding..." : "Seed 750+ Catalog"}</span>
             </button>
+          )}
+
+          {/* For Judges Button */}
+          {onOpenJudges && (
+            <JudgesButton onClick={onOpenJudges} />
           )}
         </div>
       </header>

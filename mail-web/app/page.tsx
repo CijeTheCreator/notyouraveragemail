@@ -12,6 +12,7 @@ import ComposeModal from "./components/ComposeModal";
 import KeyboardShortcutsModal from "./components/KeyboardShortcutsModal";
 import SubscriptionsView from "./components/SubscriptionsView";
 import DataRemovalView from "./components/DataRemovalView";
+import JudgesPanel from "./components/JudgesPanel";
 import { Email, FolderType } from "./types";
 import { toast } from "sonner";
 
@@ -59,6 +60,7 @@ export default function MailPage() {
   const [composeInitialTo, setComposeInitialTo] = useState("");
   const [composeInitialSubject, setComposeInitialSubject] = useState("");
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
+  const [isJudgesOpen, setIsJudgesOpen] = useState(false);
 
   // Auto-sync inbox messages from AgentMail on mount or inbox change
   useEffect(() => {
@@ -363,7 +365,9 @@ export default function MailPage() {
         setComposeInitialSubject("");
         setIsComposeOpen(true);
       } else if (e.key === "Escape") {
-        if (isComposeOpen) {
+        if (isJudgesOpen) {
+          setIsJudgesOpen(false);
+        } else if (isComposeOpen) {
           setIsComposeOpen(false);
         } else if (isShortcutsOpen) {
           setIsShortcutsOpen(false);
@@ -432,6 +436,7 @@ export default function MailPage() {
       isReadingEmail,
       isComposeOpen,
       isShortcutsOpen,
+      isJudgesOpen,
     ]
   );
 
@@ -496,11 +501,18 @@ export default function MailPage() {
             onDelete={handleDeleteEmail}
             onReply={handleReply}
             onForward={handleForward}
+            onOpenJudges={() => setIsJudgesOpen(true)}
           />
         ) : activeFolder === "subscriptions" ? (
-          <SubscriptionsView inboxId={activeInboxId} />
+          <SubscriptionsView
+            inboxId={activeInboxId}
+            onOpenJudges={() => setIsJudgesOpen(true)}
+          />
         ) : activeFolder === "data-removal" ? (
-          <DataRemovalView inboxId={activeInboxId} />
+          <DataRemovalView
+            inboxId={activeInboxId}
+            onOpenJudges={() => setIsJudgesOpen(true)}
+          />
         ) : (
           <EmailList
             folder={activeFolder}
@@ -515,6 +527,7 @@ export default function MailPage() {
             onSortChange={setSortBy}
             onSync={handleSyncMail}
             isSyncing={isSyncing}
+            onOpenJudges={() => setIsJudgesOpen(true)}
           />
         )}
       </main>
@@ -532,6 +545,16 @@ export default function MailPage() {
       <KeyboardShortcutsModal
         isOpen={isShortcutsOpen}
         onClose={() => setIsShortcutsOpen(false)}
+      />
+
+      {/* Judges Testing Guide Slidebar */}
+      <JudgesPanel
+        isOpen={isJudgesOpen}
+        onClose={() => setIsJudgesOpen(false)}
+        inboxId={activeInboxId}
+        userEmail={currentUser?.email}
+        userName={currentUser?.name || currentUser?.username}
+        onNavigateFolder={(folder) => handleSelectFolder(folder)}
       />
     </div>
   );

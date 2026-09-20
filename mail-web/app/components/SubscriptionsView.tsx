@@ -5,9 +5,11 @@ import { useQuery, useAction } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { ArrowUpRight, RotateCw, Check, AlertCircle, CreditCard } from "lucide-react";
 import { toast } from "sonner";
+import JudgesButton from "./JudgesButton";
 
 interface SubscriptionsViewProps {
   inboxId: string;
+  onOpenJudges?: () => void;
 }
 
 function ServiceLogo({ domain, name }: { domain: string; name: string }) {
@@ -37,7 +39,7 @@ function ServiceLogo({ domain, name }: { domain: string; name: string }) {
   );
 }
 
-export default function SubscriptionsView({ inboxId }: SubscriptionsViewProps) {
+export default function SubscriptionsView({ inboxId, onOpenJudges }: SubscriptionsViewProps) {
   const [cancellingId, setCancellingId] = useState<string | null>(null);
 
   const rawSubscriptions = useQuery(
@@ -104,6 +106,11 @@ export default function SubscriptionsView({ inboxId }: SubscriptionsViewProps) {
             {subscriptions.length}
           </span>
         </div>
+
+        {/* Right: For Judges Button */}
+        {onOpenJudges && (
+          <JudgesButton onClick={onOpenJudges} />
+        )}
       </header>
 
       {/* Firecrawl-Style Stat Cards Header */}
