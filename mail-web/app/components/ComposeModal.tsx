@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import {
   X,
   Minus,
-  Maximize2,
   Paperclip,
   Send,
   Sparkles,
@@ -61,31 +60,31 @@ export default function ComposeModal({
   };
 
   return (
-    <div className="fixed bottom-4 right-6 z-50 w-full max-w-xl bg-[#FEFBEA] border-3 border-[#2c2a29] brutal-shadow-left overflow-hidden flex flex-col font-sans">
+    <div className="fixed bottom-4 right-6 z-50 w-full max-w-lg bg-white border border-[#00000014] rounded-xl shadow-2xl overflow-hidden flex flex-col font-sans">
       {/* Compose Header */}
-      <div className="bg-[#8544FA] text-[#FEFBEA] px-4 py-2.5 border-b-2 border-[#2c2a29] flex items-center justify-between select-none">
+      <div className="bg-[#fafafb] px-4 py-2.5 border-b border-[#00000014] flex items-center justify-between select-none">
         <div className="flex items-center gap-2">
-          <span className="font-anton text-lg tracking-wider">NEW MESSAGE</span>
-          <span className="text-[10px] bg-[#2c2a29] text-white px-1.5 py-0.2 rounded font-mono font-bold">
-            AgentMail Dispatch
+          <span className="text-xs font-semibold text-[#111114]">New Message</span>
+          <span className="text-[10px] bg-black/5 text-[#797981] px-1.5 py-0.5 rounded font-mono">
+            AgentMail
           </span>
         </div>
 
         {/* Window controls */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1">
           <button
             onClick={() => setIsMinimized(!isMinimized)}
-            className="p-1 hover:bg-black/20 rounded transition-colors text-white"
+            className="p-1 hover:bg-[#0000000a] rounded text-[#797981] hover:text-[#111114] transition-colors cursor-pointer"
             title="Minimize"
           >
-            <Minus className="w-4 h-4" />
+            <Minus className="size-3.5" />
           </button>
           <button
             onClick={onClose}
-            className="p-1 hover:bg-red-500 rounded transition-colors text-white"
+            className="p-1 hover:bg-[#0000000a] rounded text-[#797981] hover:text-[#be222a] transition-colors cursor-pointer"
             title="Close"
           >
-            <X className="w-4 h-4" />
+            <X className="size-3.5" />
           </button>
         </div>
       </div>
@@ -94,27 +93,27 @@ export default function ComposeModal({
       {!isMinimized && (
         <form onSubmit={handleSubmit} className="flex flex-col bg-white">
           {/* Recipient */}
-          <div className="flex items-center border-b border-[#2c2a29]/20 px-4 py-2 text-xs">
-            <span className="w-16 font-bold text-gray-500 uppercase tracking-wider">To:</span>
+          <div className="flex items-center border-b border-[#0000000a] px-4 py-2 text-xs">
+            <span className="w-16 font-medium text-[#797981]">To:</span>
             <input
               type="email"
               required
               placeholder="recipient@domain.com"
               value={to}
               onChange={(e) => setTo(e.target.value)}
-              className="flex-1 outline-none text-sm font-sans"
+              className="flex-1 outline-none text-xs font-sans text-[#161619] placeholder:text-[#797981]"
             />
           </div>
 
           {/* Subject */}
-          <div className="flex items-center border-b border-[#2c2a29]/20 px-4 py-2 text-xs">
-            <span className="w-16 font-bold text-gray-500 uppercase tracking-wider">Subject:</span>
+          <div className="flex items-center border-b border-[#0000000a] px-4 py-2 text-xs">
+            <span className="w-16 font-medium text-[#797981]">Subject:</span>
             <input
               type="text"
-              placeholder="What is this regarding?"
+              placeholder="Subject line"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              className="flex-1 outline-none text-sm font-sans font-medium"
+              className="flex-1 outline-none text-xs font-sans text-[#161619] placeholder:text-[#797981]"
             />
           </div>
 
@@ -122,37 +121,37 @@ export default function ComposeModal({
           <div className="p-4 flex-1">
             <textarea
               rows={8}
-              placeholder="Write your email here..."
+              placeholder="Write your message here..."
               value={body}
               onChange={(e) => setBody(e.target.value)}
-              className="w-full h-full resize-none outline-none text-sm font-sans leading-relaxed text-[#2c2a29]"
+              className="w-full h-full resize-none outline-none text-xs sm:text-sm font-sans leading-relaxed text-[#161619] placeholder:text-[#797981]"
             />
           </div>
 
           {/* Bottom Toolbar & Send Button */}
-          <div className="p-3 bg-[#FEFBEA] border-t-2 border-[#2c2a29] flex items-center justify-between gap-3">
+          <div className="p-3 bg-[#fafafb] border-t border-[#00000014] flex items-center justify-between gap-3">
             {/* Action Tools */}
-            <div className="flex items-center gap-1.5 text-gray-600">
+            <div className="flex items-center gap-1 text-[#797981]">
               <button
                 type="button"
-                className="p-1.5 hover:bg-white hover:border border-[#2c2a29] rounded transition-all"
+                className="p-1.5 hover:bg-[#0000000a] hover:text-[#111114] rounded transition-colors cursor-pointer"
                 title="Attach files"
               >
-                <Paperclip className="w-4 h-4" />
+                <Paperclip className="size-3.5" />
               </button>
               <button
                 type="button"
-                className="p-1.5 hover:bg-white hover:border border-[#2c2a29] rounded transition-all text-[#8544FA]"
+                className="p-1.5 hover:bg-[#0000000a] hover:text-[#111114] rounded transition-colors cursor-pointer"
                 title="AI Assist Drafting"
               >
-                <Sparkles className="w-4 h-4" />
+                <Sparkles className="size-3.5" />
               </button>
               <button
                 type="button"
-                className="p-1.5 hover:bg-white hover:border border-[#2c2a29] rounded transition-all"
-                title="Schedule Send (send_at)"
+                className="p-1.5 hover:bg-[#0000000a] hover:text-[#111114] rounded transition-colors cursor-pointer"
+                title="Schedule Send"
               >
-                <Calendar className="w-4 h-4" />
+                <Calendar className="size-3.5" />
               </button>
             </div>
 
@@ -161,22 +160,22 @@ export default function ComposeModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="p-2 text-gray-500 hover:text-red-600 rounded transition-colors"
+                className="p-1.5 text-[#797981] hover:text-[#be222a] rounded transition-colors cursor-pointer"
                 title="Discard Draft"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="size-3.5" />
               </button>
               <button
                 type="submit"
                 disabled={isSending}
-                className="button-primary bg-[#8544FA] text-[#FEFBEA] px-5 py-2 text-sm font-bold flex items-center gap-2 hover:bg-[#7330ea] disabled:opacity-50"
+                className="bg-[#111114] text-[#fafafb] hover:bg-black px-4 py-1.5 text-xs font-medium rounded-md flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs disabled:opacity-50"
               >
                 {isSending ? (
-                  <span>SENDING...</span>
+                  <span>Sending...</span>
                 ) : (
                   <>
-                    <Send className="w-4 h-4" />
-                    <span>SEND</span>
+                    <Send className="size-3" />
+                    <span>Send</span>
                   </>
                 )}
               </button>

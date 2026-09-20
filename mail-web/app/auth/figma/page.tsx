@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import { useQuery, useMutation, useAction, useConvexAuth } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
-export default function FigmaConnectPage() {
+function FigmaConnectContent() {
   const searchParams = useSearchParams();
   const urlStatus = searchParams.get("status");
   const urlError = searchParams.get("error");
@@ -203,5 +203,17 @@ export default function FigmaConnectPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function FigmaConnectPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-[#fafafb]">
+        <p className="text-xs text-[#797981] font-sans">Loading Figma Settings...</p>
+      </div>
+    }>
+      <FigmaConnectContent />
+    </Suspense>
   );
 }

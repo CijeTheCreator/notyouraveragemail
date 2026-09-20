@@ -1,99 +1,148 @@
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=Freeman&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-anton: "Anton", sans-serif;
-  --font-freeman: "Freeman", sans-serif;
-  --color-primary: #8544FA;
-  --color-secondary: #390778;
-  --color-black: #2c2a29;
-  --color-white: #FEFBEA;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --color-background: #fafafb;
+  --color-foreground: #111114;
+
+  --color-console-primary: #161619;
+  --color-console-secondary: #323237;
+  --color-console-supporting: #47474d;
+  --color-console-meta: #5a5a61;
+  --color-console-decorative: #797981;
+
+  --color-console-border-subtle: rgba(0, 0, 0, 0.08);
+  --color-console-border-strong: rgba(0, 0, 0, 0.2);
+  --color-console-hover: rgba(0, 0, 0, 0.05);
+  --color-console-open: rgba(0, 0, 0, 0.07);
+
+  --color-surface-0: #e7e7ea;
+  --color-surface-1: #f6f6f9;
+  --color-surface-1-hover: #eeeef1;
+  --color-surface-2: #eeeef1;
+  --color-surface-3: #ffffff;
+
+  --color-sidebar: #f1f1f4;
+  --color-sidebar-foreground: #111114;
+  --color-sidebar-border: rgba(0, 0, 0, 0.08);
+  --color-sidebar-accent: rgba(0, 0, 0, 0.07);
+  --color-sidebar-accent-foreground: #111114;
+
+  --color-success: #186a23;
+  --color-sent: #005fad;
+  --color-warning: #8d5400;
+  --color-star: #916600;
+  --color-destructive: #be222a;
+  --color-border: rgba(0, 0, 0, 0.08);
+}
+
+:root {
+  --background: #fafafb;
+  --foreground: #111114;
+  --console-border-subtle: rgba(0, 0, 0, 0.08);
+  --console-border-strong: rgba(0, 0, 0, 0.2);
+  --surface-1: #f6f6f9;
+  --surface-2: #eeeef1;
+  --sidebar: #f1f1f4;
 }
 
 ::selection {
-  background-color: rgba(133, 68, 250, 0.8);
-  color: #FEFBEA;
+  background-color: rgba(17, 17, 20, 0.12);
+  color: #111114;
 }
 
 body {
-  background-color: #FEFBEA;
-  color: #2c2a29;
-  font-family: var(--font-freeman), sans-serif;
+  background-color: #fafafb;
+  color: #161619;
+  font-family: var(--font-sans), sans-serif;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.heading-text-2 {
-  -webkit-text-stroke: 2px #2c2a29;
-  color: #FEFBEA;
-  line-height: 1.1;
-  text-shadow:
-    0 0 #2c2a29,
-    -0.04px 2px #2c2a29,
-    -0.08px 4px #2c2a29,
-    -0.12px 6px #2c2a29;
+/* AgentMail Design System Utilities */
+.console-sidebar-group-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #797981;
+  padding: 0.375rem 0.625rem;
 }
 
-.heading-text-3 {
-  -webkit-text-stroke: 3px #2c2a29;
-  color: #FEFBEA;
-  line-height: 1.1;
-  text-shadow:
-    0 0 #2c2a29,
-    -0.04px 2px #2c2a29,
-    -0.08px 4px #2c2a29,
-    -0.12px 6px #2c2a29,
-    -0.16px 8px #2c2a29;
+.console-nav-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.375rem 0.625rem;
+  border-radius: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #323237;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.brutal-shadow-sm {
-  box-shadow: 2px 2px 0px #2c2a29;
+.console-nav-row:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #161619;
 }
 
-.brutal-shadow {
-  box-shadow: 4px 4px 0px #2c2a29;
+.console-nav-row[data-active="true"] {
+  background-color: rgba(0, 0, 0, 0.08);
+  color: #111114;
+  font-weight: 600;
 }
 
-.brutal-shadow-left {
-  box-shadow: 6px 6px 0px #2c2a29;
+.console-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  background-color: #111114;
+  color: #fafafb;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 0.4375rem 0.75rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
-.brutal-shadow-right {
-  box-shadow: -6px 6px 0px #2c2a29;
+.console-btn-primary:hover {
+  background-color: #27272a;
 }
 
+.console-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  background-color: #ffffff;
+  color: #161619;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 0.4375rem 0.75rem;
+  border-radius: 0.375rem;
+  transition: all 0.15s ease;
+}
+
+.console-btn-secondary:hover {
+  background-color: #f6f6f9;
+  border-color: rgba(0, 0, 0, 0.16);
+}
+
+/* Fallback mappings for backwards compatibility */
 .brutal-btn {
-  box-shadow: 4px 4px 0px #2c2a29;
-  border: 2px solid #2c2a29;
+  border-radius: 0.375rem;
   cursor: pointer;
-  transition: all 0.1s ease;
+  transition: all 0.15s ease;
 }
 
-.brutal-btn:hover {
-  box-shadow: 1px 1px 0px #2c2a29;
-  transform: translate(3px, 3px);
-}
-
-.brutal-btn:active {
-  box-shadow: 0px 0px 0px #2c2a29;
-  transform: translate(4px, 4px);
-}
-
-.button-primary {
-  box-shadow: 6px 6px 0px #2c2a29;
-  border: 2px solid #2c2a29;
-  cursor: pointer;
-  font-family: var(--font-freeman), sans-serif;
-  transition: all 0.1s ease;
-}
-
-.button-primary:hover {
-  box-shadow: 2px 2px 0px #2c2a29;
-  transform: translate(4px, 4px);
-}
-
-.button-primary-pressed {
-  box-shadow: 2px 2px 0px #2c2a29;
-  border: 2px solid #2c2a29;
-  font-family: var(--font-freeman), sans-serif;
-  transform: translate(4px, 4px);
+.brutal-shadow, .brutal-shadow-sm, .brutal-shadow-left, .brutal-shadow-right {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
 }

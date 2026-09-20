@@ -69,18 +69,18 @@ export default function TrustScoreBadge({
   return (
     <div
       ref={containerRef}
-      className="relative inline-block"
+      className="relative inline-block font-sans"
       onClick={(e) => e.stopPropagation()}
     >
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[11px] font-bold border border-[#2c2a29] transition-transform active:scale-95 cursor-pointer brutal-shadow-sm select-none ${
+        className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-xs font-medium rounded-md border transition-colors cursor-pointer select-none ${
           suspicious
-            ? "bg-[#FFE4E6] text-[#9F1239] hover:bg-[#FECDD3]"
+            ? "bg-[#fef2f2] text-[#be222a] border-[#fecaca] hover:bg-[#fee2e2]"
             : score !== undefined
-            ? "bg-white text-[#2c2a29] hover:bg-[#F0FDF4]"
-            : "bg-white text-gray-700 hover:bg-gray-100"
+            ? "bg-white text-[#161619] border-[#00000014] hover:bg-[#f6f6f9]"
+            : "bg-white text-[#5a5a61] border-[#00000014] hover:bg-[#f6f6f9]"
         }`}
         title={
           score !== undefined
@@ -93,90 +93,82 @@ export default function TrustScoreBadge({
             <img
               src={getTrustpilotStarSvg(score)}
               alt={`Trustpilot ${score} stars`}
-              className="h-3.5 w-auto flex-shrink-0"
+              className="h-3 w-auto flex-shrink-0"
             />
-            <span className="font-mono text-[11px] font-bold leading-none">
+            <span className="font-mono text-xs font-medium leading-none">
               {score.toFixed(1)}
             </span>
           </>
         ) : (
           <>
-            <Shield className="w-3.5 h-3.5 text-gray-500 flex-shrink-0" />
-            <span className="font-sans text-[11px]">
+            <Shield className="size-3 text-[#797981] flex-shrink-0" />
+            <span className="text-xs">
               {compact ? domain : `${domain || "Sender"} Rep`}
             </span>
           </>
         )}
       </button>
 
-      {/* Neobrutalist Popover */}
+      {/* Sleek Popover Card */}
       {isOpen && (
         <div
-          className="absolute right-0 top-full mt-2 w-84 bg-[#FEFBEA] border-2 border-[#2c2a29] brutal-shadow p-4 z-50 text-left font-sans text-xs text-[#2c2a29]"
+          className="absolute right-0 top-full mt-1.5 w-80 bg-white border border-[#00000014] rounded-lg shadow-xl p-4 z-50 text-left font-sans text-xs text-[#161619]"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Loading State with Trustpilot Logo & Spinner */}
+          {/* Loading State */}
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-6 gap-3 text-center">
+            <div className="flex flex-col items-center justify-center py-6 gap-2 text-center">
               <img
                 src="/trustpilot/logo-black.svg"
                 alt="Trustpilot"
-                className="h-5 w-auto"
+                className="h-4 w-auto opacity-70"
               />
-              <div className="flex items-center gap-2 text-xs font-bold font-mono text-[#2c2a29]">
-                <span className="w-4 h-4 border-2 border-[#00B67A] border-t-transparent rounded-full animate-spin flex-shrink-0" />
-                <span>Loading Trustpilot profile...</span>
+              <div className="flex items-center gap-2 text-xs font-medium text-[#161619]">
+                <span className="size-3.5 border-2 border-[#111114] border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                <span>Loading domain profile...</span>
               </div>
-              <p className="text-[10px] text-gray-500 font-sans">
-                Extracting real-time domain reputation and reviews
-              </p>
             </div>
           ) : (
             <>
-              {/* Header with Trustpilot Brand Logo */}
-              <div className="flex items-start justify-between gap-2 border-b-2 border-[#2c2a29] pb-2.5 mb-3">
+              {/* Header */}
+              <div className="flex items-start justify-between gap-2 border-b border-[#00000014] pb-2.5 mb-3">
                 <div>
                   <img
                     src="/trustpilot/logo-black.svg"
                     alt="Trustpilot"
-                    className="h-3.5 w-auto mb-1.5 opacity-90"
+                    className="h-3.5 w-auto mb-1 opacity-80"
                   />
-                  <div className="font-anton text-base tracking-wide uppercase">
+                  <div className="font-semibold text-sm text-[#111114]">
                     {domainData?.companyName || domain || "Domain Reputation"}
                   </div>
                 </div>
 
                 {score !== undefined && (
                   <div
-                    className={`px-2.5 py-1 border-2 border-[#2c2a29] text-center brutal-shadow-sm flex flex-col items-center justify-center ${
-                      suspicious ? "bg-[#FF6B6B] text-white" : "bg-[#00B67A] text-white"
+                    className={`px-2 py-1 rounded-md text-center flex flex-col items-center justify-center ${
+                      suspicious ? "bg-[#fef2f2] text-[#be222a]" : "bg-[#f0fdf4] text-[#186a23]"
                     }`}
                   >
-                    <div className="font-anton text-lg leading-tight flex items-center justify-center gap-1">
-                      <img
-                        src="/trustpilot/star-mark-white.svg"
-                        alt="Trustpilot"
-                        className="w-3.5 h-3.5"
-                      />
+                    <div className="text-sm font-semibold flex items-center justify-center gap-1 font-mono">
                       <span>{score.toFixed(1)}</span>
+                      <span className="text-[10px] text-[#797981]">/5</span>
                     </div>
-                    <div className="text-[9px] font-mono uppercase font-bold tracking-wider">/ 5.0</div>
                   </div>
                 )}
               </div>
 
               {/* Metrics */}
-              <div className="space-y-1.5 mb-3 bg-white p-2.5 border border-[#2c2a29]">
+              <div className="space-y-1.5 mb-3 bg-[#f6f6f9] p-2.5 rounded-md border border-[#00000014]">
                 <div className="flex justify-between items-center text-[11px]">
-                  <span className="font-bold text-gray-600">Rating:</span>
-                  <span className="font-mono font-bold capitalize">
+                  <span className="text-[#5a5a61]">Rating:</span>
+                  <span className="font-medium capitalize text-[#111114]">
                     {category || (score !== undefined ? (score >= 4 ? "Great" : score >= 3 ? "Average" : "Bad") : "Unrated")}
                   </span>
                 </div>
                 {reviewCount !== undefined && (
                   <div className="flex justify-between items-center text-[11px]">
-                    <span className="font-bold text-gray-600">Total Reviews:</span>
-                    <span className="font-mono font-bold">{reviewCount.toLocaleString()}</span>
+                    <span className="text-[#5a5a61]">Total Reviews:</span>
+                    <span className="font-mono font-medium text-[#111114]">{reviewCount.toLocaleString()}</span>
                   </div>
                 )}
               </div>
@@ -184,19 +176,17 @@ export default function TrustScoreBadge({
               {/* Top Customer Complaints & Feedback */}
               {complaintKeywords && complaintKeywords.length > 0 && (
                 <div className="mb-3">
-                  <div className="font-bold text-[10px] uppercase text-gray-600 mb-1.5 font-mono">
-                    Top Customer Complaints:
+                  <div className="font-medium text-[11px] uppercase tracking-wider text-[#797981] mb-1.5 font-mono">
+                    Top Feedback Keywords:
                   </div>
-                  <div className="space-y-1.5">
+                  <div className="space-y-1">
                     {complaintKeywords.slice(0, 3).map((item, i) => (
                       <div
                         key={i}
-                        className="bg-white border border-[#2c2a29] p-2 text-[11px] font-sans flex items-start gap-2 leading-tight brutal-shadow-sm"
+                        className="bg-[#f6f6f9] border border-[#0000000a] p-1.5 rounded text-[11px] flex items-start gap-1.5 leading-tight"
                       >
-                        <span className="bg-[#FED7AA] text-[#7C2D12] border border-[#2c2a29] text-[9px] font-mono font-bold px-1 py-0.2 rounded-xs flex-shrink-0">
-                          #{i + 1}
-                        </span>
-                        <span className="text-gray-800 font-medium">{item}</span>
+                        <span className="text-[#797981] font-mono text-[10px]">#{i + 1}</span>
+                        <span className="text-[#323237]">{item}</span>
                       </div>
                     ))}
                   </div>
@@ -209,10 +199,10 @@ export default function TrustScoreBadge({
                   href={trustpilotUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="brutal-btn w-full bg-[#00B67A] hover:bg-[#009b67] text-white py-2 px-3 flex items-center justify-center gap-1.5 text-[11px] font-bold mt-2 shadow-xs"
+                  className="w-full bg-[#111114] hover:bg-black text-[#fafafb] py-1.5 px-3 rounded-md flex items-center justify-center gap-1.5 text-xs font-medium transition-colors"
                 >
-                  <span>View Full Profile on Trustpilot</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>View Full Profile</span>
+                  <ExternalLink className="size-3" />
                 </a>
               )}
             </>

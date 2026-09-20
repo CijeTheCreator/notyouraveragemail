@@ -3,7 +3,7 @@
 //  leanring-buddy
 //
 //  Modern Mail Companion menu bar panel view.
-//  Clean, minimal, dark aesthetic showing Convex status, active inbox, and quick actions.
+//  Clean, minimal dark aesthetic.
 //
 
 import AVFoundation
@@ -15,49 +15,25 @@ struct CompanionPanelView: View {
     @ObservedObject var convexService = ConvexService.shared
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        VStack(alignment: .leading, spacing: 10) {
             panelHeader
 
-            Divider()
-                .background(DS.Colors.borderSubtle)
-                .padding(.horizontal, 16)
+            linkedInboxCard
 
-            modernMailSection
-                .padding(.top, 14)
-                .padding(.horizontal, 16)
+            figmaCard
 
-            Divider()
-                .background(DS.Colors.borderSubtle)
-                .padding(.horizontal, 16)
-                .padding(.top, 14)
-
-            instructionsSection
-                .padding(.top, 12)
-                .padding(.horizontal, 16)
+            settingsTogglesList
 
             if !companionManager.allPermissionsGranted {
                 Divider()
                     .background(DS.Colors.borderSubtle)
-                    .padding(.horizontal, 16)
-                    .padding(.top, 12)
+                    .padding(.vertical, 2)
 
                 permissionsSection
-                    .padding(.top, 12)
-                    .padding(.horizontal, 16)
             }
-
-            Spacer()
-                .frame(height: 14)
-
-            Divider()
-                .background(DS.Colors.borderSubtle)
-                .padding(.horizontal, 16)
-
-            footerSection
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
         }
-        .frame(width: 320)
+        .padding(14)
+        .frame(width: 300)
         .background(panelBackground)
     }
 
@@ -65,22 +41,21 @@ struct CompanionPanelView: View {
 
     private var panelHeader: some View {
         HStack {
-            HStack(spacing: 8) {
-                Circle()
-                    .fill(statusDotColor)
-                    .frame(width: 8, height: 8)
-                    .shadow(color: statusDotColor.opacity(0.6), radius: 4)
-
-                Text("Modern Mail Companion")
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundColor(DS.Colors.textPrimary)
+            Button(action: {
+                NSApplication.shared.terminate(nil)
+            }) {
+                HStack(spacing: 4) {
+                    Image(systemName: "power")
+                        .font(.system(size: 10, weight: .medium))
+                    Text("Quit")
+                        .font(.system(size: 11, weight: .medium))
+                }
+                .foregroundColor(DS.Colors.textTertiary)
             }
+            .buttonStyle(.plain)
+            .pointerCursor()
 
             Spacer()
-
-            Text(statusText)
-                .font(.system(size: 11, weight: .medium))
-                .foregroundColor(DS.Colors.textTertiary)
 
             Button(action: {
                 NotificationCenter.default.post(name: .clickyDismissPanel, object: nil)
@@ -88,186 +63,93 @@ struct CompanionPanelView: View {
                 Image(systemName: "xmark")
                     .font(.system(size: 10, weight: .semibold))
                     .foregroundColor(DS.Colors.textTertiary)
-                    .frame(width: 20, height: 20)
+                    .frame(width: 18, height: 18)
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
             .pointerCursor()
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
     }
 
-    // MARK: - Modern Mail Section
+    // MARK: - Linked Inbox Card
 
-    private var modernMailSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Text("ACCOUNT & BACKEND")
-                    .font(.system(size: 10, weight: .bold))
-                    .foregroundColor(DS.Colors.textTertiary)
+    @ViewBuilder
+    private var linkedInboxCard: some View {
+        if !convexService.activeInboxId.isEmpty {
+            HStack(spacing: 8) {
+                Image(systemName: "envelope.badge.shield.half.filled")
+                    .font(.system(size: 13))
+                    .foregroundColor(DS.Colors.overlayCursorBlue)
+
+                Text(convexService.activeInboxId)
+                    .font(.system(size: 12, weight: .medium, design: .monospaced))
+                    .foregroundColor(DS.Colors.textPrimary)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+
                 Spacer()
-                HStack(spacing: 4) {
-                    Circle()
-                        .fill(convexService.isConnected ? DS.Colors.success : Color.orange)
-                        .frame(width: 6, height: 6)
-                    Text(convexService.isConnected ? "Convex Live" : "Connecting...")
-                        .font(.system(size: 10, weight: .medium))
-                        .foregroundColor(convexService.isConnected ? DS.Colors.textSecondary : Color.orange)
-                }
-            }
-
-            if !convexService.activeInboxId.isEmpty {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("LINKED INBOX")
-                        .font(.system(size: 10, weight: .semibold))
-                        .foregroundColor(DS.Colors.textTertiary)
-
-                    HStack {
-                        Image(systemName: "envelope.badge.shield.half.filled")
-                            .font(.system(size: 13))
-                            .foregroundColor(DS.Colors.overlayCursorBlue)
-
-                        Text(convexService.activeInboxId)
-                            .font(.system(size: 12, weight: .medium, design: .monospaced))
-                            .foregroundColor(DS.Colors.textPrimary)
-                            .lineLimit(1)
-                            .truncationMode(.middle)
-
-                        Spacer()
-
-                        Button(action: {
-                            convexService.activeInboxId = ""
-                            convexService.isConnected = false
-                        }) {
-                            Text("Unlink")
-                                .font(.system(size: 10, weight: .medium))
-                                .foregroundColor(DS.Colors.textTertiary)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 3)
-                                .background(Color.white.opacity(0.08))
-                                .cornerRadius(4)
-                        }
-                        .buttonStyle(.plain)
-                        .pointerCursor()
-                    }
-                    .padding(10)
-                    .background(Color.white.opacity(0.04))
-                    .cornerRadius(8)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(DS.Colors.borderSubtle, lineWidth: 0.5)
-                    )
-                }
-            } else {
-                VStack(spacing: 8) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "link.badge.plus")
-                            .font(.system(size: 14))
-                            .foregroundColor(DS.Colors.textTertiary)
-
-                        Text("No account linked yet")
-                            .font(.system(size: 12))
-                            .foregroundColor(DS.Colors.textSecondary)
-
-                        Spacer()
-                    }
-
-                    Button(action: {
-                        if let url = URL(string: "http://localhost:3000/auth/companion") {
-                            NSWorkspace.shared.open(url)
-                        }
-                    }) {
-                        HStack(spacing: 6) {
-                            Image(systemName: "safari")
-                                .font(.system(size: 11))
-                            Text("Sign In on Web to Link ↗")
-                                .font(.system(size: 12, weight: .semibold))
-                        }
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 8)
-                        .background(DS.Colors.overlayCursorBlue)
-                        .cornerRadius(6)
-                    }
-                    .buttonStyle(.plain)
-                    .pointerCursor()
-                }
-                .padding(10)
-                .background(Color.white.opacity(0.04))
-                .cornerRadius(8)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(DS.Colors.borderSubtle, lineWidth: 0.5)
-                )
-            }
-        }
-    }
-
-    // MARK: - Instructions Section
-
-    private var instructionsSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("QUICK ACTIONS")
-                .font(.system(size: 10, weight: .bold))
-                .foregroundColor(DS.Colors.textTertiary)
-
-            VStack(alignment: .leading, spacing: 6) {
-                HStack(spacing: 8) {
-                    Text("⌃⌥")
-                        .font(.system(size: 12, weight: .bold, design: .monospaced))
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(Color.white.opacity(0.12))
-                        .cornerRadius(4)
-
-                    Text("Hold to speak & draft mail with selected files")
-                        .font(.system(size: 11))
-                        .foregroundColor(DS.Colors.textSecondary)
-                }
-
-                HStack(spacing: 8) {
-                    Text("🔐")
-                        .font(.system(size: 11))
-                    Text("Instant OTP alerts with auto-fill & copy")
-                        .font(.system(size: 11))
-                        .foregroundColor(DS.Colors.textSecondary)
-                }
 
                 Button(action: {
-                    if companionManager.isOverlayVisible {
-                        companionManager.setClickyCursorEnabled(false)
-                    } else {
-                        companionManager.setClickyCursorEnabled(true)
-                    }
+                    convexService.activeInboxId = ""
+                    convexService.isConnected = false
                 }) {
-                    HStack(spacing: 6) {
-                        Circle()
-                            .fill(companionManager.isOverlayVisible ? DS.Colors.overlayCursorBlue : DS.Colors.textTertiary)
-                            .frame(width: 7, height: 7)
-                        Text(companionManager.isOverlayVisible ? "Cursor Buddy: Active (Click to Hide)" : "Cursor Buddy: Hidden (Click to Show)")
-                            .font(.system(size: 11, weight: .medium))
-                            .foregroundColor(companionManager.isOverlayVisible ? DS.Colors.textPrimary : DS.Colors.textTertiary)
-                        Spacer()
-                    }
-                    .padding(.vertical, 4)
-                    .padding(.horizontal, 6)
-                    .background(companionManager.isOverlayVisible ? DS.Colors.overlayCursorBlue.opacity(0.12) : Color.white.opacity(0.04))
-                    .cornerRadius(6)
+                    Text("Unlink")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundColor(DS.Colors.textTertiary)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.white.opacity(0.08))
+                        .cornerRadius(4)
                 }
                 .buttonStyle(.plain)
                 .pointerCursor()
-
-                figmaConnectionRow
             }
             .padding(10)
-            .background(Color.white.opacity(0.03))
+            .background(Color.white.opacity(0.04))
             .cornerRadius(8)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(DS.Colors.borderSubtle, lineWidth: 0.5)
+            )
+        } else {
+            HStack(spacing: 8) {
+                Image(systemName: "envelope")
+                    .font(.system(size: 13))
+                    .foregroundColor(DS.Colors.textTertiary)
+
+                Text("No account linked yet")
+                    .font(.system(size: 12))
+                    .foregroundColor(DS.Colors.textSecondary)
+
+                Spacer()
+
+                Button(action: {
+                    if let url = URL(string: "http://localhost:3000/auth/companion") {
+                        NSWorkspace.shared.open(url)
+                    }
+                }) {
+                    Text("Connect")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundColor(DS.Colors.overlayCursorBlue)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(DS.Colors.overlayCursorBlue.opacity(0.15))
+                        .cornerRadius(4)
+                }
+                .buttonStyle(.plain)
+                .pointerCursor()
+            }
+            .padding(10)
+            .background(Color.white.opacity(0.04))
+            .cornerRadius(8)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(DS.Colors.borderSubtle, lineWidth: 0.5)
+            )
         }
     }
 
-    // MARK: - Figma Connection
+    // MARK: - Figma Card
 
     private func openFigmaConnect() {
         let encoded = convexService.activeInboxId.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
@@ -277,35 +159,29 @@ struct CompanionPanelView: View {
     }
 
     @ViewBuilder
-    private var figmaConnectionRow: some View {
+    private var figmaCard: some View {
         if let status = convexService.figmaStatus, status.connected {
-            HStack(spacing: 6) {
-                Text("🎨")
-                    .font(.system(size: 11))
-                Circle()
-                    .fill(DS.Colors.success)
-                    .frame(width: 6, height: 6)
-                VStack(alignment: .leading, spacing: 1) {
-                    Text("Figma Connected")
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundColor(DS.Colors.textPrimary)
-                    if let handle = status.figmaHandle ?? status.figmaEmail {
-                        Text(handle)
-                            .font(.system(size: 10))
-                            .foregroundColor(DS.Colors.textTertiary)
-                            .lineLimit(1)
-                            .truncationMode(.middle)
-                    }
-                }
+            HStack(spacing: 8) {
+                Image("figma-logo")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 14, height: 14)
+
+                Text(status.figmaHandle ?? status.figmaEmail ?? "Figma Connected")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(DS.Colors.textPrimary)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+
                 Spacer()
-                // A workspace-wide token isn't tied to this inbox, so there is nothing to disconnect.
+
                 if status.isGlobal != true {
                     Button(action: { convexService.disconnectFigma() }) {
-                        Text("Disconnect")
+                        Text("Unlink")
                             .font(.system(size: 10, weight: .medium))
                             .foregroundColor(DS.Colors.textTertiary)
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 3)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
                             .background(Color.white.opacity(0.08))
                             .cornerRadius(4)
                     }
@@ -313,29 +189,97 @@ struct CompanionPanelView: View {
                     .pointerCursor()
                 }
             }
-            .padding(.vertical, 4)
-            .padding(.horizontal, 6)
+            .padding(10)
             .background(Color.white.opacity(0.04))
-            .cornerRadius(6)
+            .cornerRadius(8)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(DS.Colors.borderSubtle, lineWidth: 0.5)
+            )
         } else {
-            Button(action: openFigmaConnect) {
-                HStack(spacing: 6) {
-                    Text("🎨")
-                        .font(.system(size: 11))
-                    Text("Connect Figma via OAuth ↗")
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundColor(DS.Colors.overlayCursorBlue)
-                    Spacer()
+            HStack(spacing: 8) {
+                Image("figma-logo")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 14, height: 14)
+
+                Text("Figma")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(DS.Colors.textSecondary)
+
+                Spacer()
+
+                Button(action: openFigmaConnect) {
+                    Text("Connect")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundColor(convexService.activeInboxId.isEmpty ? DS.Colors.textTertiary : DS.Colors.overlayCursorBlue)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(convexService.activeInboxId.isEmpty ? Color.white.opacity(0.06) : DS.Colors.overlayCursorBlue.opacity(0.15))
+                        .cornerRadius(4)
                 }
-                .padding(.vertical, 4)
-                .padding(.horizontal, 6)
-                .background(Color.white.opacity(0.04))
-                .cornerRadius(6)
+                .buttonStyle(.plain)
+                .pointerCursor()
+                .disabled(convexService.activeInboxId.isEmpty)
             }
-            .buttonStyle(.plain)
-            .pointerCursor()
-            .disabled(convexService.activeInboxId.isEmpty)
+            .padding(10)
+            .background(Color.white.opacity(0.04))
+            .cornerRadius(8)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(DS.Colors.borderSubtle, lineWidth: 0.5)
+            )
         }
+    }
+
+    // MARK: - Native iOS/macOS Toggle Switches
+
+    private var settingsTogglesList: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Text("Cursor Buddy")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(DS.Colors.textPrimary)
+
+                Spacer()
+
+                Toggle("", isOn: Binding(
+                    get: { companionManager.isClickyCursorEnabled },
+                    set: { companionManager.setClickyCursorEnabled($0) }
+                ))
+                .labelsHidden()
+                .toggleStyle(SwitchToggleStyle(tint: DS.Colors.overlayCursorBlue))
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 7)
+
+            Divider()
+                .background(DS.Colors.borderSubtle)
+                .padding(.horizontal, 6)
+
+            HStack {
+                Text("Instant OTP Alerts")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(DS.Colors.textPrimary)
+
+                Spacer()
+
+                Toggle("", isOn: Binding(
+                    get: { companionManager.isOtpAlertsEnabled },
+                    set: { companionManager.setOtpAlertsEnabled($0) }
+                ))
+                .labelsHidden()
+                .toggleStyle(SwitchToggleStyle(tint: DS.Colors.overlayCursorBlue))
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 7)
+        }
+        .background(Color.white.opacity(0.04))
+        .cornerRadius(8)
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(DS.Colors.borderSubtle, lineWidth: 0.5)
+        )
     }
 
     // MARK: - Permissions Section
@@ -413,38 +357,6 @@ struct CompanionPanelView: View {
         }
     }
 
-    // MARK: - Footer
-
-    private var footerSection: some View {
-        HStack {
-            Button(action: {
-                relaunchApp()
-            }) {
-                HStack(spacing: 4) {
-                    Image(systemName: "arrow.clockwise")
-                        .font(.system(size: 10))
-                    Text("Relaunch")
-                        .font(.system(size: 11))
-                }
-                .foregroundColor(DS.Colors.textTertiary)
-            }
-            .buttonStyle(.plain)
-            .pointerCursor()
-
-            Spacer()
-
-            Button(action: {
-                NSApplication.shared.terminate(nil)
-            }) {
-                Text("Quit")
-                    .font(.system(size: 11))
-                    .foregroundColor(DS.Colors.textTertiary)
-            }
-            .buttonStyle(.plain)
-            .pointerCursor()
-        }
-    }
-
     private func relaunchApp() {
         let appURL = Bundle.main.bundleURL
         let config = NSWorkspace.OpenConfiguration()
@@ -462,36 +374,5 @@ struct CompanionPanelView: View {
             .fill(DS.Colors.background)
             .shadow(color: Color.black.opacity(0.5), radius: 20, x: 0, y: 10)
             .shadow(color: Color.black.opacity(0.3), radius: 4, x: 0, y: 2)
-    }
-
-    private var statusDotColor: Color {
-        if !companionManager.isOverlayVisible {
-            return DS.Colors.textTertiary
-        }
-        switch companionManager.voiceState {
-        case .idle:
-            return DS.Colors.success
-        case .listening, .processing, .responding:
-            return DS.Colors.blue400
-        }
-    }
-
-    private var statusText: String {
-        if !companionManager.allPermissionsGranted {
-            return "Permissions"
-        }
-        if !companionManager.isOverlayVisible {
-            return "Ready"
-        }
-        switch companionManager.voiceState {
-        case .idle:
-            return "Active"
-        case .listening:
-            return "Listening"
-        case .processing:
-            return "Processing"
-        case .responding:
-            return "Responding"
-        }
     }
 }

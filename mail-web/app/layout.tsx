@@ -14,20 +14,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full">
-      <body className="h-full flex flex-col bg-[#FEFBEA] text-[#2c2a29] antialiased">
+    <html lang="en" className="h-full light" style={{ colorScheme: "light" }}>
+      <body className="h-full flex flex-col bg-[#fafafb] text-[#161619] font-sans antialiased selection:bg-black/10 selection:text-black">
         <ConvexClientProvider>
           {children}
           <Toaster
             position="top-right"
             toastOptions={{
               style: {
-                border: "2px solid #2c2a29",
-                boxShadow: "3px 3px 0px #2c2a29",
-                borderRadius: "2px",
+                border: "1px solid rgba(0, 0, 0, 0.08)",
+                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
+                borderRadius: "6px",
                 fontFamily: "var(--font-sans, sans-serif)",
-                color: "#2c2a29",
-                background: "#FEFBEA",
+                color: "#161619",
+                background: "#ffffff",
+                fontSize: "0.8125rem",
               },
             }}
           />

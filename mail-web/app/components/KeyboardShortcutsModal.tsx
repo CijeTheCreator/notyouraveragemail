@@ -25,37 +25,37 @@ export default function KeyboardShortcutsModal({
     { key: "U", description: "Toggle read / unread status" },
     { key: "E", description: "Move email to trash" },
     { key: "Esc", description: "Close modal / deselect active view" },
-    { key: "?", description: "Show / hide this shortcuts guide" },
+    { key: "?", description: "Show / hide shortcuts" },
   ];
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-[#FEFBEA] border-3 border-[#2c2a29] brutal-shadow-left max-w-md w-full overflow-hidden">
+    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 font-sans">
+      <div className="bg-white border border-[#00000014] rounded-xl shadow-2xl max-w-md w-full overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="bg-[#2c2a29] text-[#FEFBEA] px-5 py-3 flex items-center justify-between">
+        <div className="bg-[#fafafb] px-4 py-3 border-b border-[#00000014] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Command className="w-5 h-5 text-[#8544FA]" />
-            <h3 className="font-anton text-xl tracking-wider">SUPERHUMAN SHORTCUTS</h3>
+            <Command className="size-4 text-[#111114]" />
+            <h3 className="text-xs font-semibold text-[#111114]">Keyboard Shortcuts</h3>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white transition-colors"
+            className="p-1 hover:bg-[#0000000a] rounded text-[#797981] hover:text-[#111114] transition-colors cursor-pointer"
           >
-            <X className="w-5 h-5" />
+            <X className="size-3.5" />
           </button>
         </div>
 
         {/* Shortcuts Table */}
-        <div className="p-5 flex flex-col gap-2.5 max-h-[70vh] overflow-y-auto">
+        <div className="p-4 flex flex-col gap-2 max-h-[70vh] overflow-y-auto">
           {shortcuts.map((item, idx) => (
             <div
               key={idx}
-              className="flex items-center justify-between border-b border-[#2c2a29]/15 pb-2 text-sm"
+              className="flex items-center justify-between border-b border-[#0000000a] pb-2 text-xs"
             >
-              <span className="font-sans text-[#2c2a29] font-medium">
+              <span className="text-[#323237] font-medium">
                 {item.description}
               </span>
-              <kbd className="bg-white border-2 border-[#2c2a29] font-mono font-bold text-xs px-2 py-1 brutal-shadow-sm rounded-sm">
+              <kbd className="bg-[#f6f6f9] border border-[#00000014] font-mono text-[11px] font-medium px-2 py-0.5 rounded text-[#111114]">
                 {item.key}
               </kbd>
             </div>
@@ -63,8 +63,8 @@ export default function KeyboardShortcutsModal({
         </div>
 
         {/* Footer */}
-        <div className="bg-white p-3 border-t-2 border-[#2c2a29] text-center text-xs text-gray-600 font-sans">
-          Press <kbd className="font-bold font-mono">Esc</kbd> anytime to dismiss.
+        <div className="bg-[#fafafb] p-2.5 border-t border-[#00000014] text-center text-[11px] text-[#797981]">
+          Press <kbd className="font-mono bg-black/5 px-1 py-0.5 rounded">Esc</kbd> anytime to dismiss
         </div>
       </div>
     </div>

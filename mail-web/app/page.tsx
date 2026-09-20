@@ -442,13 +442,18 @@ export default function MailPage() {
 
   if (isLoading) {
     return (
-      <div className="h-screen w-screen flex flex-col items-center justify-center bg-[#FEFBEA] text-[#2c2a29]">
-        <div className="border-2 border-[#2c2a29] bg-white p-6 brutal-shadow-left flex flex-col items-center gap-3">
-          <h1 className="font-anton text-3xl tracking-wider">
-            MODERN<span className="text-[#8544FA]">MAIL</span>
-          </h1>
-          <div className="flex items-center gap-2 text-xs font-bold text-gray-600 font-mono">
-            <span className="w-2 h-2 rounded-full bg-[#8544FA] animate-ping" />
+      <div className="h-screen w-screen flex flex-col items-center justify-center bg-[#fafafb] text-[#161619] font-sans">
+        <div className="border border-[#00000014] bg-white p-6 rounded-lg shadow-sm flex flex-col items-center gap-3">
+          <div className="flex items-center gap-2">
+            <div className="size-6 rounded-md bg-[#111114] text-white flex items-center justify-center">
+              <span className="text-xs font-semibold">M</span>
+            </div>
+            <span className="font-semibold text-sm tracking-tight text-[#111114]">
+              ModernMail
+            </span>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-[#797981]">
+            <span className="size-2 rounded-full bg-[#111114] animate-ping" />
             Verifying authentication...
           </div>
         </div>
@@ -461,7 +466,7 @@ export default function MailPage() {
   }
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#FEFBEA] text-[#2c2a29] font-sans">
+    <div className="flex h-screen w-screen overflow-hidden bg-[#fafafb] text-[#161619] font-sans">
       {/* Pane 1: Left Sidebar */}
       <Sidebar
         activeFolder={activeFolder}

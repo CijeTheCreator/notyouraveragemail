@@ -185,14 +185,9 @@ struct ComposeHUDView: View {
             VStack(alignment: .leading, spacing: 12) {
                 // Header with Apple Native Liquid Glass Buttons at Top Right
                 HStack(alignment: .center, spacing: 8) {
-                    HStack(spacing: 6) {
-                        Image(systemName: "sparkles")
-                            .foregroundColor(.blue)
-                            .font(.system(size: 13, weight: .semibold))
-                        Text("Mail Draft")
-                            .font(.system(size: 13, weight: .bold))
-                            .foregroundColor(.primary)
-                    }
+                    Image(systemName: "sparkles")
+                        .foregroundColor(.blue)
+                        .font(.system(size: 13, weight: .semibold))
 
                     Spacer()
 
