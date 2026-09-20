@@ -19,12 +19,14 @@ final class CursorPromptOverlayManager: ObservableObject {
     @Published var isShowing: Bool = false
     @Published var promptText: String = ""
     @Published var selectedFiles: [SelectedFileInfo] = []
+    @Published var appContext: AppContextResult? = nil
 
     private var panel: NSPanel?
     private var clickOutsideMonitor: Any?
 
-    func showPromptWindow(initialFiles: [SelectedFileInfo]) {
-        self.selectedFiles = initialFiles
+    func showPromptWindow(context: AppContextResult) {
+        self.appContext = context
+        self.selectedFiles = context.files
         self.promptText = ""
         self.isShowing = true
 
@@ -32,10 +34,13 @@ final class CursorPromptOverlayManager: ObservableObject {
 
         guard let panel = self.panel else { return }
 
+        // Determine if file selection row should be shown (Finder only)
+        let isFinderSelection = (context.appName == "Finder" && !context.files.isEmpty)
+
         // Position panel beside the cursor
         let mouseLocation = NSEvent.mouseLocation
         let panelWidth: CGFloat = 380
-        let panelHeight: CGFloat = 82
+        let panelHeight: CGFloat = isFinderSelection ? 82 : 46
 
         // Find which screen contains the mouse, or fallback to main
         let screen = NSScreen.screens.first(where: { $0.frame.contains(mouseLocation) }) ?? NSScreen.main
@@ -64,6 +69,18 @@ final class CursorPromptOverlayManager: ObservableObject {
         }
 
         installClickOutsideMonitor()
+    }
+
+    func showPromptWindow(initialFiles: [SelectedFileInfo]) {
+        let context = AppContextResult(
+            appName: "Finder",
+            bundleIdentifier: "com.apple.finder",
+            windowTitle: initialFiles.first?.name,
+            files: initialFiles,
+            textContext: nil,
+            screenshotBase64: nil
+        )
+        showPromptWindow(context: context)
     }
 
     func hidePromptWindow() {
@@ -128,6 +145,10 @@ private class KeyablePromptPanel: NSPanel {
 struct CursorPromptView: View {
     @ObservedObject var manager: CursorPromptOverlayManager
 
+    private var isFinderSelection: Bool {
+        manager.appContext?.appName == "Finder" && !manager.selectedFiles.isEmpty
+    }
+
     var body: some View {
         ZStack {
             // Apple Native frosted HUD glass
@@ -148,7 +169,7 @@ struct CursorPromptView: View {
                         )
                 )
 
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading, spacing: isFinderSelection ? 6 : 0) {
                 // Row 1: Text field and submit button
                 HStack(spacing: 8) {
                     Image(systemName: "sparkle")
@@ -173,19 +194,15 @@ struct CursorPromptView: View {
                     .disabled(manager.promptText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
 
-                Divider().opacity(0.2)
+                if isFinderSelection {
+                    Divider().opacity(0.2)
 
-                // Row 2: Selected Files Chips & Add Attachment Button
-                HStack(spacing: 6) {
-                    Image(systemName: "paperclip")
-                        .font(.system(size: 10))
-                        .foregroundColor(manager.selectedFiles.isEmpty ? .secondary.opacity(0.6) : .blue)
-
-                    if manager.selectedFiles.isEmpty {
-                        Text("No files selected")
+                    // Row 2: Selected Files Chips & Add Attachment Button (Finder selections only)
+                    HStack(spacing: 6) {
+                        Image(systemName: "paperclip")
                             .font(.system(size: 10))
-                            .foregroundColor(.secondary.opacity(0.7))
-                    } else {
+                            .foregroundColor(.blue)
+
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 4) {
                                 ForEach(manager.selectedFiles) { file in
@@ -214,32 +231,32 @@ struct CursorPromptView: View {
                                 }
                             }
                         }
-                    }
 
-                    Spacer()
+                        Spacer()
 
-                    Button(action: {
-                        pickMoreFiles()
-                    }) {
-                        HStack(spacing: 2) {
-                            Image(systemName: "plus")
-                                .font(.system(size: 8, weight: .bold))
-                            Text("Attach")
-                                .font(.system(size: 9, weight: .medium))
+                        Button(action: {
+                            pickMoreFiles()
+                        }) {
+                            HStack(spacing: 2) {
+                                Image(systemName: "plus")
+                                    .font(.system(size: 8, weight: .bold))
+                                Text("Attach")
+                                    .font(.system(size: 9, weight: .medium))
+                            }
+                            .foregroundColor(.blue)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Color.blue.opacity(0.12))
+                            .clipShape(Capsule())
                         }
-                        .foregroundColor(.blue)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(Color.blue.opacity(0.12))
-                        .clipShape(Capsule())
+                        .buttonStyle(.plain)
                     }
-                    .buttonStyle(.plain)
                 }
             }
             .padding(.horizontal, 12)
-            .padding(.vertical, 8)
+            .padding(.vertical, isFinderSelection ? 8 : 10)
         }
-        .frame(width: 380, height: 82)
+        .frame(width: 380, height: isFinderSelection ? 82 : 46)
     }
 
     private func pickMoreFiles() {
@@ -265,15 +282,21 @@ struct CursorPromptView: View {
         guard !text.isEmpty else { return }
 
         let files = manager.selectedFiles
+        let screenCtx = manager.appContext?.formattedScreenContext
         manager.hidePromptWindow()
+
+        var userInfo: [String: Any] = [
+            "prompt": text,
+            "files": files
+        ]
+        if let screenCtx = screenCtx, !screenCtx.isEmpty {
+            userInfo["screenContext"] = screenCtx
+        }
 
         NotificationCenter.default.post(
             name: NSNotification.Name("TriggerPromptDrafting"),
             object: nil,
-            userInfo: [
-                "prompt": text,
-                "files": files
-            ]
+            userInfo: userInfo
         )
     }
 }

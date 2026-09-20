@@ -308,7 +308,7 @@ struct BlueCursorView: View {
                 .rotationEffect(.degrees(triangleRotationDegrees))
                 .shadow(color: DS.Colors.overlayCursorBlue, radius: 8 + (buddyFlightScale - 1.0) * 20, x: 0, y: 0)
                 .scaleEffect(buddyFlightScale)
-                .opacity(buddyIsVisibleOnThisScreen && !companionManager.isScanningForOtp && !companionManager.isUploadingFiles && (companionManager.voiceState == .idle || companionManager.voiceState == .responding) ? cursorOpacity : 0)
+                .opacity(buddyIsVisibleOnThisScreen && !companionManager.isScanningForOtp && !companionManager.isUploadingFiles && !companionManager.isCollectingContext && (companionManager.voiceState == .idle || companionManager.voiceState == .responding) ? cursorOpacity : 0)
                 .position(cursorPosition)
                 .animation(
                     buddyNavigationMode == .followingCursor
@@ -319,6 +319,7 @@ struct BlueCursorView: View {
                 .animation(.easeIn(duration: 0.25), value: companionManager.voiceState)
                 .animation(.easeIn(duration: 0.2), value: companionManager.isScanningForOtp)
                 .animation(.easeIn(duration: 0.2), value: companionManager.isUploadingFiles)
+                .animation(.easeIn(duration: 0.2), value: companionManager.isCollectingContext)
                 .animation(
                     buddyNavigationMode == .navigatingToTarget ? nil : .easeInOut(duration: 0.3),
                     value: triangleRotationDegrees
@@ -331,13 +332,14 @@ struct BlueCursorView: View {
                 .animation(.spring(response: 0.2, dampingFraction: 0.6, blendDuration: 0), value: cursorPosition)
                 .animation(.easeIn(duration: 0.15), value: companionManager.voiceState)
 
-            // Blue spinner — shown while uploading files or while AI is processing
+            // Blue spinner — shown while uploading files, collecting context, or while AI is processing
             BlueCursorSpinnerView()
-                .opacity(buddyIsVisibleOnThisScreen && (companionManager.voiceState == .processing || companionManager.isUploadingFiles) ? cursorOpacity : 0)
+                .opacity(buddyIsVisibleOnThisScreen && (companionManager.voiceState == .processing || companionManager.isUploadingFiles || companionManager.isCollectingContext) ? cursorOpacity : 0)
                 .position(cursorPosition)
                 .animation(.spring(response: 0.2, dampingFraction: 0.6, blendDuration: 0), value: cursorPosition)
                 .animation(.easeIn(duration: 0.15), value: companionManager.voiceState)
                 .animation(.easeIn(duration: 0.15), value: companionManager.isUploadingFiles)
+                .animation(.easeIn(duration: 0.15), value: companionManager.isCollectingContext)
 
             // Animated 👀 eyes — shown while scanning screen for OTP input field
             BlueCursorScanningEyesView()
