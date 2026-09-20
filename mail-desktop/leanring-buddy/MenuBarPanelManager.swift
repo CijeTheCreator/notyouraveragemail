@@ -12,6 +12,7 @@
 //
 
 import AppKit
+import Combine
 import SwiftUI
 
 extension Notification.Name {
@@ -34,6 +35,9 @@ final class MenuBarPanelManager: NSObject {
     private let companionManager: CompanionManager
     private let panelWidth: CGFloat = 320
     private let panelHeight: CGFloat = 380
+    private var draftingObservationCancellable: AnyCancellable?
+    private var draftingAnimationTimer: Timer?
+    private var draftingFrameIndex: Int = 0
 
     init(companionManager: CompanionManager) {
         self.companionManager = companionManager
@@ -47,9 +51,20 @@ final class MenuBarPanelManager: NSObject {
         ) { [weak self] _ in
             self?.hidePanel()
         }
+
+        NotificationCenter.default.addObserver(
+            forName: NSNotification.Name("ResetCompanionDraftingState"),
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.stopDraftingAnimation()
+        }
+
+        bindDraftingState()
     }
 
     deinit {
+        draftingAnimationTimer?.invalidate()
         if let monitor = clickOutsideMonitor {
             NSEvent.removeMonitor(monitor)
         }
@@ -102,6 +117,79 @@ final class MenuBarPanelManager: NSObject {
 
         NSColor.black.setFill()
         path.fill()
+
+        image.unlockFocus()
+        return image
+    }
+
+    private func bindDraftingState() {
+        draftingObservationCancellable = companionManager.$isDraftingEmail
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isDrafting in
+                if isDrafting {
+                    self?.startDraftingAnimation()
+                } else {
+                    self?.stopDraftingAnimation()
+                }
+            }
+    }
+
+    private func startDraftingAnimation() {
+        stopDraftingAnimation()
+        draftingFrameIndex = 0
+
+        let timer = Timer(timeInterval: 0.08, repeats: true) { [weak self] t in
+            guard let self = self, self.draftingAnimationTimer == t else {
+                t.invalidate()
+                return
+            }
+            self.draftingFrameIndex = (self.draftingFrameIndex + 1) % 12
+            self.statusItem?.button?.image = self.makeDraftingSpinnerIcon(frameIndex: self.draftingFrameIndex)
+            self.statusItem?.button?.image?.isTemplate = true
+        }
+        RunLoop.main.add(timer, forMode: .common)
+        draftingAnimationTimer = timer
+    }
+
+    func stopDraftingAnimation() {
+        draftingAnimationTimer?.invalidate()
+        draftingAnimationTimer = nil
+        statusItem?.button?.image = makeClickyMenuBarIcon()
+        statusItem?.button?.image?.isTemplate = true
+    }
+
+    private func makeDraftingSpinnerIcon(frameIndex: Int) -> NSImage {
+        let iconSize: CGFloat = 18
+        let image = NSImage(size: NSSize(width: iconSize, height: iconSize))
+        image.lockFocus()
+
+        let center = CGPoint(x: iconSize / 2, y: iconSize / 2)
+        let radius: CGFloat = 6.0
+        let totalSpokes = 8
+        let activeSpoke = frameIndex % totalSpokes
+
+        for i in 0..<totalSpokes {
+            let angle = (CGFloat(i) / CGFloat(totalSpokes)) * (2.0 * .pi)
+            let innerPoint = CGPoint(
+                x: center.x + (radius - 2.5) * cos(angle),
+                y: center.y + (radius - 2.5) * sin(angle)
+            )
+            let outerPoint = CGPoint(
+                x: center.x + radius * cos(angle),
+                y: center.y + radius * sin(angle)
+            )
+
+            let spokePath = NSBezierPath()
+            spokePath.move(to: innerPoint)
+            spokePath.line(to: outerPoint)
+            spokePath.lineWidth = 1.6
+            spokePath.lineCapStyle = .round
+
+            let dist = (i - activeSpoke + totalSpokes) % totalSpokes
+            let alpha = max(0.2, 1.0 - (CGFloat(dist) / CGFloat(totalSpokes)))
+            NSColor.black.withAlphaComponent(alpha).setStroke()
+            spokePath.stroke()
+        }
 
         image.unlockFocus()
         return image

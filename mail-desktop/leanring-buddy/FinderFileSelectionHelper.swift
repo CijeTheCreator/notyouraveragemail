@@ -27,8 +27,73 @@ struct SelectedFileInfo: Identifiable, Equatable {
 final class FinderFileSelectionHelper {
     static let shared = FinderFileSelectionHelper()
 
-    /// Queries Finder via AppleScript to get the currently selected file paths in <10ms.
+    /// Queries Finder via AppleScript (with fallback to Process osascript) to get the currently selected file paths.
     func getCurrentlySelectedFiles() -> [SelectedFileInfo] {
+        NSLog("🔍 [FinderFileSelectionHelper] Querying Finder for selected files...")
+
+        // Strategy 1: Try in-process NSAppleScript
+        var paths = getSelectedPathsViaNSAppleScript()
+
+        // Strategy 2: If NSAppleScript fails or returns empty, fallback to /usr/bin/osascript via Process
+        if paths.isEmpty {
+            NSLog("🔍 [FinderFileSelectionHelper] NSAppleScript returned 0 paths, attempting /usr/bin/osascript fallback...")
+            paths = getSelectedPathsViaProcess()
+        }
+
+        // Strategy 3: Check frontmost document if not Finder
+        if paths.isEmpty {
+            if let doc = getFrontmostDocumentPath() {
+                paths = [doc.path]
+            }
+        }
+
+        NSLog("🔍 [FinderFileSelectionHelper] Successfully detected \(paths.count) file paths: \(paths)")
+
+        var results: [SelectedFileInfo] = []
+        for path in paths {
+            if let fileInfo = makeFileInfo(from: path) {
+                results.append(fileInfo)
+            }
+        }
+
+        return results
+    }
+
+    private func getSelectedPathsViaProcess() -> [String] {
+        let script = """
+        tell application "Finder"
+            set sel to selection as alias list
+            set str to ""
+            repeat with anItem in sel
+                set str to str & (POSIX path of anItem) & linefeed
+            end repeat
+            return str
+        end tell
+        """
+
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/osascript")
+        process.arguments = ["-e", script]
+        let pipe = Pipe()
+        process.standardOutput = pipe
+
+        do {
+            try process.run()
+            process.waitUntilExit()
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            if let output = String(data: data, encoding: .utf8) {
+                let lines = output.components(separatedBy: .newlines)
+                    .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                    .filter { !$0.isEmpty }
+                return lines
+            }
+        } catch {
+            NSLog("⚠️ [FinderFileSelectionHelper] Process osascript error: \(error)")
+        }
+        return []
+    }
+
+    private func getSelectedPathsViaNSAppleScript() -> [String] {
         let scriptSource = """
         tell application "Finder"
             set selectedItems to selection as alias list
@@ -47,11 +112,11 @@ final class FinderFileSelectionHelper {
 
         let outputDescriptor = script.executeAndReturnError(&error)
         if let error = error {
-            print("⚠️ FinderFileSelectionHelper AppleScript error: \(error)")
+            NSLog("⚠️ [FinderFileSelectionHelper] NSAppleScript error: \(error)")
             return []
         }
 
-        var results: [SelectedFileInfo] = []
+        var paths: [String] = []
         let count = outputDescriptor.numberOfItems
 
         if count > 0 {
@@ -59,18 +124,16 @@ final class FinderFileSelectionHelper {
                 if let itemDesc = outputDescriptor.atIndex(i),
                    let pathString = itemDesc.stringValue {
                     let cleanPath = pathString.trimmingCharacters(in: .whitespacesAndNewlines)
-                    if let fileInfo = makeFileInfo(from: cleanPath) {
-                        results.append(fileInfo)
+                    if !cleanPath.isEmpty {
+                        paths.append(cleanPath)
                     }
                 }
             }
-        } else if let singleString = outputDescriptor.stringValue, !singleString.isEmpty {
-            if let fileInfo = makeFileInfo(from: singleString) {
-                results.append(fileInfo)
-            }
+        } else if let singleString = outputDescriptor.stringValue?.trimmingCharacters(in: .whitespacesAndNewlines), !singleString.isEmpty {
+            paths.append(singleString)
         }
 
-        return results
+        return paths
     }
 
     /// Tries to get the open document path of the frontmost application if not Finder
@@ -99,7 +162,7 @@ final class FinderFileSelectionHelper {
         return makeFileInfo(from: pathString)
     }
 
-    private func makeFileInfo(from path: String) -> SelectedFileInfo? {
+    func makeFileInfo(from path: String) -> SelectedFileInfo? {
         let fileManager = FileManager.default
         var isDir: ObjCBool = false
         guard fileManager.fileExists(atPath: path, isDirectory: &isDir) else {

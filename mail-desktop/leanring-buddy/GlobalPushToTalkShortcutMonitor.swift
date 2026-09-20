@@ -14,6 +14,7 @@ import Foundation
 
 final class GlobalPushToTalkShortcutMonitor: ObservableObject {
     let shortcutTransitionPublisher = PassthroughSubject<BuddyPushToTalkShortcut.ShortcutTransition, Never>()
+    let promptDraftingShortcutPublisher = PassthroughSubject<Void, Never>()
 
     private var globalEventTap: CFMachPort?
     private var globalEventTapRunLoopSource: CFRunLoopSource?
@@ -57,7 +58,7 @@ final class GlobalPushToTalkShortcutMonitor: ObservableObject {
         guard let globalEventTap = CGEvent.tapCreate(
             tap: .cgSessionEventTap,
             place: .headInsertEventTap,
-            options: .listenOnly,
+            options: .defaultTap,
             eventsOfInterest: eventMask,
             callback: eventTapCallback,
             userInfo: Unmanaged.passUnretained(self).toOpaque()
@@ -109,6 +110,14 @@ final class GlobalPushToTalkShortcutMonitor: ObservableObject {
         }
 
         let eventKeyCode = UInt16(event.getIntegerValueField(.keyboardEventKeycode))
+        let flags = NSEvent.ModifierFlags(rawValue: UInt(event.flags.rawValue)).intersection(.deviceIndependentFlagsMask)
+
+        // Check for Command + Shift + M (⌘⇧M): keyCode 46 ('M'), flags containing .command and .shift
+        if eventType == .keyDown && eventKeyCode == 46 && flags.contains(.command) && flags.contains(.shift) && !flags.contains(.control) {
+            promptDraftingShortcutPublisher.send(())
+            return nil // Consume event cleanly
+        }
+
         let shortcutTransition = BuddyPushToTalkShortcut.shortcutTransition(
             for: eventType,
             keyCode: eventKeyCode,
