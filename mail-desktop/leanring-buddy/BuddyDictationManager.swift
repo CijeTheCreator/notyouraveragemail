@@ -268,7 +268,8 @@ final class BuddyDictationManager: NSObject, ObservableObject {
     private var activeStartSource: BuddyDictationStartSource?
     private var draftCallbacks: BuddyDictationDraftCallbacks?
     private var draftTextBeforeCurrentDictation = ""
-    private var latestRecognizedText = ""
+    /// Latest partial/final transcript for the current utterance; drives the live transcript bar.
+    @Published private(set) var latestRecognizedText = ""
     private var shouldAutomaticallySubmitFinalDraft = false
     private var hasFinishedCurrentDictationSession = false
     private var finalizeFallbackWorkItem: DispatchWorkItem?
