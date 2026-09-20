@@ -268,4 +268,41 @@ export default defineSchema({
     expiresAt: v.number(),
     verified: v.boolean(),
   }).index("by_email", ["email"]),
+
+  // Drafting Sessions for Desktop Companion and autonomous email drafting
+  draftSessions: defineTable({
+    inboxId: v.string(),
+    prompt: v.string(),
+    screenContext: v.optional(v.string()),
+    threadId: v.optional(v.string()),
+    files: v.array(
+      v.object({
+        storageId: v.string(),
+        name: v.string(),
+        sizeBytes: v.optional(v.number()),
+        path: v.optional(v.string()),
+        mimeType: v.optional(v.string()),
+      })
+    ),
+    selectedAttachmentStorageIds: v.array(v.string()),
+    draft: v.optional(
+      v.object({
+        to: v.string(),
+        subject: v.string(),
+        body: v.string(),
+        attachedFiles: v.optional(v.array(v.string())),
+      })
+    ),
+    status: v.union(
+      v.literal("in_progress"),
+      v.literal("drafted"),
+      v.literal("failed")
+    ),
+    executionLog: v.array(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_inboxId", ["inboxId"])
+    .index("by_status", ["status"]),
 });
+

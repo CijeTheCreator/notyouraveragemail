@@ -21,6 +21,7 @@ import type * as pipeline_classifier from "../pipeline/classifier.js";
 import type * as pipeline_dataRemovalAgent from "../pipeline/dataRemovalAgent.js";
 import type * as pipeline_dataRemovalHandler from "../pipeline/dataRemovalHandler.js";
 import type * as pipeline_domainReputation from "../pipeline/domainReputation.js";
+import type * as pipeline_draftingAgent from "../pipeline/draftingAgent.js";
 import type * as pipeline_orchestrator from "../pipeline/orchestrator.js";
 import type * as pipeline_otp from "../pipeline/otp.js";
 import type * as pipeline_otpHandler from "../pipeline/otpHandler.js";
@@ -54,6 +55,7 @@ declare const fullApi: ApiFromModules<{
   "pipeline/dataRemovalAgent": typeof pipeline_dataRemovalAgent;
   "pipeline/dataRemovalHandler": typeof pipeline_dataRemovalHandler;
   "pipeline/domainReputation": typeof pipeline_domainReputation;
+  "pipeline/draftingAgent": typeof pipeline_draftingAgent;
   "pipeline/orchestrator": typeof pipeline_orchestrator;
   "pipeline/otp": typeof pipeline_otp;
   "pipeline/otpHandler": typeof pipeline_otpHandler;
