@@ -47,3 +47,27 @@ open /Applications/ModernMail.app
 - **File Selection & Email Prompt Drafting**: `Command + Shift + M` (`⌘⇧M`)
 - **Deep Link Scheme**: `modernmail://connect?inboxId=<inboxId>`
 - **Backend Deployment**: Convex (`https://steady-ram-494.convex.cloud`)
+
+---
+
+### 📦 Building & Packaging for Distribution (Path A: Free / Ad-Hoc)
+
+To build and package standalone distribution artifacts (`.dmg` and `.zip`):
+```bash
+./mail-desktop/scripts/package-release.sh
+```
+This automated script:
+1. Compiles `mail-desktop` in **Release** configuration (stripped and optimized).
+2. Stages `ModernMail.app` in `mail-desktop/dist/`.
+3. Performs deep ad-hoc code-signing with entitlements.
+4. Generates `mail-desktop/dist/ModernMail.dmg` (drag-and-drop disk image with `/Applications` link).
+5. Generates `mail-desktop/dist/ModernMail-macOS.zip` (standalone compressed archive).
+
+#### Gatekeeper Instructions for End Users:
+Because ad-hoc builds are not notarized by a paid Apple Developer ID, downloaded copies will have the macOS quarantine attribute set by the browser. Instruct users to either:
+1. **Right-click** `ModernMail.app` ➔ select **Open** ➔ click **Open Anyway** (in System Settings ➔ Privacy & Security).
+2. Or run this one-line command in Terminal:
+   ```bash
+   xattr -cr /Applications/ModernMail.app
+   ```
+
