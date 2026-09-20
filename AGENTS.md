@@ -2,6 +2,19 @@
 
 ## macOS Desktop Companion (`mail-desktop`) Guidelines
 
+### ⚠️ Always Install & Restart After Changing `mail-desktop`
+After **any** change to `mail-desktop` code, do not stop at a successful build. **ALWAYS install the new build and restart the app without asking**, so the developer can test it immediately:
+```bash
+cd mail-desktop
+xcodebuild -scheme leanring-buddy -configuration Debug -destination 'platform=macOS' CODE_SIGN_IDENTITY="-" build
+# Product is named Clicky.app; install it as ModernMail.app
+P=$(xcodebuild -scheme leanring-buddy -configuration Debug -destination 'platform=macOS' -showBuildSettings 2>/dev/null | awk '/ BUILT_PRODUCTS_DIR =/{print $3}')/Clicky.app
+pkill -f "ModernMail" || pkill -f "Clicky" || true; sleep 1
+rm -rf /Applications/ModernMail.app && cp -R "$P" /Applications/ModernMail.app
+codesign --force --deep --sign - /Applications/ModernMail.app
+```
+Then run the permission reset below and relaunch. Backend (`mail-web/convex`) changes must also be deployed with `npx convex dev --once` in `mail-web`.
+
 ### ⚠️ Mandatory Permission Cache Reset on Every App Rebuild
 Whenever `mail-desktop` (`leanring-buddy`) is rebuilt, recompiled, or reinstalled to `/Applications/ModernMail.app`, **YOU MUST ALWAYS RESET THE macOS TCC PERMISSION CACHE AND USERDEFAULTS** so the developer can cleanly test and regrant permissions.
 

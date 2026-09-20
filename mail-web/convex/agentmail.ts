@@ -1,6 +1,7 @@
 import { action, mutation, query, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
+import { Id } from "./_generated/dataModel";
 import { extractOtpCode } from "./pipeline/otp";
 import { extractDomain } from "./pipeline/domainReputation";
 
@@ -143,9 +144,33 @@ export const sendEmail = action({
     text: v.string(),
     html: v.optional(v.string()),
     fromName: v.string(),
+    attachments: v.optional(
+      v.array(v.object({ storageId: v.string(), name: v.string() }))
+    ),
   },
   handler: async (ctx, args) => {
     const apiKey = getApiKey();
+
+    // Load each attachment from Convex storage and base64-encode it for AgentMail.
+    // (No `Buffer` in the default Convex runtime, so encode with btoa in chunks.)
+    const outgoingAttachments: { filename: string; content_type?: string; content: string }[] = [];
+    for (const att of args.attachments ?? []) {
+      if (!att.storageId) continue;
+      const blob = await ctx.storage.get(att.storageId as Id<"_storage">);
+      if (!blob) {
+        throw new Error(`Attachment "${att.name}" was not found in storage`);
+      }
+      const bytes = new Uint8Array(await blob.arrayBuffer());
+      let binary = "";
+      for (let i = 0; i < bytes.length; i += 0x8000) {
+        binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+      }
+      outgoingAttachments.push({
+        filename: att.name,
+        content_type: blob.type || undefined,
+        content: btoa(binary),
+      });
+    }
 
     const response = await fetch(`${AGENTMAIL_BASE_URL}/inboxes/${encodeURIComponent(args.inboxId)}/messages/send`, {
       method: "POST",
@@ -158,6 +183,7 @@ export const sendEmail = action({
         subject: args.subject,
         text: args.text,
         html: args.html || `<p>${args.text.replace(/\n/g, "<br/>")}</p>`,
+        ...(outgoingAttachments.length > 0 ? { attachments: outgoingAttachments } : {}),
       }),
     });
 

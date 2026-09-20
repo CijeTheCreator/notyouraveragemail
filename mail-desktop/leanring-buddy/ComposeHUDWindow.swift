@@ -360,6 +360,19 @@ struct ComposeHUDView: View {
                         }
                         .frame(height: 105)
 
+                        if let notice = manager.currentDraft?.notice {
+                            HStack(alignment: .top, spacing: 5) {
+                                Image(systemName: "exclamationmark.triangle.fill")
+                                    .font(.system(size: 10))
+                                    .foregroundColor(.orange)
+                                Text(notice)
+                                    .font(.system(size: 10, weight: .medium))
+                                    .foregroundColor(.orange)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                            .padding(.horizontal, 2)
+                        }
+
                         if let body = manager.currentDraft?.body, body.contains("figma.com") {
                             HStack(spacing: 5) {
                                 Text("🎨")
