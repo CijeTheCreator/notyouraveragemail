@@ -19,7 +19,7 @@ export default function SignInForm() {
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      router.replace("/");
+      router.replace("/mail");
     }
   }, [isLoading, isAuthenticated, router]);
 
@@ -41,7 +41,7 @@ export default function SignInForm() {
       });
 
       toast.success("Welcome back! Signing you in...");
-      router.push("/");
+      router.push("/mail");
       router.refresh();
     } catch (err: any) {
       const rawMsg: string = err?.message || "";

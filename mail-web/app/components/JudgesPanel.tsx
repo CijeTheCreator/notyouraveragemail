@@ -186,7 +186,7 @@ export default function JudgesPanel({
                   </h3>
 
                   <p className="text-xs text-[#5a5a61] leading-relaxed">
-                    When receipt emails arrive, Modern Mail detects recurring charges, deploys an
+                    When receipt emails arrive, NotYourAverageMail detects recurring charges, deploys an
                     autonomous cancellation agent via Firecrawl to navigate customer portals and
                     cancel plans, and returns screenshot proof of cancellation directly to the user.
                   </p>
@@ -251,7 +251,7 @@ export default function JudgesPanel({
                   </h3>
 
                   <p className="text-xs text-[#5a5a61] leading-relaxed">
-                    Modern Mail indexes hundreds of data brokers, automates formal opt-out requests,
+                    NotYourAverageMail indexes hundreds of data brokers, automates formal opt-out requests,
                     automatically replies to emails from them, and tries to use Firecrawl to interact with
                     the pages if needed. It takes proactive measures to prevent spam and protect your privacy.
                   </p>
@@ -307,7 +307,7 @@ export default function JudgesPanel({
                   </h3>
 
                   <p className="text-xs text-[#5a5a61] leading-relaxed">
-                    Modern Mail extracts the sender&apos;s business domain and scrapes TrustPilot in real
+                    NotYourAverageMail extracts the sender&apos;s business domain and scrapes TrustPilot in real
                     time to evaluate company reputation, star ratings, review counts, and complaint signals
                     (such as scam or billing disputes).
                   </p>
@@ -357,7 +357,7 @@ export default function JudgesPanel({
                 {/* Clicky YC inspiration short summary */}
                 <div className="bg-[#f6f6f9] border border-[#00000014] rounded-lg p-3">
                   <p className="text-xs text-[#5a5a61] leading-relaxed">
-                    Inspired by Clicky (a YC app), Modern Mail Companion is an ambient AI buddy living
+                    Inspired by Clicky (a YC app), NotYourAverageMail Companion is an ambient AI buddy living
                     beside your cursor to handle email workflows seamlessly across your computer.
                   </p>
                 </div>

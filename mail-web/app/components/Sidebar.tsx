@@ -54,31 +54,10 @@ export default function Sidebar({
       {/* Top Header & Navigation */}
       <div className="flex flex-col min-h-0 flex-1 overflow-y-auto">
         {/* Brand Header */}
-        <div className="h-14 px-4 flex items-center gap-2.5 border-b border-[#00000014] flex-shrink-0">
-          <div className="flex aspect-square size-7 shrink-0 items-center justify-center rounded-md bg-[#111114] text-white shadow-xs">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="15"
-              height="15"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <rect width="20" height="16" x="2" y="4" rx="2" />
-              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg>
-          </div>
-          <div className="min-w-0 flex-1 text-left leading-tight">
-            <span className="truncate font-semibold tracking-tight text-[#111114] text-sm block">
-              ModernMail
-            </span>
-            <span className="text-[10px] text-[#797981] font-mono tracking-tight block">
-              console
-            </span>
-          </div>
+        <div className="h-14 px-4 flex items-center border-b border-[#00000014] flex-shrink-0">
+          <span className="truncate font-semibold tracking-tight text-[#111114] text-sm block">
+            <span className="italic">NotYourAverage</span>Mail
+          </span>
         </div>
 
         {/* Action Button: Compose */}

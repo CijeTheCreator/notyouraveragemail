@@ -171,7 +171,7 @@ export default defineSchema({
     .index("by_email", ["email"])
     .index("by_userId", ["userId"]),
 
-  // Modern Mail Subscriptions: first-class detected subscription entities
+  // NotYourAverageMail Subscriptions: first-class detected subscription entities
   subscriptions: defineTable({
     inboxId: v.string(),
     messageId: v.string(),
@@ -225,7 +225,7 @@ export default defineSchema({
     .index("by_category", ["category"])
     .index("by_region", ["region"]),
 
-  // Modern Mail Data Removals: user-specific broker opt-out status
+  // NotYourAverageMail Data Removals: user-specific broker opt-out status
   dataRemovals: defineTable({
     inboxId: v.string(),
     brokerId: v.string(),

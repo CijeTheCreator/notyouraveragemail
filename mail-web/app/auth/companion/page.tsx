@@ -20,7 +20,7 @@ export default function CompanionConnectPage() {
     (currentUser?.username ? `${currentUser.username}@agentmail.to` : "");
 
   const deepLink = inboxId
-    ? `modernmail://connect?inboxId=${encodeURIComponent(inboxId)}`
+    ? `notyouraveragemail://connect?inboxId=${encodeURIComponent(inboxId)}`
     : "";
 
   useEffect(() => {
@@ -34,7 +34,7 @@ export default function CompanionConnectPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FEFBEA]">
-        <p className="font-freeman text-xl text-[#2c2a29]">Loading Modern Mail...</p>
+        <p className="font-freeman text-xl text-[#2c2a29]">Loading NotYourAverageMail...</p>
       </div>
     );
   }
@@ -47,7 +47,7 @@ export default function CompanionConnectPage() {
             CONNECT DESKTOP BUDDY
           </h2>
           <p className="font-freeman text-sm text-[#2c2a29]">
-            Please sign in to your Modern Mail account to link your cursor companion.
+            Please sign in to your NotYourAverageMail account to link your cursor companion.
           </p>
           <div className="pt-4">
             <Link

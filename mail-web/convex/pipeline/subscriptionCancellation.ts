@@ -209,10 +209,10 @@ export const executeOneClickCancel = action({
         internal.pipeline.orchestrator.getMessageByMessageId,
         { messageId: args.messageId }
       );
-      inboxId = msg?.inboxId || "user@modernmail.to";
+      inboxId = msg?.inboxId || "user@notyouraveragemail.to";
     }
 
-    const resolvedInboxId: string = inboxId || "user@modernmail.to";
+    const resolvedInboxId: string = inboxId || "user@notyouraveragemail.to";
 
     // 1. Mark as cancelling
     await ctx.runMutation(internal.pipeline.subscriptionCancellation.updateSubscriptionStatus, {
@@ -601,7 +601,7 @@ export const purgeAllSubscriptionData = mutation({
       }
     }
 
-    // 4. Clear all modern mail subscriptions and logs
+    // 4. Clear all NotYourAverageMail subscriptions and logs
     const subs = await ctx.db.query("subscriptions").collect();
     for (const s of subs) {
       await ctx.db.delete(s._id);

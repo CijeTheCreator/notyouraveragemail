@@ -76,7 +76,7 @@ final class CompanionAppDelegate: NSObject, NSApplicationDelegate {
 
     private func handleDeepLink(_ url: URL) {
         print("🔗 Deep link received: \(url.absoluteString)")
-        guard url.scheme == "modernmail" else { return }
+        guard url.scheme == "notyouraveragemail" || url.scheme == "modernmail" else { return }
 
         if url.host == "connect",
            let components = URLComponents(url: url, resolvingAgainstBaseURL: false),

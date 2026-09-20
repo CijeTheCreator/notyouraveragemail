@@ -23,7 +23,7 @@ export default function SignUpForm() {
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      router.replace("/");
+      router.replace("/mail");
     }
   }, [isLoading, isAuthenticated, router]);
 
@@ -60,8 +60,8 @@ export default function SignUpForm() {
       });
 
       setStepStatus("3/3 Opening your inbox...");
-      toast.success("Inbox claimed successfully! Welcome to Modern Mail.");
-      router.push("/");
+      toast.success("Inbox claimed successfully! Welcome to NotYourAverageMail.");
+      router.push("/mail");
       router.refresh();
     } catch (err: any) {
       const rawMsg: string = err?.message || "";

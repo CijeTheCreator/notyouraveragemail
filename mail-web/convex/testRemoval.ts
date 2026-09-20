@@ -108,7 +108,7 @@ https://notreallydatabroker.aka0lisa.dev`;
       senderDomain: TEST_BROKER_DOMAIN,
     });
 
-    // Schedule Modern Mail classifier to process this incoming broker email
+    // Schedule NotYourAverageMail classifier to process this incoming broker email
     await ctx.scheduler.runAfter(
       0,
       internal.pipeline.classifier.classifyIncomingEmail,

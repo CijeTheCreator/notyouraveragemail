@@ -70,7 +70,7 @@ function FigmaConnectContent() {
             CONNECT FIGMA
           </h2>
           <p className="font-freeman text-sm text-[#2c2a29]">
-            Please sign in to your Modern Mail account to link your Figma developer account.
+            Please sign in to your NotYourAverageMail account to link your Figma developer account.
           </p>
           <div className="pt-4">
             <Link
@@ -127,7 +127,7 @@ function FigmaConnectContent() {
             FIGMA INTEGRATION
           </h2>
           <p className="font-freeman text-sm text-gray-600">
-            Allow Modern Mail to extract designs, render frame PDFs, and link live files from Figma.
+            Allow NotYourAverageMail to extract designs, render frame PDFs, and link live files from Figma.
           </p>
         </div>
 
@@ -176,10 +176,10 @@ function FigmaConnectContent() {
               </button>
 
               <Link
-                href={`modernmail://connect?inboxId=${encodeURIComponent(inboxId)}`}
+                href={`notyouraveragemail://connect?inboxId=${encodeURIComponent(inboxId)}`}
                 className="block text-center w-full bg-[#8544FA] text-white font-bold py-3 px-4 border-2 border-[#2c2a29] brutal-shadow hover:translate-x-[2px] hover:translate-y-[2px] transition-all text-sm"
               >
-                Return to Modern Mail Buddy ↗
+                Return to NotYourAverageMail Buddy ↗
               </Link>
             </>
           ) : (
@@ -194,7 +194,7 @@ function FigmaConnectContent() {
 
           <div className="text-center pt-2">
             <Link
-              href="/"
+              href="/mail"
               className="text-xs text-gray-500 underline hover:text-gray-900"
             >
               ← Back to Webmail

@@ -75,7 +75,7 @@ export const seedTestEmails = mutation({
             <h3 style="color: #2c2a29; margin-top: 0;">Plan Pricing Adjustment</h3>
             <p style="color: #374151; font-size: 14px; line-height: 1.6;">Starting on October 1st, your monthly renewal will update from <strong>$54.99/mo</strong> to <strong>$69.99/mo</strong>.</p>
             <div style="border-left: 4px solid #8544FA; background-color: #EDE9FE; padding: 12px 16px; margin: 16px 0; font-size: 13px;">
-              <strong>Modern Mail AI Triage:</strong> A 27% price hike was detected. You can automate cancellation or dispatch a retention discount query.
+              <strong>NotYourAverageMail AI Triage:</strong> A 27% price hike was detected. You can automate cancellation or dispatch a retention discount query.
             </div>
             <p style="color: #6b7280; font-size: 12px;">You may cancel or change plans anytime before your renewal date.</p>
           </div>
@@ -101,13 +101,13 @@ export const seedTestEmails = mutation({
         fromEmail: "sarah.chen@agenticlabs.io",
         toName: targetInboxId.split("@")[0],
         toEmail: targetInboxId,
-        subject: "Modern Mail Architecture & Launch Strategy",
+        subject: "NotYourAverageMail Architecture & Launch Strategy",
         preview: "Reviewed the 2-pane Neobrutalist design and Convex + AgentMail integration. Looks awesome.",
-        body: `Hey team,\n\nI just went through the latest build of Modern Mail with the 2-pane Neobrutalist layout and Convex Auth integration. Everything feels super snappy and clean.\n\nKey launch milestones for this sprint:\n1. 2-pane minimal view verification (done)\n2. Real-time AgentMail sync & webhook pipeline (in progress)\n3. Autonomous AI Agent Action Cards for price cancellation and OTP extraction\n\nLet's do a quick sync call at 4:30 PM today to walk through the submission demo.\n\nCheers,\nSarah Chen\nLead Architect @ Agentic Labs`,
+        body: `Hey team,\n\nI just went through the latest build of NotYourAverageMail with the 2-pane Neobrutalist layout and Convex Auth integration. Everything feels super snappy and clean.\n\nKey launch milestones for this sprint:\n1. 2-pane minimal view verification (done)\n2. Real-time AgentMail sync & webhook pipeline (in progress)\n3. Autonomous AI Agent Action Cards for price cancellation and OTP extraction\n\nLet's do a quick sync call at 4:30 PM today to walk through the submission demo.\n\nCheers,\nSarah Chen\nLead Architect @ Agentic Labs`,
         htmlBody: `<div style="font-family: sans-serif; max-width: 560px; margin: 0 auto; padding: 20px; border: 2px solid #2c2a29; background-color: #FEFBEA;">
-          <h3 style="color: #2c2a29; margin-top: 0;">Modern Mail Architecture & Launch</h3>
+          <h3 style="color: #2c2a29; margin-top: 0;">NotYourAverageMail Architecture & Launch</h3>
           <p style="color: #374151; font-size: 14px; line-height: 1.6;">Hey team,</p>
-          <p style="color: #374151; font-size: 14px; line-height: 1.6;">I just went through the latest build of Modern Mail with the 2-pane layout and Convex Auth integration. Everything feels super snappy.</p>
+          <p style="color: #374151; font-size: 14px; line-height: 1.6;">I just went through the latest build of NotYourAverageMail with the 2-pane layout and Convex Auth integration. Everything feels super snappy.</p>
           <ul style="color: #374151; font-size: 13px; line-height: 1.8;">
             <li>2-pane minimal view verification</li>
             <li>Real-time AgentMail sync & webhook pipeline</li>

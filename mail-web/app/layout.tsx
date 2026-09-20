@@ -4,7 +4,7 @@ import ConvexClientProvider from "./ConvexClientProvider";
 import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
-  title: "Modern Mail | Super App",
+  title: "NotYourAverageMail | Super App",
   description: "Next-generation, AI-native email experience with autonomous agent orchestration",
 };
 
