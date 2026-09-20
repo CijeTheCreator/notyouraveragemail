@@ -1,106 +1,124 @@
+"use client";
+
 import React from "react";
-import { CreditCard, Shield, Star, CheckCircle2, ArrowUpRight } from "lucide-react";
+import Image from "next/image";
+import { CornerBrackets } from "./FirecrawlPrimitives";
+
+const TECH_LOGOS = {
+  firecrawl: { name: "Firecrawl", src: "/svgs/firecrawl-light.svg" },
+  agentmail: { name: "AgentMail", src: "/svgs/agentmail-dark.svg" },
+  openai: { name: "OpenAI", src: "/svgs/openai-dark.svg" },
+  codex: { name: "Codex", src: "/svgs/codex-light.svg" },
+  convex: { name: "Convex", src: "/svgs/convex.svg" },
+} as const;
+
+type TechKey = keyof typeof TECH_LOGOS;
+
+interface Feature {
+  title: string;
+  description: string;
+  stack: TechKey[];
+}
+
+const WEB_FEATURES: Feature[] = [
+  {
+    title: "Subscription Cancellation",
+    description:
+      "When receipt emails arrive, NotYourAverageMail detects recurring charges, deploys an autonomous cancellation agent via Firecrawl to navigate customer portals and cancel plans, and returns screenshot proof of cancellation directly to you.",
+    stack: ["firecrawl", "agentmail", "openai", "convex"],
+  },
+  {
+    title: "Remove Your Personal Information",
+    description:
+      "NotYourAverageMail indexes hundreds of data brokers, automates formal opt-out requests, automatically replies to emails from them, and uses Firecrawl to interact with the pages if needed. It takes proactive measures to prevent spam and protect your privacy.",
+    stack: ["firecrawl", "agentmail", "convex"],
+  },
+  {
+    title: "Trust Intelligence",
+    description:
+      "NotYourAverageMail extracts the sender's business domain and scrapes TrustPilot in real time to evaluate company reputation, star ratings, review counts, and complaint signals (such as scam or billing disputes) right beside the sender in your inbox.",
+    stack: ["firecrawl", "openai", "convex"],
+  },
+];
+
+function TechStackRow({ stack }: { stack: TechKey[] }) {
+  return (
+    <div className="flex items-center mt-6 pt-5 border-t border-black/[0.06]">
+      <div className="flex -space-x-1 items-center">
+        {stack.map((key) => {
+          const tech = TECH_LOGOS[key];
+          return (
+            <div
+              key={key}
+              title={tech.name}
+              className="size-7 rounded border border-black/[0.1] bg-white flex items-center justify-center p-1 shadow-2xs hover:scale-110 hover:z-10 transition-transform"
+            >
+              <Image
+                src={tech.src}
+                alt={tech.name}
+                width={18}
+                height={18}
+                className="object-contain max-h-4 max-w-4"
+              />
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 export default function WebFeaturesSection() {
-  const features = [
-    {
-      title: "Subscription Cancellation",
-      tag: "Autonomous Web Agent",
-      icon: <CreditCard className="size-4 text-[#111114]" />,
-      description:
-        "When receipts arrive, NotYourAverageMail detects recurring charges and dispatches an autonomous agent via Firecrawl to navigate account settings, cancel your plan, and return verified screenshot proof directly to your inbox.",
-      highlights: [
-        "Zero-click cancellation workflow",
-        "Autonomous Firecrawl portal navigation",
-        "Screenshot evidence delivered to mailbox",
-      ],
-      footnote: "Tested against real SaaS & enterprise cancellation flows",
-    },
-    {
-      title: "Data Broker Wipe",
-      tag: "Privacy & Anti-Spam",
-      icon: <Shield className="size-4 text-[#111114]" />,
-      description:
-        "Indexes over 400 data brokers trading your personal contact information. Automates formal opt-out requests, handles follow-up verification emails automatically, and purges your digital footprint to eliminate spam at the source.",
-      highlights: [
-        "400+ indexed data brokers",
-        "Automated CCPA/GDPR removal requests",
-        "Autonomous reply & verification handling",
-      ],
-      footnote: "Proactive privacy protection before spam hits your inbox",
-    },
-    {
-      title: "Trust Intelligence",
-      tag: "Reputation Engine",
-      icon: <Star className="size-4 text-[#111114]" />,
-      description:
-        "Extracts sender business domains in real time and scrapes TrustPilot to surface star ratings, verified review volume, and early warning signals for scams, fake invoices, and billing disputes right next to the sender header.",
-      highlights: [
-        "Live TrustPilot ratings & review counts",
-        "Scam & deceptive billing signal detection",
-        "Inline trust badges in the reader header",
-      ],
-      footnote: "Instant situational awareness on every commercial email",
-    },
-  ];
-
   return (
-    <section id="features" className="py-20 md:py-28 max-w-6xl mx-auto px-4 sm:px-6 scroll-mt-12">
-      {/* Header */}
-      <div className="max-w-2xl mb-14">
-        <div className="text-[11px] font-mono uppercase tracking-wider text-[#797981] mb-2.5">
-          Web Application · Autonomous Workflows
+    <section
+      id="features"
+      className="max-w-7xl mx-auto border-x border-black/[0.08] relative -mt-1 bg-white select-none scroll-mt-16"
+    >
+      {/* Top and Bottom Horizontal Divider Lines */}
+      <div className="h-1 top-0 left-0 w-full bg-black/[0.08] absolute" />
+      <div className="h-1 bottom-0 left-0 w-full bg-black/[0.08] absolute" />
+      <CornerBrackets strokeColor="text-black/[0.12]" />
+
+      {/* Header Block without 'WEB APPLICATION' */}
+      <div className="p-8 sm:p-12 lg:p-16 border-b border-black/[0.08] relative">
+        <CornerBrackets strokeColor="text-black/[0.06]" />
+        <div className="max-w-3xl">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#111114] leading-[1.1] mb-4">
+            Built to run missions, <br />
+            <span className="text-[#5a5a61]">not just receive messages.</span>
+          </h2>
+
+          <p className="text-sm sm:text-base text-[#5a5a61] leading-relaxed max-w-2xl font-normal">
+            Traditional webmail sits passively while subscriptions renew and data brokers sell your
+            address. NotYourAverageMail executes proactive autonomous workflows to protect your
+            wallet and privacy.
+          </p>
         </div>
-        <h2 className="text-2xl sm:text-4xl font-bold tracking-tight text-[#111114] leading-tight mb-4">
-          Built to run missions, not just receive messages.
-        </h2>
-        <p className="text-sm sm:text-base text-[#5a5a61] leading-relaxed">
-          Traditional webmail sits passively while subscriptions renew and data brokers sell your address.
-          NotYourAverageMail executes proactive autonomous workflows to protect your wallet and attention.
-        </p>
       </div>
 
-      {/* Grid Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {features.map((feature, idx) => (
+      {/* Features Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 relative">
+        {WEB_FEATURES.map((feat, idx) => (
           <div
-            key={feature.title}
-            className="rounded-xl border border-black/[0.08] bg-white p-6 flex flex-col justify-between hover:border-black/[0.18] transition-all hover:shadow-xs group"
+            key={feat.title}
+            className={`p-8 sm:p-10 relative bg-white flex flex-col justify-between hover:bg-[#fafafb] transition-colors border-b md:border-b-0 ${
+              idx < WEB_FEATURES.length - 1 ? "md:border-r border-black/[0.08]" : ""
+            }`}
           >
+            <CornerBrackets strokeColor="text-black/[0.06] group-hover:text-black/[0.16]" />
+
             <div>
-              {/* Card Top */}
-              <div className="flex items-center justify-between gap-2 mb-4">
-                <div className="size-8 rounded-md bg-[#fafafb] border border-black/[0.08] flex items-center justify-center">
-                  {feature.icon}
-                </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-black/[0.04] text-[#5a5a61] border border-black/[0.06]">
-                  0{idx + 1} // {feature.tag}
-                </span>
-              </div>
-
-              {/* Title & Description */}
-              <h3 className="text-base font-semibold text-[#111114] tracking-tight mb-2.5 group-hover:text-black transition-colors">
-                {feature.title}
+              <h3 className="text-lg sm:text-xl font-bold tracking-tight text-[#111114] mb-3">
+                {feat.title}
               </h3>
-              <p className="text-xs text-[#5a5a61] leading-relaxed mb-6">
-                {feature.description}
+
+              <p className="text-sm text-[#5a5a61] leading-relaxed font-normal">
+                {feat.description}
               </p>
-
-              {/* Highlights */}
-              <ul className="space-y-2 mb-6 pt-4 border-t border-black/[0.06]">
-                {feature.highlights.map((item) => (
-                  <li key={item} className="flex items-start gap-2 text-xs text-[#323237]">
-                    <CheckCircle2 className="size-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
             </div>
 
-            {/* Footnote */}
-            <div className="pt-4 border-t border-black/[0.06] text-[11px] text-[#797981] font-mono flex items-center justify-between">
-              <span>{feature.footnote}</span>
-            </div>
+            {/* Stack of tech logos only */}
+            <TechStackRow stack={feat.stack} />
           </div>
         ))}
       </div>

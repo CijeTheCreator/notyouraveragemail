@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useConvexAuth } from "convex/react";
 import { ArrowRight, Menu, X } from "lucide-react";
+import { CrosshairNotch } from "./FirecrawlPrimitives";
 
 function GithubIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -19,38 +20,35 @@ function GithubIcon(props: React.SVGProps<SVGSVGElement>) {
 
 export default function LandingNavbar() {
   const { isAuthenticated, isLoading } = useConvexAuth();
-  const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 12);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
-    <header
-      className={`sticky top-0 z-40 w-full transition-all duration-200 ${
-        isScrolled
-          ? "bg-[#fafafb]/85 backdrop-blur-md border-b border-black/[0.07] shadow-xs"
-          : "bg-transparent border-b border-transparent"
-      }`}
-    >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
-        {/* Brand */}
+    <header className="sticky top-0 left-0 w-full z-[101] bg-[#fafafb]/90 backdrop-blur-md select-none transition-colors">
+      {/* Container vertical border lines */}
+      <div className="absolute top-0 max-w-7xl mx-auto border-x border-black/[0.08] h-full pointer-events-none inset-x-0" />
+
+      {/* Horizontal bottom border line */}
+      <div className="h-1 bg-black/[0.08] w-full left-0 bottom-0 absolute" />
+
+      {/* Crosshair notches at the bottom corners of the container */}
+      <div className="max-w-7xl mx-auto absolute h-full pointer-events-none top-0 inset-x-0 hidden sm:block">
+        <CrosshairNotch className="absolute -left-[10.5px] -bottom-[10px]" />
+        <CrosshairNotch className="absolute -right-[10.5px] -bottom-[10px]" />
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 h-16 flex items-center justify-between gap-6 relative">
+        {/* Brand Text Only - No Logo Picture */}
         <Link
           href="/"
-          className="flex items-center text-sm font-semibold tracking-tight text-[#111114] hover:opacity-85 transition-opacity"
+          className="text-sm font-semibold tracking-tight text-[#111114] hover:opacity-85 transition-opacity"
         >
-          <span className="font-semibold text-[13.5px] tracking-tight text-[#111114]">
-            <span className="italic">NotYourAverage</span>Mail
+          <span className="font-semibold text-[15px] tracking-tight text-[#111114]">
+            NotYourAverage<span className="font-normal text-[#5a5a61]">Mail</span>
           </span>
         </Link>
 
-        {/* Center Nav Links */}
-        <nav className="hidden md:flex items-center gap-6 text-xs font-medium text-[#5a5a61]">
+        {/* Center Nav Links - No '//' and No 'Runner' */}
+        <nav className="hidden md:flex items-center gap-7 text-xs font-mono text-[#5a5a61]">
           <a
             href="#features"
             className="hover:text-[#111114] transition-colors"
@@ -67,85 +65,99 @@ export default function LandingNavbar() {
             href="#install"
             className="hover:text-[#111114] transition-colors"
           >
-            Install
+            Quickstart
+          </a>
+          <a
+            href="#faq"
+            className="hover:text-[#111114] transition-colors"
+          >
+            FAQ
           </a>
         </nav>
 
-        {/* Right Actions */}
+        {/* Right Side: GitHub + Action CTA ('Mail' if authenticated) */}
         <div className="flex items-center gap-3">
-          {/* GitHub link */}
           <a
             href="https://github.com/CijeTheCreator/modern-mail"
             target="_blank"
-            rel="noreferrer"
-            className="size-8 rounded-md border border-black/[0.08] bg-white hover:bg-black/[0.03] text-[#5a5a61] hover:text-[#111114] flex items-center justify-center transition-colors"
-            title="View on GitHub"
+            rel="noopener noreferrer"
+            className="hidden sm:inline-flex items-center gap-1.5 h-8 px-3 rounded border border-black/[0.08] bg-white hover:bg-black/[0.03] text-xs font-mono text-[#111114] transition-all shadow-2xs"
           >
-            <GithubIcon className="size-4" />
+            <GithubIcon className="size-3.5" />
+            <span>GitHub</span>
           </a>
 
-          {/* Auth State Button */}
           {!isLoading && isAuthenticated ? (
             <Link
               href="/mail"
-              className="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-md bg-[#111114] hover:bg-black text-white text-xs font-medium transition-all shadow-xs"
+              className="inline-flex items-center justify-center gap-1.5 h-8 px-4 rounded bg-[#111114] hover:bg-black text-white text-xs font-mono font-medium transition-all shadow-sm"
             >
-              <span>Go to Inbox</span>
-              <ArrowRight className="size-3.5" />
+              <span>Mail</span>
+              <ArrowRight className="size-3" />
             </Link>
           ) : (
-            <div className="flex items-center gap-2">
-              <Link
-                href="/auth/signin"
-                className="text-xs font-medium text-[#5a5a61] hover:text-[#111114] px-2.5 py-1.5 transition-colors"
-              >
-                Sign in
-              </Link>
-              <Link
-                href="/auth/signup"
-                className="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-md bg-[#111114] hover:bg-black text-white text-xs font-medium transition-all shadow-xs"
-              >
-                <span>Open Mail</span>
-                <ArrowRight className="size-3.5" />
-              </Link>
-            </div>
+            <Link
+              href="/auth/signup"
+              className="inline-flex items-center justify-center gap-1.5 h-8 px-4 rounded bg-[#111114] hover:bg-black text-white text-xs font-mono font-medium transition-all shadow-sm"
+            >
+              <span>Open Mail</span>
+              <ArrowRight className="size-3" />
+            </Link>
           )}
 
-          {/* Mobile hamburger */}
+          {/* Mobile menu trigger */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden size-8 rounded-md border border-black/[0.08] bg-white flex items-center justify-center text-[#5a5a61]"
-            aria-label="Toggle menu"
+            className="md:hidden p-1.5 rounded text-[#5a5a61] hover:text-[#111114] hover:bg-black/[0.04] transition-colors"
+            aria-label="Toggle Menu"
           >
-            {mobileMenuOpen ? <X className="size-4" /> : <Menu className="size-4" />}
+            {mobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile dropdown */}
+      {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-[#fafafb] border-b border-black/[0.08] px-4 py-4 space-y-3">
+        <div className="md:hidden border-b border-black/[0.08] bg-white/95 backdrop-blur-md px-6 py-4 flex flex-col gap-3 font-mono text-xs">
           <a
             href="#features"
             onClick={() => setMobileMenuOpen(false)}
-            className="block text-xs font-medium text-[#5a5a61] hover:text-[#111114] py-1"
+            className="text-[#5a5a61] hover:text-[#111114] py-1"
           >
             Features
           </a>
           <a
             href="#companion"
             onClick={() => setMobileMenuOpen(false)}
-            className="block text-xs font-medium text-[#5a5a61] hover:text-[#111114] py-1"
+            className="text-[#5a5a61] hover:text-[#111114] py-1"
           >
             Desktop Companion
           </a>
           <a
             href="#install"
             onClick={() => setMobileMenuOpen(false)}
-            className="block text-xs font-medium text-[#5a5a61] hover:text-[#111114] py-1"
+            className="text-[#5a5a61] hover:text-[#111114] py-1"
           >
-            Install
+            Quickstart
           </a>
+          <a
+            href="#faq"
+            onClick={() => setMobileMenuOpen(false)}
+            className="text-[#5a5a61] hover:text-[#111114] py-1"
+          >
+            FAQ
+          </a>
+          <div className="pt-2 border-t border-black/[0.06] flex items-center gap-3">
+            <a
+              href="https://github.com/CijeTheCreator/modern-mail"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-[#111114]"
+            >
+              <GithubIcon className="size-3.5" />
+              <span>GitHub</span>
+            </a>
+          </div>
         </div>
       )}
     </header>

@@ -60,6 +60,39 @@
   --color-3: oklch(69.6% 0.165 251);
   --color-4: oklch(80.2% 0.134 225);
   --color-5: oklch(90.7% 0.231 133);
+
+  --border-faint: rgba(0, 0, 0, 0.08);
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.curvy-rect {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+@keyframes firecrawl-marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-firecrawl-marquee {
+  display: flex;
+  width: max-content;
+  animation: firecrawl-marquee 26s linear infinite;
+}
+
+.animate-firecrawl-marquee:hover {
+  animation-play-state: paused;
 }
 
 @keyframes rainbow {

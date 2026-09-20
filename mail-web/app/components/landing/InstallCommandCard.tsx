@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { Copy, Check, Terminal } from "lucide-react";
+import { Copy, Check, Terminal, Download } from "lucide-react";
 import { toast } from "sonner";
+import { CornerBrackets } from "./FirecrawlPrimitives";
 
 export default function InstallCommandCard() {
   const [copied, setCopied] = useState(false);
@@ -17,61 +18,64 @@ export default function InstallCommandCard() {
   };
 
   return (
-    <section id="install" className="py-20 md:py-28 max-w-4xl mx-auto px-4 sm:px-6 scroll-mt-12 text-center">
-      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-black/[0.08] bg-white text-[11px] font-mono text-[#5a5a61] mb-4">
-        <Terminal className="size-3.5 text-[#111114]" />
-        <span>One-Line Native Installer</span>
-      </div>
+    <section
+      id="install"
+      className="max-w-7xl mx-auto border-x border-black/[0.08] relative -mt-1 bg-[#fafafb] select-none scroll-mt-16"
+    >
+      {/* Top and Bottom Horizontal Divider Lines */}
+      <div className="h-1 top-0 left-0 w-full bg-black/[0.08] absolute" />
+      <div className="h-1 bottom-0 left-0 w-full bg-black/[0.08] absolute" />
+      <CornerBrackets strokeColor="text-black/[0.12]" />
 
-      <h2 className="text-2xl sm:text-4xl font-bold tracking-tight text-[#111114] leading-tight mb-4">
-        Install the companion in seconds.
-      </h2>
-      <p className="text-sm sm:text-base text-[#5a5a61] max-w-xl mx-auto leading-relaxed mb-8">
-        Run this single command in your macOS terminal to download, verify, and launch the companion app directly into your menu bar.
-      </p>
+      <div className="p-8 sm:p-12 lg:p-16 border-b border-black/[0.08] bg-white relative">
+        <CornerBrackets strokeColor="text-black/[0.06]" />
 
-      {/* Terminal Block */}
-      <div className="text-left rounded-xl border border-black/[0.12] bg-[#161619] shadow-lg overflow-hidden max-w-3xl mx-auto">
-        {/* Window Chrome Header */}
-        <div className="px-4 py-2.5 bg-[#202024] border-b border-white/[0.08] flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <span className="size-2.5 rounded-full bg-[#ff5f56]" />
-            <span className="size-2.5 rounded-full bg-[#ffbd2e]" />
-            <span className="size-2.5 rounded-full bg-[#27c93f]" />
+        <div className="max-w-3xl">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#111114] leading-[1.1] mb-4">
+            Install the Desktop Companion <br />
+            <span className="text-[#5a5a61]">in seconds.</span>
+          </h2>
+
+          <p className="text-sm sm:text-base text-[#5a5a61] leading-relaxed max-w-2xl font-normal mb-8">
+            Run this single line in your terminal to download, verify, and launch the companion
+            app directly into your menu bar.
+          </p>
+
+          {/* Terminal Box */}
+          <div className="rounded border border-black/[0.12] bg-[#111114] overflow-hidden shadow-xs relative">
+            <CornerBrackets strokeColor="text-white/10" />
+
+            {/* Window Chrome Header */}
+            <div className="px-4 py-2.5 bg-[#1a1a1e] border-b border-white/[0.08] flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <span className="size-2 rounded-full bg-[#ff5f56]" />
+                <span className="size-2 rounded-full bg-[#ffbd2e]" />
+                <span className="size-2 rounded-full bg-[#27c93f]" />
+              </div>
+              <span className="text-[11px] font-mono text-white/50">
+                bash — companion-install.sh
+              </span>
+              <div className="w-10" />
+            </div>
+
+            {/* Command Line */}
+            <div className="p-4 sm:p-5 flex items-center justify-between gap-4 overflow-x-auto">
+              <div className="flex items-center gap-3 font-mono text-xs sm:text-sm text-white whitespace-nowrap">
+                <span className="text-emerald-400 select-none">$</span>
+                <span className="selection:bg-white/20">{installCommand}</span>
+              </div>
+
+              <button
+                onClick={handleCopy}
+                className="size-8 rounded bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors shrink-0 cursor-pointer"
+                title="Copy command"
+              >
+                {copied ? <Check className="size-4 text-emerald-400" /> : <Copy className="size-4" />}
+              </button>
+            </div>
           </div>
-          <span className="text-[11px] font-mono text-white/50">
-            bash — companion-install.sh
-          </span>
-          <div className="w-10" />
-        </div>
-
-        {/* Command Body */}
-        <div className="p-4 sm:p-5 flex items-center justify-between gap-4 overflow-x-auto">
-          <div className="flex items-center gap-3 font-mono text-xs sm:text-sm text-[#fafafb] whitespace-nowrap">
-            <span className="text-emerald-400 select-none">$</span>
-            <span className="text-[#fafafb] selection:bg-white/20">
-              {installCommand}
-            </span>
-          </div>
-
-          <button
-            onClick={handleCopy}
-            className="size-8 rounded-md bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors shrink-0 cursor-pointer"
-            title="Copy command"
-            aria-label="Copy install command"
-          >
-            {copied ? (
-              <Check className="size-4 text-emerald-400" />
-            ) : (
-              <Copy className="size-4 text-white/80" />
-            )}
-          </button>
         </div>
       </div>
-
-      <p className="mt-4 text-[11px] font-mono text-[#797981]">
-        Compatible with Apple Silicon & Intel macOS 13+ · Zero configuration required
-      </p>
     </section>
   );
 }
