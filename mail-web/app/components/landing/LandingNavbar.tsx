@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useConvexAuth } from "convex/react";
-import { ArrowRight, Menu, X } from "lucide-react";
+import { ArrowRight, ExternalLink, Menu, X } from "lucide-react";
 import { CrosshairNotch } from "./FirecrawlPrimitives";
 
 function GithubIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -47,8 +47,8 @@ export default function LandingNavbar() {
           </span>
         </Link>
 
-        {/* Center Nav Links - No '//' and No 'Runner' */}
-        <nav className="hidden md:flex items-center gap-7 text-xs font-mono text-[#5a5a61]">
+        {/* Center Nav Links */}
+        <nav className="hidden md:flex items-center gap-6 text-xs font-mono text-[#5a5a61]">
           <a
             href="#features"
             className="hover:text-[#111114] transition-colors"
@@ -62,16 +62,28 @@ export default function LandingNavbar() {
             Desktop Companion
           </a>
           <a
-            href="#install"
+            href="#qyfpa"
             className="hover:text-[#111114] transition-colors"
           >
-            Quickstart
+            QYFPA
           </a>
           <a
-            href="#faq"
-            className="hover:text-[#111114] transition-colors"
+            href="https://www.skills.sh/cijethecreator/notyouraveragemail-skills/unsub-skill"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 hover:text-[#111114] transition-colors"
           >
-            FAQ
+            <span>/Unsub skill</span>
+            <ExternalLink className="size-3 text-[#797981]" />
+          </a>
+          <a
+            href="https://www.skills.sh/cijethecreator/notyouraveragemail-skills/opt-out-skill"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 hover:text-[#111114] transition-colors"
+          >
+            <span>/Opt-out skill</span>
+            <ExternalLink className="size-3 text-[#797981]" />
           </a>
         </nav>
 
@@ -134,18 +146,31 @@ export default function LandingNavbar() {
             Desktop Companion
           </a>
           <a
-            href="#install"
+            href="#qyfpa"
             onClick={() => setMobileMenuOpen(false)}
             className="text-[#5a5a61] hover:text-[#111114] py-1"
           >
-            Quickstart
+            QYFPA
           </a>
           <a
-            href="#faq"
+            href="https://www.skills.sh/cijethecreator/notyouraveragemail-skills/unsub-skill"
+            target="_blank"
+            rel="noopener noreferrer"
             onClick={() => setMobileMenuOpen(false)}
-            className="text-[#5a5a61] hover:text-[#111114] py-1"
+            className="inline-flex items-center gap-1 text-[#5a5a61] hover:text-[#111114] py-1"
           >
-            FAQ
+            <span>/Unsub skill</span>
+            <ExternalLink className="size-3 text-[#797981]" />
+          </a>
+          <a
+            href="https://www.skills.sh/cijethecreator/notyouraveragemail-skills/opt-out-skill"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => setMobileMenuOpen(false)}
+            className="inline-flex items-center gap-1 text-[#5a5a61] hover:text-[#111114] py-1"
+          >
+            <span>/Opt-out skill</span>
+            <ExternalLink className="size-3 text-[#797981]" />
           </a>
           <div className="pt-2 border-t border-black/[0.06] flex items-center gap-3">
             <a
