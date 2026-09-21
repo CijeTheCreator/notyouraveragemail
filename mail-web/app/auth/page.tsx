@@ -1,5 +1,5 @@
 import AuthView from "@/app/components/auth/AuthView";
 
-export default function SignInPage() {
+export default function AuthPage() {
   return <AuthView initialTab="signin" />;
 }

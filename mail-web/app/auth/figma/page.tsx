@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState, Suspense } from "react";
-import { useQuery, useMutation, useAction, useConvexAuth } from "convex/react";
+import { useQuery, useMutation, useConvexAuth } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import AuthLayout from "@/app/components/auth/AuthLayout";
 
 function FigmaConnectContent() {
   const searchParams = useSearchParams();
@@ -28,7 +29,6 @@ function FigmaConnectContent() {
     inboxId ? { inboxId } : "skip"
   );
 
-  const getAuthUrlAction = useAction(api.figma.getOAuthAuthorizationUrl);
   const disconnectMutation = useMutation(api.figma.disconnectFigma);
 
   const [isConnecting, setIsConnecting] = useState(false);
@@ -56,32 +56,40 @@ function FigmaConnectContent() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FEFBEA]">
-        <p className="font-freeman text-xl text-[#2c2a29]">Loading Figma Settings...</p>
-      </div>
+      <AuthLayout subtitle="Figma Integration">
+        <div className="py-12 text-center">
+          <div className="inline-block w-5 h-5 border-2 border-[#111114] border-t-transparent rounded-full animate-spin mb-3" />
+          <p className="text-xs text-[#5a5a61] font-medium">
+            Loading Figma Settings...
+          </p>
+        </div>
+      </AuthLayout>
     );
   }
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FEFBEA] py-12 px-4">
-        <div className="max-w-md w-full space-y-6 bg-purple-100 p-8 border-2 border-[#2c2a29] brutal-shadow-left text-center">
-          <h2 className="text-4xl font-anton text-[#2c2a29]">
-            CONNECT FIGMA
-          </h2>
-          <p className="font-freeman text-sm text-[#2c2a29]">
-            Please sign in to your NotYourAverageMail account to link your Figma developer account.
-          </p>
-          <div className="pt-4">
+      <AuthLayout subtitle="Figma Integration">
+        <div className="space-y-6 text-center py-2">
+          <div className="space-y-2">
+            <h2 className="text-base font-semibold text-[#111114]">
+              Connect Figma
+            </h2>
+            <p className="text-xs text-[#5a5a61] leading-relaxed max-w-xs mx-auto">
+              Please sign in to your NotYourAverageMail account to link your Figma developer account.
+            </p>
+          </div>
+
+          <div className="pt-2">
             <Link
               href="/auth/signin?redirect=/auth/figma"
-              className="inline-block w-full bg-[#8544FA] text-white font-bold py-3 px-6 border-2 border-[#2c2a29] brutal-shadow hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+              className="inline-flex items-center justify-center rounded-full transition-all duration-200 h-10 px-5 text-sm font-medium gap-2 bg-[#111114] text-white hover:bg-[#27272a] active:scale-[0.98] shadow-sm hover:shadow w-full"
             >
               Sign In to Continue ↗
             </Link>
           </div>
         </div>
-      </div>
+      </AuthLayout>
     );
   }
 
@@ -89,17 +97,17 @@ function FigmaConnectContent() {
   const displayHandle = figmaStatus?.figmaHandle || urlHandle;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#FEFBEA] py-12 px-4">
-      <div className="max-w-md w-full space-y-6 bg-white p-8 border-2 border-[#2c2a29] brutal-shadow-left">
-        <div className="text-center space-y-2">
-          <div className="inline-block bg-orange-100 border-2 border-[#2c2a29] p-3 mb-2">
+    <AuthLayout subtitle="Figma Integration">
+      <div className="space-y-5 py-2">
+        <div className="text-center space-y-1.5">
+          <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#f0f0f2] border border-black/5 p-2 mb-1">
             <svg
-              width="40"
-              height="40"
+              width="24"
+              height="36"
               viewBox="0 0 38 57"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              className="mx-auto"
+              className="w-full h-full"
             >
               <path
                 d="M19 28.5C19 23.2533 23.2533 19 28.5 19C33.7467 19 38 23.2533 38 28.5C38 33.7467 33.7467 38 28.5 38C23.2533 38 19 33.7467 19 28.5Z"
@@ -123,96 +131,98 @@ function FigmaConnectContent() {
               />
             </svg>
           </div>
-          <h2 className="text-3xl font-anton text-[#2c2a29] tracking-wide">
-            FIGMA INTEGRATION
+          <h2 className="text-base font-semibold text-[#111114]">
+            Figma Integration
           </h2>
-          <p className="font-freeman text-sm text-gray-600">
-            Allow NotYourAverageMail to extract designs, render frame PDFs, and link live files from Figma.
+          <p className="text-xs text-[#5a5a61] leading-relaxed">
+            Extract designs, render frame PDFs, and link live canvas files.
           </p>
         </div>
 
         {localError && (
-          <div className="bg-red-50 border-2 border-red-500 p-3 text-red-700 text-xs font-semibold">
+          <div className="p-3 text-xs bg-red-50 border border-red-200/80 text-red-700 rounded-xl leading-relaxed">
             ⚠️ {localError}
           </div>
         )}
 
-        <div className="bg-gray-50 border-2 border-[#2c2a29] p-4 space-y-2">
-          <div className="flex justify-between items-center text-xs">
-            <span className="font-semibold text-gray-500 uppercase tracking-wider">Status:</span>
+        {/* Status card */}
+        <div className="rounded-xl border border-black/10 bg-white p-3.5 space-y-2.5 text-xs">
+          <div className="flex justify-between items-center">
+            <span className="text-[#797981] font-medium">Status:</span>
             {isConnected ? (
-              <span className="bg-green-100 text-green-800 font-bold px-2 py-0.5 border border-green-600 text-xs">
-                ● Connected
+              <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 font-medium px-2 py-0.5 rounded-full border border-emerald-200/80 text-[11px]">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                Connected
               </span>
             ) : (
-              <span className="bg-yellow-100 text-yellow-800 font-bold px-2 py-0.5 border border-yellow-600 text-xs">
-                ○ Not Connected
+              <span className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-700 font-medium px-2 py-0.5 rounded-full border border-amber-200/80 text-[11px]">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                Not Connected
               </span>
             )}
           </div>
 
-          <div className="flex justify-between items-center text-xs">
-            <span className="font-semibold text-gray-500 uppercase tracking-wider">Active Inbox:</span>
-            <span className="font-mono text-gray-800 font-bold">{inboxId || "—"}</span>
+          <div className="flex justify-between items-center">
+            <span className="text-[#797981] font-medium">Active Inbox:</span>
+            <span className="font-mono text-[#111114] font-medium">{inboxId || "—"}</span>
           </div>
 
           {displayHandle && (
-            <div className="flex justify-between items-center text-xs">
-              <span className="font-semibold text-gray-500 uppercase tracking-wider">Figma Account:</span>
-              <span className="font-mono text-gray-800 font-bold">@{displayHandle}</span>
+            <div className="flex justify-between items-center">
+              <span className="text-[#797981] font-medium">Figma Account:</span>
+              <span className="font-medium text-[#111114]">@{displayHandle}</span>
             </div>
           )}
         </div>
 
-        <div className="space-y-3 pt-2">
+        {/* Action button */}
+        <div className="pt-1 space-y-2.5">
           {isConnected ? (
-            <>
-              <button
-                onClick={handleDisconnect}
-                disabled={isDisconnecting}
-                className="w-full bg-red-100 hover:bg-red-200 text-red-800 font-bold py-3 px-4 border-2 border-[#2c2a29] brutal-shadow hover:translate-x-[2px] hover:translate-y-[2px] transition-all text-sm"
-              >
-                {isDisconnecting ? "Disconnecting..." : "Disconnect Figma Account"}
-              </button>
-
-              <Link
-                href={`notyouraveragemail://connect?inboxId=${encodeURIComponent(inboxId)}`}
-                className="block text-center w-full bg-[#8544FA] text-white font-bold py-3 px-4 border-2 border-[#2c2a29] brutal-shadow hover:translate-x-[2px] hover:translate-y-[2px] transition-all text-sm"
-              >
-                Return to NotYourAverageMail Buddy ↗
-              </Link>
-            </>
+            <button
+              onClick={handleDisconnect}
+              disabled={isDisconnecting}
+              className="inline-flex items-center justify-center rounded-full transition-all duration-200 h-10 px-5 text-sm font-medium gap-2 bg-red-50 border border-red-200 text-red-700 hover:bg-red-100 active:scale-[0.98] w-full disabled:opacity-50 cursor-pointer"
+            >
+              {isDisconnecting ? "Disconnecting..." : "Disconnect Figma"}
+            </button>
           ) : (
             <button
               onClick={handleConnect}
               disabled={isConnecting}
-              className="w-full bg-[#1ABCFE] hover:bg-[#15a4df] text-white font-bold py-3 px-4 border-2 border-[#2c2a29] brutal-shadow hover:translate-x-[2px] hover:translate-y-[2px] transition-all text-sm"
+              className="inline-flex items-center justify-center rounded-full transition-all duration-200 h-10 px-5 text-sm font-medium gap-2 bg-[#111114] text-white hover:bg-[#27272a] active:scale-[0.98] shadow-sm hover:shadow w-full disabled:opacity-50 cursor-pointer"
             >
-              {isConnecting ? "Redirecting to Figma..." : "Connect with Figma (OAuth 2.0) ↗"}
+              {isConnecting ? "Connecting to Figma..." : "Connect Figma Account ↗"}
             </button>
           )}
 
           <div className="text-center pt-2">
             <Link
               href="/mail"
-              className="text-xs text-gray-500 underline hover:text-gray-900"
+              className="text-xs text-[#5a5a61] hover:text-[#111114] underline font-medium"
             >
-              ← Back to Webmail
+              Return to Inbox →
             </Link>
           </div>
         </div>
       </div>
-    </div>
+    </AuthLayout>
   );
 }
 
 export default function FigmaConnectPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-[#fafafb]">
-        <p className="text-xs text-[#797981] font-sans">Loading Figma Settings...</p>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <AuthLayout subtitle="Figma Integration">
+          <div className="py-12 text-center">
+            <div className="inline-block w-5 h-5 border-2 border-[#111114] border-t-transparent rounded-full animate-spin mb-3" />
+            <p className="text-xs text-[#5a5a61] font-medium">
+              Loading Figma Settings...
+            </p>
+          </div>
+        </AuthLayout>
+      }
+    >
       <FigmaConnectContent />
     </Suspense>
   );

@@ -1,5 +1,5 @@
-import SignUpForm from "@/app/components/auth/SignUpForm";
+import AuthView from "@/app/components/auth/AuthView";
 
 export default function SignUpPage() {
-  return <SignUpForm />;
+  return <AuthView initialTab="signup" />;
 }

@@ -1,16 +1,18 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthActions } from "@convex-dev/auth/react";
-import { useAction, useConvexAuth } from "convex/react";
+import { useAction } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { toast } from "sonner";
 
-export default function SignUpForm() {
+interface SignUpFormProps {
+  onSwitchToSignIn?: () => void;
+}
+
+export default function SignUpForm({ onSwitchToSignIn }: SignUpFormProps) {
   const router = useRouter();
-  const { isAuthenticated, isLoading } = useConvexAuth();
   const { signIn } = useAuthActions();
   const provisionInboxAction = useAction(api.agentmail.provisionInbox);
 
@@ -20,12 +22,6 @@ export default function SignUpForm() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [stepStatus, setStepStatus] = useState("");
-
-  useEffect(() => {
-    if (!isLoading && isAuthenticated) {
-      router.replace("/mail");
-    }
-  }, [isLoading, isAuthenticated, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,7 +40,7 @@ export default function SignUpForm() {
     try {
       setStepStatus("1/3 Provisioning AgentMail inbox...");
       // 1. Provision on AgentMail
-      const inboxRes = await provisionInboxAction({
+      await provisionInboxAction({
         username: cleanHandle,
         displayName: name.trim() || cleanHandle,
       });
@@ -84,100 +80,108 @@ export default function SignUpForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#FEFBEA] py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-6 bg-purple-100 p-8 border-2 border-[#2c2a29] brutal-shadow-left">
-        <div>
-          <h2 className="heading-text-2 text-5xl font-anton text-center mb-2">
-            CLAIM INBOX
-          </h2>
-          <p className="text-center text-sm font-freeman text-[#2c2a29]">
-            Already have an address?{" "}
-            <Link
-              href="/auth/signin"
-              className="text-[#8544FA] font-bold underline hover:text-black transition-colors"
-            >
-              Sign in here
-            </Link>
-          </p>
+    <form className="space-y-4" onSubmit={handleSubmit}>
+      {error && (
+        <div className="p-3 text-xs bg-red-50 border border-red-200/80 text-red-700 rounded-xl leading-relaxed">
+          {error}
         </div>
+      )}
 
-        {error && (
-          <div className="bg-red-100 border-2 border-[#2c2a29] p-3 text-xs font-freeman text-red-800">
-            {error}
-          </div>
-        )}
+      {stepStatus && (
+        <div className="p-2.5 text-xs bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl font-mono flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+          <span>{stepStatus}</span>
+        </div>
+      )}
 
-        {stepStatus && (
-          <div className="bg-emerald-100 border-2 border-emerald-600 p-3 text-xs font-bold text-emerald-800 animate-pulse font-mono">
-            {stepStatus}
-          </div>
-        )}
-
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          {/* Full Name */}
-          <div>
-            <label className="font-freeman block text-xs font-bold uppercase tracking-wider mb-1 text-[#2c2a29]">
-              Your Full Name
-            </label>
-            <input
-              type="text"
-              required
-              placeholder="Alex Mercer"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full px-3 py-2 bg-white border-2 border-[#2c2a29] text-sm font-sans focus:outline-none brutal-shadow-center"
-            />
-          </div>
-
-          {/* Desired Address */}
-          <div>
-            <label className="font-freeman block text-xs font-bold uppercase tracking-wider mb-1 text-[#2c2a29]">
-              Choose Your New Mail Address
-            </label>
-            <div className="flex border-2 border-[#2c2a29] bg-white brutal-shadow-center overflow-hidden">
+      <div className="space-y-3.5">
+        {/* Full Name */}
+        <div className="w-full">
+          <label
+            htmlFor="signup-name"
+            className="block text-xs font-medium text-[#5a5a61] mb-1.5"
+          >
+            Full Name
+          </label>
+          <div className="relative">
+            <div className="flex items-center rounded-xl border border-black/10 bg-white hover:border-black/20 focus-within:!border-[#111114] focus-within:!ring-1 focus-within:!ring-[#111114] transition-all px-3 py-2 text-sm">
               <input
+                id="signup-name"
                 type="text"
                 required
+                placeholder="Alex Mercer"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full outline-none bg-transparent text-[#111114] placeholder-[#797981]"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Desired Address Handle */}
+        <div className="w-full">
+          <label
+            htmlFor="signup-handle"
+            className="block text-xs font-medium text-[#5a5a61] mb-1.5"
+          >
+            Choose Your Mail Address
+          </label>
+          <div className="relative">
+            <div className="flex items-center rounded-xl border border-black/10 bg-white hover:border-black/20 focus-within:!border-[#111114] focus-within:!ring-1 focus-within:!ring-[#111114] transition-all px-3 py-2 text-sm">
+              <input
+                id="signup-handle"
+                type="text"
+                required
+                autoCapitalize="none"
+                autoCorrect="off"
                 placeholder="alex"
                 value={handle}
                 onChange={(e) => setHandle(e.target.value)}
-                className="flex-1 px-3 py-2 text-sm font-sans focus:outline-none lowercase"
+                className="flex-1 outline-none bg-transparent text-[#111114] placeholder-[#797981] lowercase"
               />
-              <span className="bg-[#FEFBEA] border-l-2 border-[#2c2a29] px-2.5 py-2 text-xs font-mono font-bold text-[#8544FA] flex items-center select-none">
+              <span className="text-xs font-mono font-medium text-[#5a5a61] bg-[#f0f0f2] px-2 py-0.5 rounded ml-2 select-none shrink-0">
                 @agentmail.to
               </span>
             </div>
-            <p className="text-[11px] text-gray-500 mt-1 font-sans">
-              No external email needed. This becomes your official inbox.
-            </p>
           </div>
+          <p className="text-[11px] text-[#797981] mt-1 font-normal">
+            No external email needed. This becomes your official autonomous inbox.
+          </p>
+        </div>
 
-          {/* Password */}
-          <div>
-            <label className="font-freeman block text-xs font-bold uppercase tracking-wider mb-1 text-[#2c2a29]">
-              Set Password
-            </label>
-            <input
-              type="password"
-              required
-              minLength={8}
-              placeholder="At least 8 characters"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 bg-white border-2 border-[#2c2a29] text-sm font-sans focus:outline-none brutal-shadow-center"
-            />
-          </div>
-
-          {/* Submit */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="button-primary bg-[#8544FA] text-[#FEFBEA] w-full py-3 text-lg font-bold tracking-wide hover:bg-[#7330ea] disabled:opacity-50 mt-2"
+        {/* Password */}
+        <div className="w-full">
+          <label
+            htmlFor="signup-password"
+            className="block text-xs font-medium text-[#5a5a61] mb-1.5"
           >
-            {loading ? "CREATING INBOX..." : "CREATE INBOX & SIGN UP"}
-          </button>
-        </form>
+            Password
+          </label>
+          <div className="relative">
+            <div className="flex items-center rounded-xl border border-black/10 bg-white hover:border-black/20 focus-within:!border-[#111114] focus-within:!ring-1 focus-within:!ring-[#111114] transition-all px-3 py-2 text-sm">
+              <input
+                id="signup-password"
+                type="password"
+                required
+                minLength={8}
+                placeholder="At least 8 characters"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full outline-none bg-transparent text-[#111114] placeholder-[#797981]"
+              />
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+
+      {/* CTA Button */}
+      <button
+        type="submit"
+        disabled={loading}
+        className="inline-flex items-center justify-center rounded-full transition-all duration-200 h-10 px-5 text-sm font-medium gap-2 bg-[#111114] text-white hover:bg-[#27272a] active:scale-[0.98] shadow-sm hover:shadow w-full disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer mt-2"
+      >
+        <span>{loading ? "Creating Inbox..." : "Create Account"}</span>
+      </button>
+    </form>
   );
 }

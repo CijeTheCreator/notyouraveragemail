@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useQuery, useConvexAuth } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import Link from "next/link";
+import AuthLayout from "@/app/components/auth/AuthLayout";
 
 export default function CompanionConnectPage() {
   const { isAuthenticated, isLoading } = useConvexAuth();
@@ -33,60 +34,82 @@ export default function CompanionConnectPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FEFBEA]">
-        <p className="font-freeman text-xl text-[#2c2a29]">Loading NotYourAverageMail...</p>
-      </div>
+      <AuthLayout subtitle="Desktop Companion Link">
+        <div className="py-12 text-center">
+          <div className="inline-block w-5 h-5 border-2 border-[#111114] border-t-transparent rounded-full animate-spin mb-3" />
+          <p className="text-xs text-[#5a5a61] font-medium">
+            Loading NotYourAverageMail...
+          </p>
+        </div>
+      </AuthLayout>
     );
   }
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FEFBEA] py-12 px-4">
-        <div className="max-w-md w-full space-y-6 bg-purple-100 p-8 border-2 border-[#2c2a29] brutal-shadow-left text-center">
-          <h2 className="text-4xl font-anton text-[#2c2a29]">
-            CONNECT DESKTOP BUDDY
-          </h2>
-          <p className="font-freeman text-sm text-[#2c2a29]">
-            Please sign in to your NotYourAverageMail account to link your cursor companion.
-          </p>
-          <div className="pt-4">
+      <AuthLayout subtitle="Desktop Companion Link">
+        <div className="space-y-6 text-center py-2">
+          <div className="space-y-2">
+            <h2 className="text-base font-semibold text-[#111114]">
+              Connect Desktop Companion
+            </h2>
+            <p className="text-xs text-[#5a5a61] leading-relaxed max-w-xs mx-auto">
+              Please sign in to your NotYourAverageMail account to link your desktop cursor companion.
+            </p>
+          </div>
+
+          <div className="pt-2">
             <Link
               href="/auth/signin?redirect=/auth/companion"
-              className="inline-block w-full bg-[#8544FA] text-white font-bold py-3 px-6 border-2 border-[#2c2a29] brutal-shadow hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+              className="inline-flex items-center justify-center rounded-full transition-all duration-200 h-10 px-5 text-sm font-medium gap-2 bg-[#111114] text-white hover:bg-[#27272a] active:scale-[0.98] shadow-sm hover:shadow w-full"
             >
               Sign In to Continue ↗
             </Link>
           </div>
         </div>
-      </div>
+      </AuthLayout>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#FEFBEA] py-12 px-4">
-      <div className="max-w-md w-full space-y-6 bg-green-100 p-8 border-2 border-[#2c2a29] brutal-shadow-left text-center">
-        <div className="inline-block p-4 bg-green-200 border-2 border-[#2c2a29] rounded-full">
-          <span className="text-4xl">⚡</span>
+    <AuthLayout subtitle="Desktop Companion Link">
+      <div className="space-y-5 text-center py-2">
+        <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 mb-1">
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
         </div>
-        <h2 className="text-4xl font-anton text-[#2c2a29]">
-          ACCOUNT CONNECTED!
-        </h2>
-        <p className="font-freeman text-sm text-[#2c2a29]">
-          Linking your desktop companion to <strong>{inboxId}</strong>.
-        </p>
 
-        <div className="pt-4 space-y-3">
+        <div className="space-y-1.5">
+          <h2 className="text-base font-semibold text-[#111114]">
+            Account Connected
+          </h2>
+          <p className="text-xs text-[#5a5a61] leading-relaxed">
+            Linking desktop companion to:
+          </p>
+          <div className="inline-block px-3 py-1 bg-[#f0f0f2] border border-black/5 rounded-lg text-xs font-mono font-medium text-[#111114]">
+            {inboxId}
+          </div>
+        </div>
+
+        <div className="pt-3 space-y-3">
           <a
             href={deepLink}
-            className="inline-block w-full bg-[#2c2a29] text-white font-bold py-3 px-6 border-2 border-[#2c2a29] brutal-shadow hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+            className="inline-flex items-center justify-center rounded-full transition-all duration-200 h-10 px-5 text-sm font-medium gap-2 bg-[#111114] text-white hover:bg-[#27272a] active:scale-[0.98] shadow-sm hover:shadow w-full"
           >
             Open Desktop Companion ↗
           </a>
-          <p className="text-xs font-mono text-gray-600">
-            If your browser doesn't open the app automatically, click the button above.
+          <p className="text-[11px] text-[#797981] leading-relaxed">
+            If your browser doesn&apos;t open the app automatically, click the button above.
           </p>
         </div>
       </div>
-    </div>
+    </AuthLayout>
   );
 }

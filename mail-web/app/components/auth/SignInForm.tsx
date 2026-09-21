@@ -1,27 +1,22 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthActions } from "@convex-dev/auth/react";
-import { useConvexAuth } from "convex/react";
 import { toast } from "sonner";
 
-export default function SignInForm() {
+interface SignInFormProps {
+  onSwitchToSignUp?: () => void;
+}
+
+export default function SignInForm({ onSwitchToSignUp }: SignInFormProps) {
   const router = useRouter();
-  const { isAuthenticated, isLoading } = useConvexAuth();
   const { signIn } = useAuthActions();
   const [handle, setHandle] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isNewAccountNeeded, setIsNewAccountNeeded] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (!isLoading && isAuthenticated) {
-      router.replace("/mail");
-    }
-  }, [isLoading, isAuthenticated, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +25,6 @@ export default function SignInForm() {
     setLoading(true);
 
     try {
-      // Normalize handle to full email
       const trimmed = handle.trim().toLowerCase();
       const email = trimmed.includes("@") ? trimmed : `${trimmed}@agentmail.to`;
 
@@ -49,7 +43,7 @@ export default function SignInForm() {
 
       if (rawMsg.includes("InvalidAccountId") || rawMsg.includes("Could not find account")) {
         friendlyMsg =
-          "No account found with this username. Since you connected to your new Convex Cloud database, please Sign Up to initialize your account!";
+          "No account found with this username. Please Sign Up to initialize your autonomous inbox!";
         setIsNewAccountNeeded(true);
       } else if (rawMsg.includes("InvalidSecret") || rawMsg.includes("password")) {
         friendlyMsg = "Incorrect password. Please verify your password.";
@@ -65,83 +59,80 @@ export default function SignInForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#FEFBEA] py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-6 bg-purple-100 p-8 border-2 border-[#2c2a29] brutal-shadow-left">
-        <div>
-          <h2 className="heading-text-2 text-5xl font-anton text-center mb-2">
-            SIGN IN
-          </h2>
-          <p className="text-center text-sm font-freeman text-[#2c2a29]">
-            Don't have an account?{" "}
-            <Link
-              href="/auth/signup"
-              className="text-[#8544FA] font-bold underline hover:text-black transition-colors"
+    <form className="space-y-4" onSubmit={handleSubmit}>
+      {error && (
+        <div className="p-3 text-xs bg-red-50 border border-red-200/80 text-red-700 rounded-xl space-y-1.5 leading-relaxed">
+          <p className="font-medium">{error}</p>
+          {isNewAccountNeeded && onSwitchToSignUp && (
+            <button
+              type="button"
+              onClick={onSwitchToSignUp}
+              className="text-xs font-semibold text-red-900 underline hover:text-black block"
             >
-              Create your @agentmail.to address
-            </Link>
-          </p>
+              Go to Sign Up →
+            </button>
+          )}
         </div>
+      )}
 
-        {error && (
-          <div className="bg-red-100 border-2 border-[#2c2a29] p-3.5 text-xs font-sans text-red-900 brutal-shadow-sm space-y-2">
-            <p className="font-semibold">{error}</p>
-            {isNewAccountNeeded && (
-              <Link
-                href="/auth/signup"
-                className="brutal-btn inline-block bg-[#8544FA] text-white px-3 py-1.5 text-xs font-bold hover:bg-[#702ff3]"
-              >
-                Go to Sign Up →
-              </Link>
-            )}
-          </div>
-        )}
-
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          {/* Username / Handle */}
-          <div>
-            <label className="font-freeman block text-xs font-bold uppercase tracking-wider mb-1 text-[#2c2a29]">
-              Your Email or Username
-            </label>
-            <div className="flex border-2 border-[#2c2a29] bg-white brutal-shadow-center overflow-hidden">
+      <div className="space-y-3.5">
+        {/* Email or Username */}
+        <div className="w-full">
+          <label
+            htmlFor="signin-handle"
+            className="block text-xs font-medium text-[#5a5a61] mb-1.5"
+          >
+            Email or Username
+          </label>
+          <div className="relative">
+            <div className="flex items-center rounded-xl border border-black/10 bg-white hover:border-black/20 focus-within:!border-[#111114] focus-within:!ring-1 focus-within:!ring-[#111114] transition-all px-3 py-2 text-sm">
               <input
+                id="signin-handle"
                 type="text"
                 required
-                placeholder="alex"
+                autoCapitalize="none"
+                autoCorrect="off"
+                placeholder="name@example.com or handle"
                 value={handle}
                 onChange={(e) => setHandle(e.target.value)}
-                className="flex-1 px-3 py-2 text-sm font-sans focus:outline-none"
+                className="w-full outline-none bg-transparent text-[#111114] placeholder-[#797981]"
               />
-              <span className="bg-[#FEFBEA] border-l-2 border-[#2c2a29] px-2.5 py-2 text-xs font-mono font-bold text-gray-600 flex items-center select-none">
-                @agentmail.to
-              </span>
             </div>
           </div>
+        </div>
 
-          {/* Password */}
-          <div>
-            <label className="font-freeman block text-xs font-bold uppercase tracking-wider mb-1 text-[#2c2a29]">
-              Password
-            </label>
-            <input
-              type="password"
-              required
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 bg-white border-2 border-[#2c2a29] text-sm font-sans focus:outline-none brutal-shadow-center"
-            />
-          </div>
-
-          {/* Submit */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="button-primary bg-[#8544FA] text-[#FEFBEA] w-full py-3 text-lg font-bold tracking-wide hover:bg-[#7330ea] disabled:opacity-50 mt-2"
+        {/* Password */}
+        <div className="w-full">
+          <label
+            htmlFor="signin-password"
+            className="block text-xs font-medium text-[#5a5a61] mb-1.5"
           >
-            {loading ? "AUTHENTICATING..." : "SIGN IN TO MAIL"}
-          </button>
-        </form>
+            Password
+          </label>
+          <div className="relative">
+            <div className="flex items-center rounded-xl border border-black/10 bg-white hover:border-black/20 focus-within:!border-[#111114] focus-within:!ring-1 focus-within:!ring-[#111114] transition-all px-3 py-2 text-sm">
+              <input
+                id="signin-password"
+                type="password"
+                required
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full outline-none bg-transparent text-[#111114] placeholder-[#797981]"
+              />
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+
+      {/* CTA Button */}
+      <button
+        type="submit"
+        disabled={loading}
+        className="inline-flex items-center justify-center rounded-full transition-all duration-200 h-10 px-5 text-sm font-medium gap-2 bg-[#111114] text-white hover:bg-[#27272a] active:scale-[0.98] shadow-sm hover:shadow w-full disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer mt-2"
+      >
+        <span>{loading ? "Signing in..." : "Log In"}</span>
+      </button>
+    </form>
   );
 }
