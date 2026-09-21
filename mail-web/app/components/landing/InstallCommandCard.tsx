@@ -1,19 +1,29 @@
 "use client";
 
 import React, { useState } from "react";
-import { Copy, Check, Terminal, Download } from "lucide-react";
+import { Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 import { CornerBrackets } from "./FirecrawlPrimitives";
 
 export default function InstallCommandCard() {
+  const [activeTab, setActiveTab] = useState<"human" | "agent">("human");
   const [copied, setCopied] = useState(false);
-  const installCommand =
-    "curl -fsSL https://raw.githubusercontent.com/CijeTheCreator/modern-mail/main/mail-desktop/scripts/install.sh | bash";
+
+  const humanCommand =
+    "curl -fsSL https://steady-ram-494.convex.site/install.sh | bash";
+  const agentCommand =
+    "Run the one-line command to install and launch MailBuddy: curl -fsSL https://steady-ram-494.convex.site/install.sh | bash";
+
+  const currentCommand = activeTab === "human" ? humanCommand : agentCommand;
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(installCommand);
+    navigator.clipboard.writeText(currentCommand);
     setCopied(true);
-    toast.success("Install command copied to clipboard!");
+    toast.success(
+      activeTab === "human"
+        ? "Install command copied to clipboard!"
+        : "Agent command copied to clipboard!"
+    );
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -31,48 +41,71 @@ export default function InstallCommandCard() {
         <CornerBrackets strokeColor="text-black/[0.06]" />
 
         <div className="max-w-3xl">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#111114] leading-[1.1] mb-4">
-            Install the Desktop Companion <br />
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#111114] leading-[1.1] mb-6">
+            Install MailBuddy <br />
             <span className="text-[#5a5a61]">in seconds.</span>
           </h2>
 
+          {/* Tabs without icons or emojis */}
+          <div className="inline-flex p-1 rounded bg-black/[0.04] border border-black/[0.08] mb-6">
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab("human");
+                setCopied(false);
+              }}
+              className={`px-3.5 py-1.5 rounded text-xs font-mono font-medium transition-all ${
+                activeTab === "human"
+                  ? "bg-white text-[#111114] shadow-2xs"
+                  : "text-[#5a5a61] hover:text-[#111114]"
+              }`}
+            >
+              I am a Human
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab("agent");
+                setCopied(false);
+              }}
+              className={`px-3.5 py-1.5 rounded text-xs font-mono font-medium transition-all ${
+                activeTab === "agent"
+                  ? "bg-white text-[#111114] shadow-2xs"
+                  : "text-[#5a5a61] hover:text-[#111114]"
+              }`}
+            >
+              I am an Agent
+            </button>
+          </div>
+
           <p className="text-sm sm:text-base text-[#5a5a61] leading-relaxed max-w-2xl font-normal mb-8">
-            Run this single line in your terminal to download, verify, and launch the companion
-            app directly into your menu bar.
+            {activeTab === "human"
+              ? "Run it in your terminal to download, verify, and launch MailBuddy directly in your menu bar."
+              : "Run the one-line command to install and launch MailBuddy."}
           </p>
 
-          {/* Terminal Box */}
-          <div className="rounded border border-black/[0.12] bg-[#111114] overflow-hidden shadow-xs relative">
+          {/* Regular Code Box with Copy Button */}
+          <div className="rounded border border-black/[0.12] bg-[#111114] p-4 sm:p-5 flex items-center justify-between gap-4 overflow-x-auto shadow-xs relative">
             <CornerBrackets strokeColor="text-white/10" />
 
-            {/* Window Chrome Header */}
-            <div className="px-4 py-2.5 bg-[#1a1a1e] border-b border-white/[0.08] flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <span className="size-2 rounded-full bg-[#ff5f56]" />
-                <span className="size-2 rounded-full bg-[#ffbd2e]" />
-                <span className="size-2 rounded-full bg-[#27c93f]" />
-              </div>
-              <span className="text-[11px] font-mono text-white/50">
-                bash — companion-install.sh
-              </span>
-              <div className="w-10" />
-            </div>
-
-            {/* Command Line */}
-            <div className="p-4 sm:p-5 flex items-center justify-between gap-4 overflow-x-auto">
-              <div className="flex items-center gap-3 font-mono text-xs sm:text-sm text-white whitespace-nowrap">
+            <div className="flex items-center gap-3 font-mono text-xs sm:text-sm text-white whitespace-nowrap">
+              {activeTab === "human" && (
                 <span className="text-emerald-400 select-none">$</span>
-                <span className="selection:bg-white/20">{installCommand}</span>
-              </div>
-
-              <button
-                onClick={handleCopy}
-                className="size-8 rounded bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors shrink-0 cursor-pointer"
-                title="Copy command"
-              >
-                {copied ? <Check className="size-4 text-emerald-400" /> : <Copy className="size-4" />}
-              </button>
+              )}
+              <span className="selection:bg-white/20">{currentCommand}</span>
             </div>
+
+            <button
+              onClick={handleCopy}
+              className="size-8 rounded bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors shrink-0 cursor-pointer"
+              title="Copy command"
+            >
+              {copied ? (
+                <Check className="size-4 text-emerald-400" />
+              ) : (
+                <Copy className="size-4" />
+              )}
+            </button>
           </div>
         </div>
       </div>

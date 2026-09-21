@@ -55,8 +55,9 @@ export default function Sidebar({
       <div className="flex flex-col min-h-0 flex-1 overflow-y-auto">
         {/* Brand Header */}
         <div className="h-14 px-4 flex items-center border-b border-[#00000014] flex-shrink-0">
-          <span className="truncate font-semibold tracking-tight text-[#111114] text-sm block">
-            <span className="italic">NotYourAverage</span>Mail
+          <span className="truncate tracking-tight text-[#111114] text-sm block">
+            <span className="font-bold">NotYourAverage</span>
+            <span className="font-normal text-[#5a5a61]">Mail</span>
           </span>
         </div>
 

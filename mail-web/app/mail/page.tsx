@@ -449,11 +449,10 @@ export default function MailPage() {
     return (
       <div className="h-screen w-screen flex flex-col items-center justify-center bg-[#fafafb] text-[#161619] font-sans">
         <div className="border border-[#00000014] bg-white p-6 rounded-lg shadow-sm flex flex-col items-center gap-3">
-          <div className="flex items-center justify-center">
-            <span className="font-semibold text-sm tracking-tight text-[#111114]">
-              <span className="italic">NotYourAverage</span>Mail
+            <span className="text-sm tracking-tight text-[#111114]">
+              <span className="font-bold">NotYourAverage</span>
+              <span className="font-normal text-[#5a5a61]">Mail</span>
             </span>
-          </div>
           <div className="flex items-center gap-2 text-xs text-[#797981]">
             <span className="size-2 rounded-full bg-[#111114] animate-ping" />
             Verifying authentication...

@@ -13,24 +13,39 @@ const FAQS: FAQItem[] = [
   {
     question: "How does the subscription cancellation agent work?",
     answer:
-      "When recurring bills or invoices hit your inbox, our agent identifies the subscription. It deploys an autonomous Firecrawl browser agent to log in, navigate the cancellation screens, decline the guilt-trip retention offers, confirm the cancellation, and return clear screenshot proof directly to your mailbox.",
+      "Cancel in one click. NotYourAverageMail finds and collates your subscriptions so you can track them all in one place without connecting your bank. When you’re ready to cancel, click the cancel button and Firecrawl navigates the cancellation process for you.",
   },
   {
     question: "How does the Data Broker removal feature protect my privacy?",
     answer:
-      "Data brokers quietly scrape public records and resell your contact details. NotYourAverageMail indexes hundreds of data brokers, automates formal legal opt-out requests, automatically replies to confirmation emails, and interacts with opt-out forms via Firecrawl so your private records are wiped.",
+      "Data brokers collect and resell personal information like your contact details. NotYourAverageMail finds your information across hundreds of data brokers and, with your approval, sends opt-out requests on your behalf. It handles confirmation emails and uses Firecrawl to complete opt-out forms when needed, helping remove your information from data broker databases.",
   },
   {
-    question: "What is Trust Intelligence?",
+    question: "What is Know Your Sender?",
     answer:
-      "Whenever a company sends you an email, we extract their business domain and scrape TrustPilot in real time. You will see a verified rating badge right beside the sender's address showing their star score, total review count, and complaint signals (such as scam warnings or billing disputes).",
+      "Whenever a company sends you an email, NotYourAverageMail identifies the business and uses Firecrawl to check Trustpilot in real time. You’ll see a rating badge right beside the sender, showing their star rating, review count, and complaint signals such as scam warnings or billing disputes.",
   },
   {
-    question: "How does the Desktop Companion work?",
+    question: "How does MailBuddy work?",
     answer:
-      "Inspired by Clicky (YC), our companion is a lightweight native macOS app living beside your cursor. OTP Buddy detects incoming 2FA verification codes and automatically types the digits into the active field on your screen. You can also select any document in Figma, Pages, or your browser and press ⌘⇧M to draft an email, or hold Control + Option (⌃⌥) for streaming voice dictation.",
+      "Inspired by Clicky (YC), MailBuddy is a lightweight native macOS app that lives beside your cursor. When a 2FA code arrives, MailBuddy finds it and types it into the active verification field for you. Select any document or content in Figma, Pages, or your browser and press ⌘⇧M to draft an email, or hold Control + Option (⌃⌥) to dictate one with streaming voice input.",
   },
 ];
+
+function formatBrandText(text: string): React.ReactNode {
+  if (!text.includes("NotYourAverageMail")) return text;
+  const parts = text.split("NotYourAverageMail");
+  return parts.map((part, i) => (
+    <React.Fragment key={i}>
+      {i > 0 && (
+        <span>
+          <strong className="font-bold text-[#111114]">NotYourAverage</strong>Mail
+        </span>
+      )}
+      {part}
+    </React.Fragment>
+  ));
+}
 
 export default function LandingFAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
@@ -58,8 +73,8 @@ export default function LandingFAQ() {
           </h2>
 
           <p className="text-sm sm:text-base text-[#5a5a61] leading-relaxed max-w-2xl font-normal">
-            Everything you need to know about our autonomous agents, screenshot proof, and desktop
-            companion security.
+            Everything you need to know about{" "}
+            <strong className="font-bold text-[#111114]">NotYourAverage</strong>Mail and MailBuddy.
           </p>
         </div>
 
@@ -83,7 +98,7 @@ export default function LandingFAQ() {
 
                 {isOpen && (
                   <div className="pb-6 pr-12 text-xs sm:text-sm text-[#5a5a61] leading-relaxed font-normal">
-                    {faq.answer}
+                    {formatBrandText(faq.answer)}
                   </div>
                 )}
               </div>

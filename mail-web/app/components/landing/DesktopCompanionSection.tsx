@@ -25,21 +25,21 @@ const COMPANION_FEATURES: CompanionFeature[] = [
   {
     title: "OTP Buddy",
     description:
-      "When an OTP or 2FA verification email arrives, the companion intercepts the message, detects the code, locates the OTP input field on your active screen, and automatically fills the digits into the field.",
-    stack: ["agentmail", "convex"],
+      "When an OTP or 2FA verification email arrives, MailBuddy intercepts the message, detects the code, locates the OTP input field on your active screen, and automatically fills the digits into the field.",
+    stack: ["agentmail", "openai", "convex"],
   },
   {
     title: "Contextual Drafting",
     shortcut: "⌘⇧M",
     description:
-      "Draft context-rich emails directly from any application on your computer — Pages, Keynote, Figma, or your web browser. Select any file, document, or screen content and press ⌘⇧M to instantly draft an email from anywhere. The agent also uses Firecrawl to search the web and automatically discover the right recipient email contacts if they aren't already in your address book.",
+      "Draft context-rich emails from anywhere on your computer. Select a file, document, or anything on your screen and press ⌘⇧M to instantly turn it into an email, whether you’re in Pages, Keynote, Figma, or your browser. If you don’t have the recipient’s email, MailBuddy searches the web and finds the right contact for you.",
     stack: ["firecrawl", "openai", "codex", "convex"],
   },
   {
     title: "Voice Push-To-Talk",
     shortcut: "⌃⌥",
     description:
-      "Hold Control + Option anywhere on your computer and speak. Streaming voice dictation translates your voice directly into structured email drafts ready for review or sending.",
+      "Hold Control + Option anywhere on your computer and speak. MailBuddy turns your voice into a structured email draft in real time, ready for you to review and send.",
     stack: ["openai", "convex"],
   },
 ];
@@ -86,18 +86,14 @@ export default function DesktopCompanionSection() {
       <div className="p-8 sm:p-12 lg:p-16 border-b border-black/[0.08] relative">
         <CornerBrackets strokeColor="text-black/[0.06]" />
         <div className="max-w-3xl">
-          <div className="text-[11px] font-mono tracking-widest uppercase text-[#797981] mb-3">
-            DESKTOP COMPANION
-          </div>
-
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#111114] leading-[1.1] mb-4">
-            An ambient assistant living <br />
-            <span className="text-[#5a5a61]">beside your cursor.</span>
+            An assistant that’s always there, <br />
+            <span className="text-[#5a5a61]">right where you work.</span>
           </h2>
 
           <p className="text-sm sm:text-base text-[#5a5a61] leading-relaxed max-w-2xl font-normal">
-            Inspired by Clicky (a YC app), NotYourAverageMail Companion is an ambient AI buddy living
-            beside your cursor to handle email workflows seamlessly across your computer.
+            Inspired by Clicky (YC), the MailBuddy is an AI buddy that lives beside your cursor, ready
+            to handle email workflows seamlessly across your computer.
           </p>
         </div>
       </div>

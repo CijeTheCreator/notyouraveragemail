@@ -21,7 +21,7 @@ export default function LandingFooter() {
             href="/"
             className="text-base font-semibold tracking-tight text-[#111114] hover:opacity-85 transition-opacity"
           >
-            <span>NotYourAverage</span>
+            <span className="font-bold">NotYourAverage</span>
             <span className="font-normal text-[#5a5a61]">Mail</span>
           </Link>
           <p className="text-xs text-[#797981] font-mono">
@@ -38,13 +38,6 @@ export default function LandingFooter() {
           >
             GitHub
           </a>
-        </div>
-      </div>
-
-      {/* Bottom Copyright Strip */}
-      <div className="p-6 sm:p-8 flex items-center justify-between text-[11px] font-mono text-[#797981] bg-white">
-        <div>
-          © {new Date().getFullYear()} NotYourAverageMail.
         </div>
       </div>
     </footer>

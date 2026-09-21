@@ -24,19 +24,19 @@ const WEB_FEATURES: Feature[] = [
   {
     title: "Subscription Cancellation",
     description:
-      "When receipt emails arrive, NotYourAverageMail detects recurring charges, deploys an autonomous cancellation agent via Firecrawl to navigate customer portals and cancel plans, and returns screenshot proof of cancellation directly to you.",
+      "NotYourAverageMail brings your subscriptions into one place. When you want to cancel, just click cancel and it takes care of the rest, navigating the customer portal and sending you screenshot proof when it’s done.",
     stack: ["firecrawl", "agentmail", "openai", "convex"],
   },
   {
     title: "Remove Your Personal Information",
     description:
-      "NotYourAverageMail indexes hundreds of data brokers, automates formal opt-out requests, automatically replies to emails from them, and uses Firecrawl to interact with the pages if needed. It takes proactive measures to prevent spam and protect your privacy.",
-    stack: ["firecrawl", "agentmail", "convex"],
+      "NotYourAverageMail finds your information across hundreds of data brokers. With one click, it sends opt-out requests, handles replies, and interacts with their websites when needed to get your data removed. It takes proactive steps to reduce spam and protect your privacy.",
+    stack: ["firecrawl", "agentmail", "openai", "convex"],
   },
   {
-    title: "Trust Intelligence",
+    title: "Know Your Sender",
     description:
-      "NotYourAverageMail extracts the sender's business domain and scrapes TrustPilot in real time to evaluate company reputation, star ratings, review counts, and complaint signals (such as scam or billing disputes) right beside the sender in your inbox.",
+      "NotYourAverageMail checks the sender against Trustpilot in real time, showing you their rating, review count, and complaint signals right next to the email. See who you’re dealing with before you click, reply, or buy.",
     stack: ["firecrawl", "openai", "convex"],
   },
 ];
@@ -68,6 +68,21 @@ function TechStackRow({ stack }: { stack: TechKey[] }) {
   );
 }
 
+function formatBrandText(text: string): React.ReactNode {
+  if (!text.includes("NotYourAverageMail")) return text;
+  const parts = text.split("NotYourAverageMail");
+  return parts.map((part, i) => (
+    <React.Fragment key={i}>
+      {i > 0 && (
+        <span>
+          <strong className="font-bold text-[#111114]">NotYourAverage</strong>Mail
+        </span>
+      )}
+      {part}
+    </React.Fragment>
+  ));
+}
+
 export default function WebFeaturesSection() {
   return (
     <section
@@ -90,8 +105,10 @@ export default function WebFeaturesSection() {
 
           <p className="text-sm sm:text-base text-[#5a5a61] leading-relaxed max-w-2xl font-normal">
             Traditional webmail sits passively while subscriptions renew and data brokers sell your
-            address. NotYourAverageMail executes proactive autonomous workflows to protect your
-            wallet and privacy.
+            address. <strong className="font-bold text-[#111114]">NotYourAverage</strong>Mail puts
+            subscription cancellations in one place, so you can cancel multiple subscriptions from
+            your inbox, while proactively taking steps to not only filter spam, but request deletion
+            of your data from data brokers.
           </p>
         </div>
       </div>
@@ -113,7 +130,7 @@ export default function WebFeaturesSection() {
               </h3>
 
               <p className="text-sm text-[#5a5a61] leading-relaxed font-normal">
-                {feat.description}
+                {formatBrandText(feat.description)}
               </p>
             </div>
 

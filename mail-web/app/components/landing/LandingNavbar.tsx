@@ -42,8 +42,9 @@ export default function LandingNavbar() {
           href="/"
           className="text-sm font-semibold tracking-tight text-[#111114] hover:opacity-85 transition-opacity"
         >
-          <span className="font-semibold text-[15px] tracking-tight text-[#111114]">
-            NotYourAverage<span className="font-normal text-[#5a5a61]">Mail</span>
+          <span className="text-[15px] tracking-tight text-[#111114]">
+            <span className="font-bold">NotYourAverage</span>
+            <span className="font-normal text-[#5a5a61]">Mail</span>
           </span>
         </Link>
 
@@ -59,7 +60,7 @@ export default function LandingNavbar() {
             href="#companion"
             className="hover:text-[#111114] transition-colors"
           >
-            Desktop Companion
+            MailBuddy
           </a>
           <a
             href="#qypa"
@@ -143,7 +144,7 @@ export default function LandingNavbar() {
             onClick={() => setMobileMenuOpen(false)}
             className="text-[#5a5a61] hover:text-[#111114] py-1"
           >
-            Desktop Companion
+            MailBuddy
           </a>
           <a
             href="#qypa"

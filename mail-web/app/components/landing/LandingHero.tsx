@@ -26,16 +26,17 @@ export default function LandingHero() {
 
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6 text-center z-10">
         {/* Hero Title */}
-        <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-[#111114] leading-[1.08] mb-6 max-w-4xl mx-auto">
-          An All Gas, No Brakes way of experiencing mail
+        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[68px] font-bold tracking-tight text-[#111114] leading-[1.1] mb-6 max-w-5xl mx-auto">
+          An All Gas, No Brakes way <br className="hidden sm:inline" />
+          to consume and compose mail
         </h1>
 
         {/* Subtitle - Friendly, Human, All Gas No Brakes */}
         <p className="text-base sm:text-lg text-[#5a5a61] max-w-2xl mx-auto leading-relaxed mb-10 font-normal">
-          An AI-native email engine built to handle the dirty work. Spot recurring bills and cancel
-          them with verified screenshot proof, wipe your personal information off hundreds of data
-          brokers, check live sender trust ratings, and control your inbox hands-free with an ambient
-          Desktop Companion.
+          An innovative mailbox that transforms how you manage email, making it easy to cancel
+          subscriptions without linking your bank account, remove your personal information from data
+          brokers, check live sender trust ratings, and take a fresh approach to composing and sending
+          messages.
         </p>
 
         {/* Action Buttons */}
@@ -63,7 +64,7 @@ export default function LandingHero() {
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 h-11 px-5 rounded border border-black/[0.1] bg-white hover:bg-black/[0.03] text-[#111114] text-xs font-mono font-medium transition-all shadow-2xs"
           >
             <Terminal className="size-3.5 text-[#5a5a61]" />
-            <span>Install Desktop Companion</span>
+            <span>Install MailBuddy</span>
           </a>
         </div>
       </div>

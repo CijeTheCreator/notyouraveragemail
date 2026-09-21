@@ -15,31 +15,31 @@ interface TechPartner {
 const PARTNERS: TechPartner[] = [
   {
     name: "AgentMail",
-    role: "Inboxes & Webhooks",
+    role: "Mail Infra",
     logo: "/svgs/agentmail-dark.svg",
     url: "https://agentmail.to",
   },
   {
     name: "Firecrawl",
-    role: "Web Extraction & Actions",
+    role: "Web Extraction & Interaction",
     logo: "/svgs/firecrawl-light.svg",
     url: "https://firecrawl.dev",
   },
   {
     name: "OpenAI",
-    role: "LLM & Vision Models",
+    role: "LLM, Transcription & Computer Use API",
     logo: "/svgs/openai-dark.svg",
     url: "https://openai.com",
   },
   {
     name: "Codex",
-    role: "Autonomous Agent Logic",
+    role: "Coding Agent",
     logo: "/svgs/codex-light.svg",
     url: "https://openai.com",
   },
   {
     name: "Convex",
-    role: "Realtime Reactive Sync",
+    role: "Realtime Backend, Frontend Hosting",
     logo: "/svgs/convex.svg",
     url: "https://convex.dev",
   },

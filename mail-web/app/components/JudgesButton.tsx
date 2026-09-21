@@ -23,7 +23,7 @@ export default function JudgesButton({ onClick, className }: JudgesButtonProps) 
       onClick={onClick}
       className={className}
     >
-      For Judges
+      For Wayne & Friends (Judges too, apparently 👀)
     </RainbowButton>
   );
 }

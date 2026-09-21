@@ -55,8 +55,11 @@ export default function JudgesPanel({
     process.env.NEXT_PUBLIC_TEST_OTP_URL ||
     "http://localhost:3002/otp";
   const installScriptUrl =
+    (process.env.NEXT_PUBLIC_CONVEX_SITE_URL
+      ? `${process.env.NEXT_PUBLIC_CONVEX_SITE_URL}/install.sh`
+      : null) ||
     process.env.NEXT_PUBLIC_COMPANION_INSTALL_SCRIPT_URL ||
-    "https://raw.githubusercontent.com/CijeTheCreator/modern-mail/main/mail-desktop/scripts/install.sh";
+    "https://steady-ram-494.convex.site/install.sh";
 
   const installCommand = `curl -fsSL ${installScriptUrl} | bash`;
 
@@ -162,7 +165,7 @@ export default function JudgesPanel({
                     : "text-[#5a5a61] hover:text-[#111114]"
                 }`}
               >
-                Desktop Companion
+                MailBuddy
               </button>
             </div>
 
@@ -186,9 +189,9 @@ export default function JudgesPanel({
                   </h3>
 
                   <p className="text-xs text-[#5a5a61] leading-relaxed">
-                    When receipt emails arrive, NotYourAverageMail detects recurring charges, deploys an
-                    autonomous cancellation agent via Firecrawl to navigate customer portals and
-                    cancel plans, and returns screenshot proof of cancellation directly to the user.
+                    <strong className="font-bold text-[#111114]">NotYourAverage</strong>Mail brings your
+                    subscriptions into one place. When you want to cancel, just click cancel and it takes care
+                    of the rest, navigating the customer portal and sending you screenshot proof when it’s done.
                   </p>
 
                   <div className="bg-[#fafafb] border border-[#00000014] rounded-lg p-3 space-y-2.5">
@@ -247,13 +250,14 @@ export default function JudgesPanel({
                 {/* Feature 2: Remove your personal information */}
                 <section className="space-y-3">
                   <h3 className="text-xs font-semibold text-[#111114]">
-                    Remove your personal information
+                    Remove Your Personal Information
                   </h3>
 
                   <p className="text-xs text-[#5a5a61] leading-relaxed">
-                    NotYourAverageMail indexes hundreds of data brokers, automates formal opt-out requests,
-                    automatically replies to emails from them, and tries to use Firecrawl to interact with
-                    the pages if needed. It takes proactive measures to prevent spam and protect your privacy.
+                    <strong className="font-bold text-[#111114]">NotYourAverage</strong>Mail finds your information
+                    across hundreds of data brokers. With one click, it sends opt-out requests, handles replies,
+                    and interacts with their websites when needed to get your data removed. It takes proactive
+                    steps to reduce spam and protect your privacy.
                   </p>
 
                   <div className="bg-[#fafafb] border border-[#00000014] rounded-lg p-3 space-y-2.5">
@@ -300,16 +304,16 @@ export default function JudgesPanel({
 
                 <hr className="border-t border-[#00000014]" />
 
-                {/* Feature 3: Trust Intelligence */}
+                {/* Feature 3: Know Your Sender */}
                 <section className="space-y-3">
                   <h3 className="text-xs font-semibold text-[#111114]">
-                    Trust Intelligence
+                    Know Your Sender
                   </h3>
 
                   <p className="text-xs text-[#5a5a61] leading-relaxed">
-                    NotYourAverageMail extracts the sender&apos;s business domain and scrapes TrustPilot in real
-                    time to evaluate company reputation, star ratings, review counts, and complaint signals
-                    (such as scam or billing disputes).
+                    <strong className="font-bold text-[#111114]">NotYourAverage</strong>Mail checks the sender
+                    against Trustpilot in real time, showing you their rating, review count, and complaint
+                    signals right next to the email. See who you’re dealing with before you click, reply, or buy.
                   </p>
 
                   <div className="bg-[#fafafb] border border-[#00000014] rounded-lg p-3 space-y-2">
@@ -329,12 +333,12 @@ export default function JudgesPanel({
                 {/* Installation Guide at the top */}
                 <section className="space-y-3">
                   <h3 className="text-xs font-semibold text-[#111114]">
-                    Installation Guide
+                    Install MailBuddy
                   </h3>
 
                   <div className="bg-[#fafafb] border border-[#00000014] rounded-lg p-3 space-y-2">
                     <p className="text-xs text-[#5a5a61] leading-relaxed">
-                      Run this simple one-line script in your terminal to install and launch the desktop companion:
+                      Run this in your terminal to download, verify, and launch MailBuddy directly into your menu bar:
                     </p>
 
                     <div className="flex items-center justify-between bg-white border border-[#00000014] rounded p-2 text-xs font-mono text-[#111114]">
@@ -357,23 +361,23 @@ export default function JudgesPanel({
                 {/* Clicky YC inspiration short summary */}
                 <div className="bg-[#f6f6f9] border border-[#00000014] rounded-lg p-3">
                   <p className="text-xs text-[#5a5a61] leading-relaxed">
-                    Inspired by Clicky (a YC app), NotYourAverageMail Companion is an ambient AI buddy living
-                    beside your cursor to handle email workflows seamlessly across your computer.
+                    Inspired by Clicky (YC), MailBuddy is an AI buddy that lives beside your cursor, ready
+                    to handle email workflows seamlessly across your computer.
                   </p>
                 </div>
 
                 <hr className="border-t border-[#00000014]" />
 
-                {/* Feature 1: OTP buddy */}
+                {/* Feature 1: OTP Buddy */}
                 <section className="space-y-3">
                   <h3 className="text-xs font-semibold text-[#111114]">
-                    OTP buddy
+                    OTP Buddy
                   </h3>
 
                   <p className="text-xs text-[#5a5a61] leading-relaxed">
-                    When an OTP or 2FA verification email arrives, the companion intercepts the message,
-                    detects the code, locates the OTP input field on your active screen, and automatically
-                    fills the digits into the field.
+                    When an OTP or 2FA verification email arrives, MailBuddy intercepts the message, detects
+                    the code, locates the OTP input field on your active screen, and automatically fills the
+                    digits into the field.
                   </p>
 
                   <div className="bg-[#fafafb] border border-[#00000014] rounded-lg p-3 space-y-2.5">
@@ -388,7 +392,7 @@ export default function JudgesPanel({
                     </a>
 
                     <p className="text-[11px] text-[#797981] leading-relaxed">
-                      Open the test OTP page, enter your mailbox address, and watch the companion automatically
+                      Open the test OTP page, enter your mailbox address, and watch MailBuddy automatically
                       navigate to the input and fill the code.
                     </p>
                   </div>
@@ -408,12 +412,12 @@ export default function JudgesPanel({
                   </div>
 
                   <p className="text-xs text-[#5a5a61] leading-relaxed">
-                    Draft context-rich emails directly from any application on your computer — Pages, Keynote,
-                    Figma, or your web browser. Select any file, document, or screen content and press{" "}
+                    Draft context-rich emails from anywhere on your computer. Select a file, document, or
+                    anything on your screen and press{" "}
                     <kbd className="font-mono text-[10px] bg-black/5 px-1 py-0.5 rounded">⌘⇧M</kbd> to
-                    instantly draft an email from anywhere. The agent also uses Firecrawl to search the web
-                    and automatically discover the right recipient email contacts if they aren&apos;t already
-                    in your address book.
+                    instantly turn it into an email, whether you’re in Pages, Keynote, Figma, or your
+                    browser. If you don’t have the recipient’s email, MailBuddy searches the web and finds
+                    the right contact for you.
                   </p>
                 </section>
 
@@ -432,8 +436,8 @@ export default function JudgesPanel({
 
                   <p className="text-xs text-[#5a5a61] leading-relaxed">
                     Hold <kbd className="font-mono text-[10px] bg-black/5 px-1 py-0.5 rounded">⌃⌥</kbd> anywhere
-                    on your computer and speak. Streaming voice dictation translates your voice directly into
-                    structured email drafts ready for review or sending.
+                    on your computer and speak. MailBuddy turns your voice into a structured email draft in
+                    real time, ready for you to review and send.
                   </p>
                 </section>
               </>
