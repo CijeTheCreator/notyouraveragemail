@@ -37,7 +37,7 @@ export default function LandingFAQ() {
 
   return (
     <section
-      id="qyfpa"
+      id="qypa"
       className="max-w-7xl mx-auto border-x border-black/[0.08] relative -mt-1 bg-white select-none scroll-mt-16"
     >
       {/* Top and Bottom Horizontal Divider Lines */}
@@ -50,7 +50,7 @@ export default function LandingFAQ() {
 
         <div className="max-w-3xl mb-12">
           <div className="text-[11px] font-mono tracking-widest uppercase text-[#797981] mb-3">
-            QYFPA
+            QYPA
           </div>
 
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#111114] leading-[1.1] mb-4">

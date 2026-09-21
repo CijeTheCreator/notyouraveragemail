@@ -62,10 +62,10 @@ export default function LandingNavbar() {
             Desktop Companion
           </a>
           <a
-            href="#qyfpa"
+            href="#qypa"
             className="hover:text-[#111114] transition-colors"
           >
-            QYFPA
+            QYPA
           </a>
           <a
             href="https://www.skills.sh/cijethecreator/notyouraveragemail-skills/unsub-skill"
@@ -146,11 +146,11 @@ export default function LandingNavbar() {
             Desktop Companion
           </a>
           <a
-            href="#qyfpa"
+            href="#qypa"
             onClick={() => setMobileMenuOpen(false)}
             className="text-[#5a5a61] hover:text-[#111114] py-1"
           >
-            QYFPA
+            QYPA
           </a>
           <a
             href="https://www.skills.sh/cijethecreator/notyouraveragemail-skills/unsub-skill"
