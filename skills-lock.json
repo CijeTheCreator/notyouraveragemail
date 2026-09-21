@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "opt-out-skill": {
+      "source": "CijeTheCreator/notyouraveragemail-skills",
+      "sourceType": "github",
+      "skillPath": "opt-out-skill/SKILL.md",
+      "computedHash": "b833fae71eb5b75d63d2e1ab3f1c4955c22f664895a440277b5f873509bed7cf"
+    },
+    "unsub-skill": {
+      "source": "CijeTheCreator/notyouraveragemail-skills",
+      "sourceType": "github",
+      "skillPath": "unsub-skill/SKILL.md",
+      "computedHash": "9a85b7402122fa3dab25fd04e1f3809d9e6cb029df722fc1634d973c1bc3e2fa"
+    }
+  }
+}
