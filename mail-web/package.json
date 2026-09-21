@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "convex dev --start 'next dev'",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "deploy": "npx @convex-dev/static-hosting deploy --dist out",
-    "deploy:dev": "npx @convex-dev/static-hosting upload --dist out --build"
+    "deploy:dev": "npx @convex-dev/static-hosting upload --dist out --build",
+    "deploy:convex": "convex dev --once"
   },
   "dependencies": {
     "@ai-sdk/openai": "^4.0.71",
