@@ -1,0 +1,80 @@
+# Hackathon log
+
+- **Project:** modern-mail
+- **Event:** Convex All Gas Hackathon
+- **What it does:** Neobrutalist AI mail super app with autonomous triage, real-time AgentMail inbox sync, Trustpilot domain reputation intelligence, and autonomous subscription management.
+- **Live app:** not deployed
+- **Repo:** https://github.com/CijeTheCreator/modern-mail
+- **Frontend:** not deployed
+- **Convex deployment:** https://steady-ram-494.convex.cloud
+- **Components:** @convex-dev/agent
+- **Convex features:** schema, tables, indexes, queries, mutations, actions, scheduled functions, HTTP actions, file storage, realtime queries, components
+- **Auth:** Convex Auth
+- **AI models:** OpenAI (gpt-5-nano across all Convex agent pipelines & Computer Use; gpt-live-transcribe via OpenAI Realtime WebSockets & @ai-sdk/openai)
+- **Started:** 2026-09-07T13:58:24Z
+- **Last updated:** 2026-09-21T06:43:00Z
+
+## Log
+
+### 2026-09-07 - 9ad0ec05
+Built minimal two-pane Neobrutalist mail client layout with full-width reader pane, Anton and Freeman typography, keyboard navigation shortcuts, folder filters, and floating compose modal (`app/page.tsx`, `app/components/Sidebar.tsx`, `app/components/EmailList.tsx`, `app/components/EmailReader.tsx`).
+
+### 2026-09-07 - 6c534853
+Integrated Convex Auth for handle-based inbox registration and route protection on root. Added AgentMail API actions for inbox provisioning, live outbound sending, and inbox message synchronization. Configured HTTP webhook endpoints with Svix verification support, payload fallbacks, OTP token extraction, and AI Action Card detection. Added unexecuted three-email test seeder (`convex/schema.ts`, `convex/auth.ts`, `convex/agentmail.ts`, `convex/http.ts`, `convex/messages.ts`, `convex/seed.ts`, `app/page.tsx`).
+
+### 2026-09-11 - b2c61016
+Added autonomous subscription tracking and domain reputation pipeline. Scrapes Trustpilot data via Firecrawl to calculate TrustScores, extract customer complaints, and down-rank suspicious senders in the Neobrutalist mail list. Added subscription cancellation action cards, background pipeline orchestration via Convex scheduled functions, and a dedicated Subscriptions & Spend dashboard (`convex/schema.ts`, `convex/pipeline/subscriptionCancellation.ts`, `convex/pipeline/domainReputation.ts`, `convex/pipeline/orchestrator.ts`, `convex/pipeline/actionCards.ts`, `app/components/SubscriptionsView.tsx`, `app/components/TrustScoreBadge.tsx`). Convex features: scheduled functions, schema, indexes, queries, mutations, actions.
+
+### 2026-09-14 - 5b2e376b
+Restructured repository into a multi-app workspace separating the core mail client (`mail-web`) from a companion subscription portal simulator (`test-checkout`). Added Convex backend functions to simulate Adobe Creative Cloud checkouts, subscription record creation, and real-time cancellation state tracking (`mail-web/convex/testCheckout.ts`, `test-checkout/app/checkout/page.tsx`, `test-checkout/app/plans/page.tsx`, `test-checkout/components/cancel-plan-modal.tsx`). Convex features: queries, mutations.
+
+### 2026-09-15 - 4c03ba7e
+Configured Convex Auth Resend provider for magic link authentication and renamed the portal simulator to `test-subscription`. Wired the client provider and session hooks to reactive Convex queries on `userSubscriptions`, and added header navigation with conditional authentication and logout controls (`mail-web/convex/auth.ts`, `mail-web/convex/schema.ts`, `mail-web/convex/testCheckout.ts`, `test-subscription/components/ConvexClientProvider.tsx`, `test-subscription/components/adobe-header.tsx`, `test-subscription/hooks/use-session.ts`). Convex features: Convex Auth, schema, indexes, queries, mutations.
+
+### 2026-09-16 - 05455bc8
+Integrated `@convex-dev/agent` with OpenAI (`gpt-5-nano` via `@ai-sdk/openai`) and Firecrawl `/v2/scrape/{scrapeId}/interact` for autonomous multi-step subscription cancellation. Implemented `mail-web/convex/pipeline/cancellationAgent.ts` with custom semantic tools for portal scraping, interactive page prompting, inbox authentication polling for OTPs/magic links, and structured completion reporting. Dispatched via non-blocking background scheduled functions with real-time log persistence (`mail-web/convex/convex.config.ts`, `mail-web/convex/pipeline/cancellationAgent.ts`, `mail-web/convex/pipeline/subscriptionCancellation.ts`, `mail-web/convex/auth.ts`). Convex features: components, scheduled functions, actions, queries, mutations.
+
+### 2026-09-18 - d952faa1
+Enhanced subscription cancellation pipeline with autonomous auth discovery (`authDiscoveryAgent.ts`), incoming email classification (`classifier.ts`), automated subscription ingestion (`subscriptionHandler.ts`), and OTP routing (`otpHandler.ts`). Improved agent resilience with rate limit backoff, Playwright execution fallback, and extended watchdog timeouts. Migrated screenshots to Convex file storage (`ctx.storage`) and exposed `@convex-dev/agent` playground endpoints (`mail-web/convex/pipeline/cancellationAgent.ts`, `mail-web/convex/pipeline/subscriptionCancellation.ts`, `mail-web/convex/playground.ts`). Convex features: file storage, schema, actions, queries, mutations, scheduled functions, components.
+
+### 2026-09-18 - 92ac1896
+Implemented autonomous Data Removal (Eraser) system with 764-broker catalog (`dataBrokers`), user removal tracking (`dataRemovals`), and browser-driven agent (`dataRemovalAgent.ts`) using `@convex-dev/agent` and Firecrawl. Added proof screenshot persistence in Convex storage (`ctx.storage`), catalog pagination with 20 brokers per page, and companion test broker app `test-removal` (`mail-web/convex/dataBrokers.ts`, `mail-web/convex/pipeline/dataRemovalAgent.ts`, `mail-web/app/components/DataRemovalView.tsx`, `test-removal/app/optout/page.tsx`). Convex features: schema, tables, indexes, actions, queries, mutations, scheduled functions, file storage, components.
+
+### 2026-09-19 - 0baf48df
+Resolved mail list sorting by implementing true chronological date-time comparison via epoch timestamps, replacing descending alphabetical string comparison on time-only strings. Set 'Newest first' as default sort order, added full-date hover tooltips to email list rows, and formatted full timestamps in the email reader (`mail-web/app/page.tsx`, `mail-web/app/components/EmailList.tsx`, `mail-web/app/components/EmailReader.tsx`, `mail-web/app/types.ts`).
+
+### 2026-09-19 - 856e7011
+Built Modern Mail Desktop Companion (`mail-desktop`), a native macOS cursor-buddy client adapted from Clicky and backed by Convex and OpenAI. Features sub-10ms hybrid file selection via AppleScript for Finder/Desktop files, background drafting via OpenAI Convex action `companion:draftEmail`, a native top-right Compose HUD with Approve/Edit/Reject actions, and real-time OTP awareness subscribing to Convex queries with autonomous form auto-fill via ScreenCaptureKit, OpenAI Computer Use (`companion:detectOtpCoordinates`), and CoreGraphics synthetic input. Migrated desktop companion query engine to the official `ConvexMobile` Swift SDK (`get-convex/convex-swift`) for zero-polling reactive WebSocket subscriptions (`client.subscribe(to:with:)`), registered live AgentMail webhooks for instant incoming email ingestion, and built a dedicated Resend-powered minimalist OTP insertion test harness (`mail-web/convex/companion.ts`, `mail-web/convex/agentmail.ts`, `mail-web/convex/testOtp.ts`, `test-removal/app/otp/page.tsx`, `mail-desktop/leanring-buddy/ConvexService.swift`, `mail-desktop/leanring-buddy/FinderFileSelectionHelper.swift`, `mail-desktop/leanring-buddy/ComposeHUDWindow.swift`, `mail-desktop/leanring-buddy/OtpAlertOverlayPanel.swift`). Convex features: queries, mutations, actions, realtime sync, HTTP actions.
+
+### 2026-09-19 - c02ab0b6
+Upgraded macOS companion with zero-click OTP detection, animated scanning indicator, and typing polish. Screen capture and OpenAI Computer Use run automatically in the background on incoming OTP alerts, showing gentle blinking eyes next to the cursor buddy during scanning. Suppressed text speech bubbles while typing in target input fields, restored smooth Bézier return flight back to the cursor, added copy-only fallback when no input field is detected, and added startup snapshot deduplication to prevent re-alerting old OTPs (`mail-desktop/leanring-buddy/CompanionManager.swift`, `mail-desktop/leanring-buddy/OverlayWindow.swift`, `mail-desktop/leanring-buddy/OtpAlertOverlayPanel.swift`, `mail-desktop/leanring-buddy/ConvexService.swift`, `mail-web/convex/companion.ts`). Convex features: queries, actions, realtime sync.
+
+### 2026-09-20 - 062b4c2a
+Added keyboard-driven prompt drafting (`Command + Shift + M`), Convex file staging, and autonomous LLM email drafting via `@convex-dev/agent`. Integrated floating Compose HUD review window with Approve/Edit/Reject liquid glass capsule controls, Convex parallel file upload (`generateUploadUrl`), and session tracking in `draftSessions` table. Created OpenAI-powered drafting agent with semantic tools for session file inspection, correspondent history discovery, web search, and attachment staging (`mail-desktop/leanring-buddy/GlobalPushToTalkShortcutMonitor.swift`, `mail-desktop/leanring-buddy/CursorPromptOverlayPanel.swift`, `mail-desktop/leanring-buddy/ComposeHUDWindow.swift`, `mail-web/convex/pipeline/draftingAgent.ts`, `mail-web/convex/companion.ts`, `mail-web/convex/schema.ts`). Convex features: components, actions, queries, mutations, file storage, schema, tables.
+
+### 2026-09-20 - 34c182b0
+Added strict anti-hallucination handling and send guard for unspecified email recipients. The drafting agent returns an empty recipient string when no recipient can be identified instead of inventing placeholder addresses. Enhanced the desktop Compose HUD to intercept empty or invalid recipients with visual warning badges and automatically trigger inline edit mode with email validation before dispatch (`mail-desktop/leanring-buddy/ComposeHUDWindow.swift`, `mail-web/convex/companion.ts`, `mail-web/convex/pipeline/draftingAgent.ts`). Convex features: actions, queries, mutations.
+
+### 2026-09-20 - e0cb07fb
+Architected extensible macOS Application Context Provider system (`AppContextProvider.swift`, `AppContextRegistry`) and built native context extractors for Apple Pages (`PagesContextProvider.swift`) and Apple Keynote (`KeynoteContextProvider.swift`). Interfaces directly with iWork apps via AppleScript in <100ms to extract document titles, body text, and slide outlines (titles, body bullets, presenter notes for up to 10 slides), dual-exporting native `.pages` / `.key` and high-resolution vector `.pdf` files into local staging. Added ScreenCaptureKit visual fallback for unmapped apps, cursor buddy spinning ring extraction animation, and implemented LLM-based format resolution in `@convex-dev/agent` defaulting to native formats or attaching `.pdf` upon request (`mail-desktop/leanring-buddy/AppContextProvider.swift`, `mail-desktop/leanring-buddy/KeynoteContextProvider.swift`, `mail-desktop/leanring-buddy/PagesContextProvider.swift`, `mail-desktop/leanring-buddy/FallbackScreenContextProvider.swift`, `mail-desktop/leanring-buddy/CompanionManager.swift`, `mail-desktop/leanring-buddy/OverlayWindow.swift`, `mail-web/convex/pipeline/draftingAgent.ts`). Convex features: components, actions, queries, mutations, file storage.
+
+### 2026-09-20 - a32641d3
+Implemented browser context providers for Apple Safari (`SafariContextProvider.swift`) and Chromium browsers (Google Chrome, Arc, Brave, Microsoft Edge via `ChromiumContextProvider.swift`). Captures active tab URL, page title, selected quotes via macOS Accessibility API (`AXUIElement`), and page excerpts in <25ms with window traversal resilience. Filtered internal browser schemes, added quote formatting (`> "..."`) and link citations in `@convex-dev/agent` (`draftingAgent.ts`), and documented multi-instance fallback behavior (`mail-desktop/leanring-buddy/SafariContextProvider.swift`, `mail-desktop/leanring-buddy/ChromiumContextProvider.swift`, `mail-desktop/leanring-buddy/AppContextProvider.swift`, `mail-web/convex/pipeline/draftingAgent.ts`). Convex features: components, actions, queries, mutations.
+
+### 2026-09-20 - 8ca247e2
+Added Figma integration with OAuth 2.0 connection management, native desktop context extraction (`FigmaContextProvider.swift`), and autonomous `@convex-dev/agent` assembly agent (`figmaAgent.ts`). Built token storage in Convex (`figmaConnections`), OAuth start and callback routes with companion panel connection status, on-demand high-resolution vector PDF frame export stored to Convex storage (`ctx.storage`), and outgoing email attachment delivery via AgentMail. Added strict quota preservation: URL node-ID direct export, rate limit detection with graceful Compose HUD warning notices, and zero-API-call link sharing (`mail-web/convex/figma.ts`, `mail-web/convex/pipeline/figmaAgent.ts`, `mail-web/convex/companion.ts`, `mail-web/convex/agentmail.ts`, `mail-desktop/leanring-buddy/FigmaContextProvider.swift`, `mail-desktop/leanring-buddy/CompanionPanelView.swift`, `mail-desktop/leanring-buddy/ComposeHUDWindow.swift`). Convex features: components, schema, tables, indexes, actions, queries, mutations, file storage.
+
+### 2026-09-20 - 8c46cd3f
+Implemented real-time streaming push-to-talk voice dictation via OpenAI Realtime (`gpt-live-transcribe`) over WebSocket. Added backend ephemeral token minting action (`companion:createTranscribeToken`) with 30-minute session windows, client-side prefetch token caching, background 24kHz PCM audio streaming with pre-connect buffering. Added native floating transcript window (`LiveTranscriptBarWindow.swift`) with sustained 1.2s final text display and empty update protection (`mail-desktop/leanring-buddy/OpenAIRealtimeTranscriptionProvider.swift`, `mail-desktop/leanring-buddy/LiveTranscriptBarWindow.swift`, `mail-desktop/leanring-buddy/BuddyDictationManager.swift`, `mail-desktop/leanring-buddy/ConvexService.swift`, `mail-web/convex/companion.ts`). Convex features: actions, queries.
+
+### 2026-09-20 - 946358de
+Modernized Subscriptions and Data Removal views with clean design system, logo matching, and broker logo manifest. Integrated hundreds of broker SVG logos with an automated catalog manifest, updated the subscriptions spending summary, and polished action modals (`mail-web/app/components/SubscriptionsView.tsx`, `mail-web/app/components/DataRemovalView.tsx`, `mail-web/public/broker-logos/manifest.json`).
+
+### 2026-09-20 - 5aca99f3
+Created automated standalone Release packaging pipeline (`mail-desktop/scripts/package-release.sh`) and documented distribution runbooks in `AGENTS.md`. Builds optimized Release binaries for `NotYourAverageMail.app`, performs deep ad-hoc code-signing, and packages both drag-and-drop `.dmg` installers and `.zip` archives.
+
+### 2026-09-20 - 0fc096a4
+Added interactive Judges testing panel (`JudgesPanel.tsx`) with animated rainbow navigation trigger, providing live test toggles for NotReallyAdobe subscription cancellation, NotReallyDataBroker removal dispatches, and local OTP verification harnesses (`mail-web/app/components/JudgesPanel.tsx`, `mail-web/app/page.tsx`). Convex features: mutations, actions.
+
+### 2026-09-20 - 826ca50c
+Redesigned `mail-web` landing page to match Firecrawl's design system. Implemented architectural container grid lines, boundary crosshairs, corner bracket SVGs (`FirecrawlPrimitives.tsx`), and an infinite marquee reel displaying partner tech logos (AgentMail, Firecrawl, OpenAI, Codex, Convex). Restructured product features into clean JudgesPanel explainers with tech logo stacks, added a collapsible Accordion FAQ, and routed inbox view to `/mail` (`mail-web/app/page.tsx`, `mail-web/app/components/landing/TechCreditsReel.tsx`, `mail-web/app/components/landing/WebFeaturesSection.tsx`, `mail-web/app/components/landing/DesktopCompanionSection.tsx`, `mail-web/app/components/landing/LandingFAQ.tsx`).
