@@ -47,6 +47,20 @@ open /Applications/NotYourAverageMail.app
 - **File Selection & Email Prompt Drafting**: `Command + Shift + M` (`⌘⇧M`)
 - **Deep Link Scheme**: `notyouraveragemail://connect?inboxId=<inboxId>` (alias: `modernmail://`)
 - **Backend Deployment**: Convex (`https://steady-ram-494.convex.cloud`)
+- **Web Frontend Deployment (`siteURL`)**:
+  - **Local Testing**: `http://localhost:3000`
+  - **Distribution / Production**: `https://steady-ram-494.convex.site`
+
+---
+
+### 🌐 Web URL Environment Rule (Testing vs. Distribution)
+- **When Testing Locally**: Use `http://localhost:3000` for all companion web link openings (companion auth link, Figma OAuth connect, Figma settings).
+- **When Building for Distribution**: Use `https://steady-ram-494.convex.site` (`ConvexService.shared.siteURL`).
+- **Figma OAuth Callback URLs**:
+  The Figma Developer Console app (`FIGMA_CLIENT_ID`) MUST have the appropriate redirect URI registered:
+  - **Live Distribution**: `https://steady-ram-494.convex.site/api/auth/figma/callback`
+  - **Local Testing**: `http://localhost:3000/api/auth/figma/callback`
+  *(Both URLs should be registered in the Figma developer dashboard so authentication works in both testing and live distribution).*
 
 ---
 

@@ -80,6 +80,12 @@ final class ConvexService: ObservableObject {
         }
     }
 
+    @Published var siteURL: String {
+        didSet {
+            UserDefaults.standard.set(siteURL, forKey: "convex_site_url")
+        }
+    }
+
     @Published var isConnected: Bool = false
     @Published var lastDetectedOtp: OtpAlertItem?
     @Published var activeDraft: EmailDraft?
@@ -96,6 +102,7 @@ final class ConvexService: ObservableObject {
 
     init() {
         self.deploymentURL = UserDefaults.standard.string(forKey: "convex_deployment_url") ?? "https://steady-ram-494.convex.cloud"
+        self.siteURL = UserDefaults.standard.string(forKey: "convex_site_url") ?? "https://steady-ram-494.convex.site"
         self.activeInboxId = UserDefaults.standard.string(forKey: "active_inbox_id") ?? ""
         let savedKnown = UserDefaults.standard.stringArray(forKey: "known_otp_message_ids") ?? []
         self.knownOtpCodes = Set(savedKnown)

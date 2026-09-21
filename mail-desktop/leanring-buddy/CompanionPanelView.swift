@@ -124,7 +124,7 @@ struct CompanionPanelView: View {
                 Spacer()
 
                 Button(action: {
-                    if let url = URL(string: "http://localhost:3000/auth/companion") {
+                    if let url = URL(string: "\(convexService.siteURL)/auth/companion") {
                         NSWorkspace.shared.open(url)
                     }
                 }) {
@@ -153,7 +153,7 @@ struct CompanionPanelView: View {
 
     private func openFigmaConnect() {
         let encoded = convexService.activeInboxId.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        if let url = URL(string: "http://localhost:3000/api/auth/figma/start?inboxId=\(encoded)") {
+        if let url = URL(string: "\(convexService.siteURL)/api/auth/figma/start?inboxId=\(encoded)") {
             NSWorkspace.shared.open(url)
         }
     }

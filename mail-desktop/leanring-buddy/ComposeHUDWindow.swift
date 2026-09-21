@@ -377,7 +377,7 @@ struct ComposeHUDView: View {
                                     .foregroundColor(.secondary)
                                 Spacer()
                                 Button(action: {
-                                    if let url = URL(string: "http://localhost:3000/auth/figma") {
+                                    if let url = URL(string: "\(ConvexService.shared.siteURL)/auth/figma") {
                                         NSWorkspace.shared.open(url)
                                     }
                                 }) {
