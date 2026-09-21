@@ -1552,6 +1552,22 @@ First step: Call start_browser_session with the Portal URL to open the website.`
         },
       );
 
+      if (sub && sub.status === "cancelled") {
+        console.log(
+          `[CancellationAgent] Cancellation confirmed for ${args.service}. Triggering cancelling skill generation...`
+        );
+        await ctx.scheduler.runAfter(
+          0,
+          internal.pipeline.cancellingSkills.generateSkillIfMissing,
+          {
+            messageId: args.messageId,
+            company: sub.service || args.service,
+            domain: sub.domain || args.domain,
+            portalUrl: sub.portalUrl || args.portalUrl,
+          }
+        );
+      }
+
       if (sub && sub.status === "cancelling") {
         console.warn(
           `[CancellationAgent] Agent reached step limit without confirming cancellation for ${args.service}`,

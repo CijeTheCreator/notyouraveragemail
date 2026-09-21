@@ -202,6 +202,133 @@ http.route({
   handler: handleFigmaCallback,
 });
 
+// Unsub Skill Public HTTP API: list available companies with cancellation skills
+const handleListUnsubCompanies = httpAction(async (ctx, request) => {
+  const corsHeaders = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Content-Type": "application/json",
+  };
+
+  if (request.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: corsHeaders });
+  }
+
+  try {
+    const companies = await ctx.runQuery(
+      api.pipeline.cancellingSkills.listAllSkills,
+      {}
+    );
+    return new Response(
+      JSON.stringify({
+        ok: true,
+        count: companies.length,
+        companies,
+      }),
+      { status: 200, headers: corsHeaders }
+    );
+  } catch (err: any) {
+    return new Response(
+      JSON.stringify({
+        ok: false,
+        error: err?.message || "Failed to list companies",
+      }),
+      { status: 500, headers: corsHeaders }
+    );
+  }
+});
+
+// Unsub Skill Public HTTP API: get procedural cancelling skill for a company
+const handleGetUnsubSkill = httpAction(async (ctx, request) => {
+  const corsHeaders = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Content-Type": "application/json",
+  };
+
+  if (request.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: corsHeaders });
+  }
+
+  try {
+    const url = new URL(request.url);
+    const company = url.searchParams.get("company") || undefined;
+    const domain = url.searchParams.get("domain") || undefined;
+
+    if (!company && !domain) {
+      return new Response(
+        JSON.stringify({
+          ok: false,
+          error:
+            "Missing required query parameter: please provide either ?company=<name> or ?domain=<domain>",
+        }),
+        { status: 400, headers: corsHeaders }
+      );
+    }
+
+    const skill = await ctx.runQuery(
+      api.pipeline.cancellingSkills.getSkillByDomainOrCompany,
+      { company, domain }
+    );
+
+    if (!skill) {
+      return new Response(
+        JSON.stringify({
+          ok: false,
+          error: `No cancellation skill found for ${domain || company}`,
+        }),
+        { status: 404, headers: corsHeaders }
+      );
+    }
+
+    return new Response(
+      JSON.stringify({
+        ok: true,
+        company: skill.company,
+        domain: skill.domain,
+        portalUrl: skill.portalUrl,
+        skillText: skill.skillText,
+        updatedAt: skill.updatedAt,
+      }),
+      { status: 200, headers: corsHeaders }
+    );
+  } catch (err: any) {
+    return new Response(
+      JSON.stringify({
+        ok: false,
+        error: err?.message || "Failed to retrieve skill",
+      }),
+      { status: 500, headers: corsHeaders }
+    );
+  }
+});
+
+http.route({
+  path: "/api/unsub/companies",
+  method: "GET",
+  handler: handleListUnsubCompanies,
+});
+
+http.route({
+  path: "/api/unsub/companies",
+  method: "OPTIONS",
+  handler: handleListUnsubCompanies,
+});
+
+http.route({
+  path: "/api/unsub/skill",
+  method: "GET",
+  handler: handleGetUnsubSkill,
+});
+
+http.route({
+  path: "/api/unsub/skill",
+  method: "OPTIONS",
+  handler: handleGetUnsubSkill,
+});
+
 // Static hosting catch-all must be registered last
 registerStaticRoutes(http, components.staticHosting);
 

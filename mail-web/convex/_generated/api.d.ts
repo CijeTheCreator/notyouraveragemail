@@ -18,6 +18,7 @@ import type * as messages from "../messages.js";
 import type * as pipeline_actionCards from "../pipeline/actionCards.js";
 import type * as pipeline_authDiscoveryAgent from "../pipeline/authDiscoveryAgent.js";
 import type * as pipeline_cancellationAgent from "../pipeline/cancellationAgent.js";
+import type * as pipeline_cancellingSkills from "../pipeline/cancellingSkills.js";
 import type * as pipeline_classifier from "../pipeline/classifier.js";
 import type * as pipeline_dataRemovalAgent from "../pipeline/dataRemovalAgent.js";
 import type * as pipeline_dataRemovalHandler from "../pipeline/dataRemovalHandler.js";
@@ -54,6 +55,7 @@ declare const fullApi: ApiFromModules<{
   "pipeline/actionCards": typeof pipeline_actionCards;
   "pipeline/authDiscoveryAgent": typeof pipeline_authDiscoveryAgent;
   "pipeline/cancellationAgent": typeof pipeline_cancellationAgent;
+  "pipeline/cancellingSkills": typeof pipeline_cancellingSkills;
   "pipeline/classifier": typeof pipeline_classifier;
   "pipeline/dataRemovalAgent": typeof pipeline_dataRemovalAgent;
   "pipeline/dataRemovalHandler": typeof pipeline_dataRemovalHandler;

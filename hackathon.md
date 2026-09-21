@@ -1,18 +1,18 @@
 # Hackathon log
 
-- **Project:** modern-mail
+- **Project:** NotYourAverageMail
 - **Event:** Convex All Gas Hackathon
 - **What it does:** Neobrutalist AI mail super app with autonomous triage, real-time AgentMail inbox sync, Trustpilot domain reputation intelligence, and autonomous subscription management.
-- **Live app:** not deployed
-- **Repo:** https://github.com/CijeTheCreator/modern-mail
-- **Frontend:** not deployed
+- **Live app:** https://steady-ram-494.convex.site
+- **Repo:** https://github.com/CijeTheCreator/notyouraveragemail.git
+- **Frontend:** Convex static hosting
 - **Convex deployment:** https://steady-ram-494.convex.cloud
-- **Components:** @convex-dev/agent
+- **Components:** @convex-dev/agent, @convex-dev/static-hosting
 - **Convex features:** schema, tables, indexes, queries, mutations, actions, scheduled functions, HTTP actions, file storage, realtime queries, components
 - **Auth:** Convex Auth
 - **AI models:** OpenAI (gpt-5-nano across all Convex agent pipelines & Computer Use; gpt-live-transcribe via OpenAI Realtime WebSockets & @ai-sdk/openai)
 - **Started:** 2026-09-07T13:58:24Z
-- **Last updated:** 2026-09-21T06:43:00Z
+- **Last updated:** 2026-09-21T10:26:05Z
 
 ## Log
 
@@ -78,3 +78,10 @@ Added interactive Judges testing panel (`JudgesPanel.tsx`) with animated rainbow
 
 ### 2026-09-20 - 826ca50c
 Redesigned `mail-web` landing page to match Firecrawl's design system. Implemented architectural container grid lines, boundary crosshairs, corner bracket SVGs (`FirecrawlPrimitives.tsx`), and an infinite marquee reel displaying partner tech logos (AgentMail, Firecrawl, OpenAI, Codex, Convex). Restructured product features into clean JudgesPanel explainers with tech logo stacks, added a collapsible Accordion FAQ, and routed inbox view to `/mail` (`mail-web/app/page.tsx`, `mail-web/app/components/landing/TechCreditsReel.tsx`, `mail-web/app/components/landing/WebFeaturesSection.tsx`, `mail-web/app/components/landing/DesktopCompanionSection.tsx`, `mail-web/app/components/landing/LandingFAQ.tsx`).
+
+### 2026-09-21 - 7e26c5c9
+Configured Convex static hosting (`@convex-dev/static-hosting`) and Next.js static export (`next.config.ts`) to host the frontend directly from `https://steady-ram-494.convex.site`. Migrated Figma OAuth initiation and callback handlers into Convex HTTP actions (`convex/http.ts`) with static catch-all route resolution. Updated desktop companion (`mail-desktop`) to use dynamic `siteURL` pointing to the live Convex site domain for web authentication and Figma linking, and documented testing versus distribution workflow in `AGENTS.md` and `deployment.md` (`mail-web/convex/convex.config.ts`, `mail-web/convex/http.ts`, `mail-web/next.config.ts`, `mail-desktop/leanring-buddy/ConvexService.swift`, `mail-desktop/leanring-buddy/CompanionPanelView.swift`, `mail-desktop/leanring-buddy/ComposeHUDWindow.swift`, `deployment.md`, `AGENTS.md`). Convex features: components, HTTP actions, file storage, queries, mutations.
+
+### 2026-09-21 - unsub-skill
+Implemented autonomous Cancelling Skills Engine and public Unsub Skill HTTP API. Following successful subscription cancellations by `cancellationAgent`, real-world execution logs are synthesized via LLM (`gpt-5-nano`) into structured, procedural Firecrawl and Playwright cancellation workflows with sanitized parameter placeholders (`<USER_EMAIL>`, `<PASSWORD>`, `<OTP_CODE>`). Skills are deduplicated and persisted in `cancellingSkills` table. Exposed public CORS-enabled Convex HTTP actions (`GET /api/unsub/companies`, `GET /api/unsub/skill`) and published external agent skill specification (`mail-web/public/unsub-SKILL.md`) for external agent integration (`mail-web/convex/schema.ts`, `mail-web/convex/pipeline/cancellingSkills.ts`, `mail-web/convex/pipeline/cancellationAgent.ts`, `mail-web/convex/http.ts`, `mail-web/public/unsub-SKILL.md`). Convex features: schema, tables, indexes, queries, mutations, scheduled actions, HTTP actions.
+

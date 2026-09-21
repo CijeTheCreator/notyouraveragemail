@@ -317,5 +317,19 @@ export default defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
   }).index("by_inboxId", ["inboxId"]),
+
+  // Autonomous Cancelling Skills catalog generated from successful cancellation logs
+  cancellingSkills: defineTable({
+    company: v.string(), // e.g. "Adobe"
+    domain: v.string(), // e.g. "adobe.com"
+    skillText: v.string(), // Procedural Firecrawl + Playwright instructions
+    portalUrl: v.optional(v.string()),
+    sourceMessageId: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_domain", ["domain"])
+    .index("by_company", ["company"]),
 });
+
 
