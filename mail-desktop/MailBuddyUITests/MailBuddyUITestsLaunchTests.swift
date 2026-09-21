@@ -7,7 +7,7 @@
 
 import XCTest
 
-final class leanring_buddyUITestsLaunchTests: XCTestCase {
+final class MailBuddyUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true

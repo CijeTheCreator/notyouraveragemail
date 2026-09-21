@@ -41,7 +41,7 @@ An AI mail companion that lives as a buddy next to your cursor on macOS. Enhance
 
 ```
 mail-desktop/
-├── leanring-buddy/
+├── MailBuddy/
 │   ├── ConvexService.swift             # Real-time Convex query & action client
 │   ├── FinderFileSelectionHelper.swift # <10ms AppleScript Finder selection grabber
 │   ├── ComposeHUDWindow.swift          # Top-right native Compose HUD (Approve/Edit/Reject)
@@ -50,7 +50,7 @@ mail-desktop/
 │   ├── CompanionPanelView.swift        # Menu bar dropdown & inbox handle setting
 │   ├── OverlayWindow.swift             # Transparent full-screen cursor overlay
 │   └── ...
-└── leanring-buddy.xcodeproj            # Xcode project (SwiftUI / AppKit)
+└── MailBuddy.xcodeproj                 # Xcode project (SwiftUI / AppKit)
 ```
 
 ---
@@ -67,10 +67,10 @@ npx convex dev --once --typecheck=disable
 ### 2. Build & Run Desktop App
 1. Open the project in Xcode:
    ```bash
-   open mail-desktop/leanring-buddy.xcodeproj
+   open mail-desktop/MailBuddy.xcodeproj
    ```
 2. In Xcode:
-   - Select the `leanring-buddy` scheme.
+   - Select the `MailBuddy` scheme.
    - Ensure your personal signing team is selected under **Signing & Capabilities**.
    - Press **Cmd + R** to build and run.
 3. Grant macOS permissions when prompted:

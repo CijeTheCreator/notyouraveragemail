@@ -58,7 +58,7 @@ struct CompanionPanelView: View {
             Spacer()
 
             Button(action: {
-                NotificationCenter.default.post(name: .clickyDismissPanel, object: nil)
+                NotificationCenter.default.post(name: .mailBuddyDismissPanel, object: nil)
             }) {
                 Image(systemName: "xmark")
                     .font(.system(size: 10, weight: .semibold))
@@ -244,8 +244,8 @@ struct CompanionPanelView: View {
                 Spacer()
 
                 Toggle("", isOn: Binding(
-                    get: { companionManager.isClickyCursorEnabled },
-                    set: { companionManager.setClickyCursorEnabled($0) }
+                    get: { companionManager.isMailBuddyCursorEnabled },
+                    set: { companionManager.setMailBuddyCursorEnabled($0) }
                 ))
                 .labelsHidden()
                 .toggleStyle(SwitchToggleStyle(tint: DS.Colors.overlayCursorBlue))

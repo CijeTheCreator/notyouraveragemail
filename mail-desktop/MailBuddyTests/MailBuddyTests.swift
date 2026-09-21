@@ -6,9 +6,9 @@
 //
 
 import Testing
-@testable import leanring_buddy
+@testable import MailBuddy
 
-struct leanring_buddyTests {
+struct MailBuddyTests {
 
     @Test func firstPermissionRequestUsesSystemPromptOnly() async throws {
         let presentationDestination = WindowPositionManager.permissionRequestPresentationDestination(

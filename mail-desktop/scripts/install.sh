@@ -10,8 +10,8 @@ PROJECT_DIR="${SCRIPT_DIR}/../.."
 if [ -d "$PROJECT_DIR/mail-desktop" ]; then
   echo "🔨 Building and installing from local repository..."
   cd "$PROJECT_DIR/mail-desktop"
-  xcodebuild -scheme leanring-buddy -configuration Debug -destination 'platform=macOS' CODE_SIGN_IDENTITY="-" build -quiet
-  P=$(xcodebuild -scheme leanring-buddy -configuration Debug -destination 'platform=macOS' -showBuildSettings 2>/dev/null | awk '/ BUILT_PRODUCTS_DIR =/{print $3}')/NotYourAverageMail.app
+  xcodebuild -scheme MailBuddy -configuration Debug -destination 'platform=macOS' CODE_SIGN_IDENTITY="-" build -quiet
+  P=$(xcodebuild -scheme MailBuddy -configuration Debug -destination 'platform=macOS' -showBuildSettings 2>/dev/null | awk '/ BUILT_PRODUCTS_DIR =/{print $3}')/NotYourAverageMail.app
   pkill -f "NotYourAverageMail" || pkill -f "ModernMail" || pkill -f "Clicky" || true; sleep 1
   rm -rf /Applications/NotYourAverageMail.app && cp -R "$P" /Applications/NotYourAverageMail.app
   codesign --force --deep --sign - /Applications/NotYourAverageMail.app

@@ -1,6 +1,6 @@
 //
-//  ClickyAnalytics.swift
-//  leanring-buddy
+//  MailBuddyAnalytics.swift
+//  MailBuddy
 //
 //  Centralized PostHog analytics wrapper. All event names and properties
 //  are defined here so instrumentation is consistent and easy to audit.
@@ -9,7 +9,9 @@
 import Foundation
 import PostHog
 
-enum ClickyAnalytics {
+typealias ClickyAnalytics = MailBuddyAnalytics
+
+enum MailBuddyAnalytics {
 
     // MARK: - Setup
 

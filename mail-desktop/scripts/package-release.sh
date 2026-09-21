@@ -8,9 +8,9 @@ DIST_DIR="$PROJECT_DIR/dist"
 
 echo "🚀 [1/5] Building NotYourAverageMail in Release configuration..."
 cd "$PROJECT_DIR"
-xcodebuild -scheme leanring-buddy -configuration Release -destination 'platform=macOS' CODE_SIGN_IDENTITY="-" build -quiet
+xcodebuild -scheme MailBuddy -configuration Release -destination 'platform=macOS' CODE_SIGN_IDENTITY="-" build -quiet
 
-BUILT_PRODUCTS_DIR=$(xcodebuild -scheme leanring-buddy -configuration Release -destination 'platform=macOS' -showBuildSettings 2>/dev/null | awk '/ BUILT_PRODUCTS_DIR =/{print $3}')
+BUILT_PRODUCTS_DIR=$(xcodebuild -scheme MailBuddy -configuration Release -destination 'platform=macOS' -showBuildSettings 2>/dev/null | awk '/ BUILT_PRODUCTS_DIR =/{print $3}')
 SOURCE_APP="$BUILT_PRODUCTS_DIR/NotYourAverageMail.app"
 
 if [ ! -d "$SOURCE_APP" ]; then
