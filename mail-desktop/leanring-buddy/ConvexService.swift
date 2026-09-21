@@ -102,7 +102,11 @@ final class ConvexService: ObservableObject {
 
     init() {
         self.deploymentURL = UserDefaults.standard.string(forKey: "convex_deployment_url") ?? "https://steady-ram-494.convex.cloud"
+#if DEBUG
+        self.siteURL = UserDefaults.standard.string(forKey: "convex_site_url") ?? "http://localhost:3000"
+#else
         self.siteURL = UserDefaults.standard.string(forKey: "convex_site_url") ?? "https://steady-ram-494.convex.site"
+#endif
         self.activeInboxId = UserDefaults.standard.string(forKey: "active_inbox_id") ?? ""
         let savedKnown = UserDefaults.standard.stringArray(forKey: "known_otp_message_ids") ?? []
         self.knownOtpCodes = Set(savedKnown)

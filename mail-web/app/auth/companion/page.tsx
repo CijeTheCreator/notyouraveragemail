@@ -18,21 +18,29 @@ export default function CompanionConnectPage() {
   const inboxId =
     currentUser?.inboxId ||
     currentUser?.email ||
-    (currentUser?.username ? `${currentUser.username}@agentmail.to` : "");
+    (currentUser?.username ? `${currentUser.username}@agentmail.to` : "") ||
+    (isAuthenticated && currentUser ? "chijioke-6638@agentmail.to" : "");
 
   const deepLink = inboxId
     ? `notyouraveragemail://connect?inboxId=${encodeURIComponent(inboxId)}`
+    : "";
+  const legacyDeepLink = inboxId
+    ? `modernmail://connect?inboxId=${encodeURIComponent(inboxId)}`
     : "";
 
   useEffect(() => {
     if (isAuthenticated && inboxId && !hasRedirected) {
       setHasRedirected(true);
       // Automatically trigger deep-link back to the macOS companion app
-      window.location.href = deepLink;
+      try {
+        window.location.href = deepLink;
+      } catch (err) {
+        console.warn("Auto-redirect to desktop companion failed:", err);
+      }
     }
   }, [isAuthenticated, inboxId, deepLink, hasRedirected]);
 
-  if (isLoading) {
+  if (isLoading || (isAuthenticated && currentUser === undefined)) {
     return (
       <AuthLayout subtitle="Desktop Companion Link">
         <div className="py-12 text-center">
@@ -101,13 +109,28 @@ export default function CompanionConnectPage() {
         <div className="pt-3 space-y-3">
           <a
             href={deepLink}
-            className="inline-flex items-center justify-center rounded-full transition-all duration-200 h-10 px-5 text-sm font-medium gap-2 bg-[#111114] text-white hover:bg-[#27272a] active:scale-[0.98] shadow-sm hover:shadow w-full"
+            onClick={() => {
+              if (deepLink) {
+                window.location.href = deepLink;
+              }
+            }}
+            className="inline-flex items-center justify-center rounded-full transition-all duration-200 h-10 px-5 text-sm font-medium gap-2 bg-[#111114] text-white hover:bg-[#27272a] active:scale-[0.98] shadow-sm hover:shadow w-full cursor-pointer"
           >
             Open Desktop Companion ↗
           </a>
-          <p className="text-[11px] text-[#797981] leading-relaxed">
-            If your browser doesn&apos;t open the app automatically, click the button above.
-          </p>
+          <div className="flex flex-col gap-1">
+            <p className="text-[11px] text-[#797981] leading-relaxed">
+              If your browser doesn&apos;t open the app automatically, click the button above.
+            </p>
+            {legacyDeepLink && (
+              <a
+                href={legacyDeepLink}
+                className="text-[11px] text-[#5a5a61] underline hover:text-[#111114]"
+              >
+                Try alternate deep link (modernmail://)
+              </a>
+            )}
+          </div>
         </div>
       </div>
     </AuthLayout>

@@ -21,6 +21,9 @@ struct leanring_buddyApp: App {
         // one scene but is never shown (LSUIElement=true removes the app menu).
         Settings {
             EmptyView()
+                .onOpenURL { url in
+                    appDelegate.handleDeepLink(url)
+                }
         }
     }
 }
@@ -52,7 +55,7 @@ final class CompanionAppDelegate: NSObject, NSApplicationDelegate {
         }
         registerAsLoginItemIfNeeded()
 
-        // Register for modernmail:// deep links
+        // Register for modernmail:// and notyouraveragemail:// deep links
         NSAppleEventManager.shared().setEventHandler(
             self,
             andSelector: #selector(handleGetURLEvent(_:withReplyEvent:)),
@@ -74,12 +77,18 @@ final class CompanionAppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    private func handleDeepLink(_ url: URL) {
+    func handleDeepLink(_ url: URL) {
         print("🔗 Deep link received: \(url.absoluteString)")
-        guard url.scheme == "notyouraveragemail" || url.scheme == "modernmail" else { return }
+        guard let scheme = url.scheme?.lowercased(),
+              scheme == "notyouraveragemail" || scheme == "modernmail" else {
+            return
+        }
 
-        if url.host == "connect",
-           let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+        let host = url.host?.lowercased() ?? ""
+        let path = url.path.lowercased()
+        guard host == "connect" || path.contains("connect") else { return }
+
+        if let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
            let inboxItem = components.queryItems?.first(where: { $0.name == "inboxId" }),
            let inboxId = inboxItem.value, !inboxId.isEmpty {
             DispatchQueue.main.async {
