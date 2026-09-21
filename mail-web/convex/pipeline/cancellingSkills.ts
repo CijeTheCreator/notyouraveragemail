@@ -147,7 +147,7 @@ export const generateSkillIfMissing = internalAction({
     }
 
     const logText = logs
-      .map((l) => `[${new Date(l.timestamp).toISOString()}] ${l.logLine}`)
+      .map((l: any) => `[${new Date(l.timestamp).toISOString()}] ${l.logLine}`)
       .join("\n");
 
     console.log(

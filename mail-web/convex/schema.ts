@@ -330,6 +330,21 @@ export default defineSchema({
   })
     .index("by_domain", ["domain"])
     .index("by_company", ["company"]),
+
+  // Autonomous Opt-Out Skills catalog generated from successful broker removal logs
+  optOutSkills: defineTable({
+    brokerId: v.string(), // e.g. "spokeo", "notreallydatabroker"
+    name: v.string(), // e.g. "Spokeo", "NotReallyDataBroker"
+    domain: v.string(), // e.g. "spokeo.com"
+    optOutUrl: v.optional(v.string()),
+    skillText: v.string(), // Procedural Firecrawl + Playwright instructions
+    sourceMessageId: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_brokerId", ["brokerId"])
+    .index("by_domain", ["domain"])
+    .index("by_name", ["name"]),
 });
 
 

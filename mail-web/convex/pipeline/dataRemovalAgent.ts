@@ -568,6 +568,34 @@ const completeRemovalTool = createTool({
       screenshotUrl: finalScreenshotUrl,
     });
 
+    if (args.status === "completed") {
+      try {
+        const broker = await ctx.runQuery(internal.dataBrokers.getBroker, {
+          brokerId: args.brokerId,
+        });
+        const brokerName = broker?.name || args.brokerId;
+        const cleanDomain = broker?.website
+          ? broker.website.replace(/^https?:\/\/(www\.)?/i, "").split("/")[0]
+          : `${args.brokerId}.com`;
+        const optOutUrl = broker?.optOutUrl || undefined;
+
+        await ctx.scheduler.runAfter(
+          0,
+          internal.pipeline.optOutSkills.generateSkillIfMissing,
+          {
+            inboxId: args.inboxId,
+            brokerId: args.brokerId,
+            name: brokerName,
+            domain: cleanDomain,
+            optOutUrl,
+            messageId: args.messageId,
+          }
+        );
+      } catch (triggerErr) {
+        console.warn("[DataRemovalAgent] Could not trigger skill generation:", triggerErr);
+      }
+    }
+
     return {
       finished: true,
       status: args.status,
