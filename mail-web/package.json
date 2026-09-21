@@ -6,13 +6,16 @@
     "dev": "convex dev --start 'next dev'",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "deploy": "npx @convex-dev/static-hosting deploy --dist out",
+    "deploy:dev": "npx @convex-dev/static-hosting upload --dist out --build"
   },
   "dependencies": {
     "@ai-sdk/openai": "^4.0.71",
     "@auth/core": "^0.41.3",
     "@convex-dev/agent": "^0.7.3",
     "@convex-dev/auth": "^0.0.95",
+    "@convex-dev/static-hosting": "^0.2.1",
     "@radix-ui/react-slot": "^1.3.3",
     "agentmail": "^0.5.23",
     "ai": "^7.0.107",

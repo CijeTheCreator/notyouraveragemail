@@ -38,8 +38,8 @@ function FigmaConnectContent() {
   const handleConnect = () => {
     if (!inboxId) return;
     setIsConnecting(true);
-    setLocalError(null);
-    window.location.href = `/api/auth/figma/start?inboxId=${encodeURIComponent(inboxId)}`;
+    const siteUrl = process.env.NEXT_PUBLIC_CONVEX_SITE_URL || "";
+    window.location.href = `${siteUrl}/api/auth/figma/start?inboxId=${encodeURIComponent(inboxId)}`;
   };
 
   const handleDisconnect = async () => {

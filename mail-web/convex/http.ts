@@ -1,7 +1,8 @@
 import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
-import { internal } from "./_generated/api";
+import { api, internal, components } from "./_generated/api";
 import { auth } from "./auth";
+import { registerStaticRoutes } from "@convex-dev/static-hosting";
 
 const http = httpRouter();
 
@@ -131,5 +132,77 @@ http.route({
   method: "POST",
   handler: handleAgentMailWebhook,
 });
+
+// Figma OAuth endpoints
+const handleFigmaStart = httpAction(async (ctx, request) => {
+  const url = new URL(request.url);
+  const inboxId = url.searchParams.get("inboxId") || "default@agentmail.to";
+  const baseUrl = url.origin;
+  const redirectUri = `${baseUrl}/api/auth/figma/callback`;
+
+  const { authUrl } = await ctx.runAction(api.figma.getOAuthAuthorizationUrl, {
+    inboxId,
+    redirectUri,
+  });
+
+  return Response.redirect(authUrl, 302);
+});
+
+const handleFigmaCallback = httpAction(async (ctx, request) => {
+  const url = new URL(request.url);
+  const code = url.searchParams.get("code");
+  const state = url.searchParams.get("state");
+  const error = url.searchParams.get("error");
+  const errorDescription = url.searchParams.get("error_description");
+  const baseUrl = url.origin;
+
+  if (error) {
+    return Response.redirect(
+      `${baseUrl}/auth/figma?error=${encodeURIComponent(errorDescription || error)}`,
+      302
+    );
+  }
+
+  if (!code || !state) {
+    return Response.redirect(
+      `${baseUrl}/auth/figma?error=Missing+code+or+state`,
+      302
+    );
+  }
+
+  try {
+    const redirectUri = `${baseUrl}/api/auth/figma/callback`;
+    const result = await ctx.runAction(api.figma.exchangeOAuthCode, {
+      code,
+      redirectUri,
+      state,
+    });
+
+    return Response.redirect(
+      `${baseUrl}/auth/figma?status=connected&handle=${encodeURIComponent(result.figmaHandle || "")}`,
+      302
+    );
+  } catch (err: any) {
+    return Response.redirect(
+      `${baseUrl}/auth/figma?error=${encodeURIComponent(err.message || "Failed to link Figma account")}`,
+      302
+    );
+  }
+});
+
+http.route({
+  path: "/api/auth/figma/start",
+  method: "GET",
+  handler: handleFigmaStart,
+});
+
+http.route({
+  path: "/api/auth/figma/callback",
+  method: "GET",
+  handler: handleFigmaCallback,
+});
+
+// Static hosting catch-all must be registered last
+registerStaticRoutes(http, components.staticHosting);
 
 export default http;

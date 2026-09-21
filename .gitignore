@@ -16,6 +16,8 @@ coverage/
 # next.js
 .next/
 out/
+**/out/
+mail-web/out/
 
 # production
 build/
