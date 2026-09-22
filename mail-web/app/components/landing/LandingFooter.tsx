@@ -31,7 +31,7 @@ export default function LandingFooter() {
 
         <div>
           <a
-            href="https://github.com/CijeTheCreator/modern-mail"
+            href="https://github.com/CijeTheCreator/notyouraveragemail"
             target="_blank"
             rel="noopener noreferrer"
             className="text-xs font-mono text-[#5a5a61] hover:text-[#111114] transition-colors"

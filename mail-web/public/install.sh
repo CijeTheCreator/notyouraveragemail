@@ -17,7 +17,7 @@ if [ -d "$PROJECT_DIR/mail-desktop" ]; then
   codesign --force --deep --sign - /Applications/NotYourAverageMail.app
 else
   echo "⬇️ Downloading latest NotYourAverageMail release..."
-  RELEASE_URL="https://github.com/CijeTheCreator/modern-mail/releases/latest/download/NotYourAverageMail-macOS.zip"
+  RELEASE_URL="https://github.com/CijeTheCreator/notyouraveragemail/releases/latest/download/NotYourAverageMail-macOS.zip"
   TMP_ZIP="/tmp/NotYourAverageMail-macOS.zip"
   curl -fsSL "$RELEASE_URL" -o "$TMP_ZIP"
   pkill -f "NotYourAverageMail" || pkill -f "ModernMail" || pkill -f "Clicky" || true; sleep 1

@@ -91,7 +91,7 @@ export default function LandingNavbar() {
         {/* Right Side: GitHub + Action CTA ('Mail' if authenticated) */}
         <div className="flex items-center gap-3">
           <a
-            href="https://github.com/CijeTheCreator/modern-mail"
+            href="https://github.com/CijeTheCreator/notyouraveragemail"
             target="_blank"
             rel="noopener noreferrer"
             className="hidden sm:inline-flex items-center gap-1.5 h-8 px-3 rounded border border-black/[0.08] bg-white hover:bg-black/[0.03] text-xs font-mono text-[#111114] transition-all shadow-2xs"
@@ -175,7 +175,7 @@ export default function LandingNavbar() {
           </a>
           <div className="pt-2 border-t border-black/[0.06] flex items-center gap-3">
             <a
-              href="https://github.com/CijeTheCreator/modern-mail"
+              href="https://github.com/CijeTheCreator/notyouraveragemail"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 text-[#111114]"
