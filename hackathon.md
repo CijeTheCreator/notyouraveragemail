@@ -2,7 +2,7 @@
 
 - **Project:** NotYourAverageMail
 - **Event:** Convex All Gas Hackathon
-- **What it does:** Neobrutalist AI mail super app with autonomous triage, real-time AgentMail inbox sync, Trustpilot domain reputation intelligence, and autonomous subscription management.
+- **What it does:** Autonomous AI mail client and native macOS MailBuddy companion featuring one-click subscription cancellation, 760+ data broker privacy removal, Trustpilot sender reputation, screen-aware OTP auto-fill, and voice/contextual email drafting.
 - **Live app:** https://steady-ram-494.convex.site
 - **Repo:** https://github.com/CijeTheCreator/notyouraveragemail.git
 - **Frontend:** Convex static hosting
@@ -12,7 +12,7 @@
 - **Auth:** Convex Auth
 - **AI models:** OpenAI (gpt-5-nano across all Convex agent pipelines & Computer Use; gpt-live-transcribe via OpenAI Realtime WebSockets & @ai-sdk/openai)
 - **Started:** 2026-09-07T13:58:24Z
-- **Last updated:** 2026-09-21T10:26:05Z
+- **Last updated:** 2026-09-22T10:30:17Z
 
 ## Log
 
@@ -84,4 +84,13 @@ Configured Convex static hosting (`@convex-dev/static-hosting`) and Next.js stat
 
 ### 2026-09-21 - unsub-skill
 Implemented autonomous Cancelling Skills Engine and public Unsub Skill HTTP API. Following successful subscription cancellations by `cancellationAgent`, real-world execution logs are synthesized via LLM (`gpt-5-nano`) into structured, procedural Firecrawl and Playwright cancellation workflows with sanitized parameter placeholders (`<USER_EMAIL>`, `<PASSWORD>`, `<OTP_CODE>`). Skills are deduplicated and persisted in `cancellingSkills` table. Exposed public CORS-enabled Convex HTTP actions (`GET /api/unsub/companies`, `GET /api/unsub/skill`) and published external agent skill specification (`mail-web/public/unsub-SKILL.md`) for external agent integration (`mail-web/convex/schema.ts`, `mail-web/convex/pipeline/cancellingSkills.ts`, `mail-web/convex/pipeline/cancellationAgent.ts`, `mail-web/convex/http.ts`, `mail-web/public/unsub-SKILL.md`). Convex features: schema, tables, indexes, queries, mutations, scheduled actions, HTTP actions.
+
+### 2026-09-21 - ce8123a4
+Implemented autonomous Data Broker Opt-Out Skills Engine and public Opt-Out Skill HTTP API. Following successful broker privacy removal runs by `dataRemovalAgent`, execution traces are synthesized via LLM (`gpt-5-nano`) into procedural Playwright opt-out scripts with token redaction (`<FULL_NAME>`, `<USER_EMAIL>`, `<PHONE_NUMBER>`, `<RESIDENTIAL_ADDRESS>`), persisted in the `optOutSkills` table, and served via public CORS endpoints (`GET /api/optout/brokers`, `GET /api/optout/skill`) alongside mirrored agent skill definitions (`mail-web/convex/schema.ts`, `mail-web/convex/pipeline/optOutSkills.ts`, `mail-web/convex/pipeline/dataRemovalAgent.ts`, `mail-web/convex/http.ts`, `mail-web/public/opt-out-SKILL.md`, `.agents/skills/opt-out-skill/SKILL.md`). Convex features: schema, tables, indexes, queries, mutations, scheduled functions, HTTP actions.
+
+### 2026-09-21 - 4e2b47de
+Refactored macOS desktop companion from `learning-buddy` to `MailBuddy`. Stripped deprecated legacy AI dependencies (AssemblyAI, Claude, ElevenLabs, Whisper), streamlined the companion app down to OpenAI Realtime voice dictation and Convex real-time synchronization, and updated the native install script (`install.sh`). Refreshed landing page UI, brand typography, MailBuddy tabs, judges panel copy, and linked QYPA (Quick, Yes, Proceed, Always) autonomous cancellation skills (`mail-desktop/MailBuddy/*`, `mail-web/public/install.sh`, `mail-web/app/components/landing/*`, `mail-web/app/components/JudgesPanel.tsx`). Convex features: realtime queries.
+
+### 2026-09-22 - 55bf9882
+Enhanced static hosting resolution on Convex (`@convex-dev/static-hosting`) in `mail-web/convex/http.ts` to automatically resolve extensionless Next.js static export paths (e.g. `/auth/companion`, `/mail`) to their `.html` static assets stored in Convex storage before falling back to SPA routing. Added domain normalization for magic link cancellation URLs in `cancellationAgent` to reliably target test portal environments (`notreallyadobe.aka0lisa.dev`). Configured desktop release siteURL, paper plane favicon/icon branding, and curl pipe compatibility for the MailBuddy installer (`mail-web/convex/http.ts`, `mail-web/convex/pipeline/cancellationAgent.ts`, `mail-web/public/install.sh`, `mail-desktop/MailBuddy/ConvexService.swift`, `mail-desktop/scripts/package-release.sh`, `mail-web/app/icon.svg`). Convex features: HTTP actions, components, file storage, queries, mutations, actions.
 
