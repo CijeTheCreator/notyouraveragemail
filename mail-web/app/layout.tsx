@@ -6,6 +6,12 @@ import { Toaster } from "sonner";
 export const metadata: Metadata = {
   title: "NotYourAverageMail",
   description: "Next-generation, AI-native email experience with autonomous agent orchestration",
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico" },
+    ],
+  },
 };
 
 export default function RootLayout({
