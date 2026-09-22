@@ -1,6 +1,6 @@
-# Modern Mail Desktop Companion (`mail-desktop`) ⚡
+# NotYourAverageMail Desktop Companion — MailBuddy (`mail-desktop`) ⚡
 
-An AI mail companion that lives as a buddy next to your cursor on macOS. Enhanced from **Clicky**, retaining its dark aesthetic and transparent cursor overlay, integrated with **Modern Mail's Convex backend** and **OpenAI** (Computer Use + LLM drafting with `gpt-5-nano` & real-time live streaming transcription with `gpt-live-transcribe`).
+An AI mail companion that lives as a buddy next to your cursor on macOS. Enhanced from **Clicky**, retaining its dark aesthetic and transparent cursor overlay, integrated with **NotYourAverageMail's Convex backend** and **OpenAI** (Computer Use + LLM drafting with `gpt-5-nano` & real-time live streaming transcription with `gpt-live-transcribe`).
 
 ---
 
