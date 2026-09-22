@@ -2,7 +2,6 @@ import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
 import { api, internal, components } from "./_generated/api";
 import { auth } from "./auth";
-import { registerStaticRoutes } from "@convex-dev/static-hosting";
 
 const http = httpRouter();
 
@@ -461,7 +460,114 @@ http.route({
   handler: handleGetOptOutSkill,
 });
 
-// Static hosting catch-all must be registered last
-registerStaticRoutes(http, components.staticHosting);
+// Enhanced static hosting handler supporting Next.js export routes (e.g. /auth/companion -> /auth/companion.html)
+const serveStaticFile = httpAction(async (ctx, request) => {
+  const url = new URL(request.url);
+  let path = "";
+  try {
+    path = decodeURIComponent(url.pathname);
+  } catch {
+    return new Response("Bad Request", { status: 400 });
+  }
+
+  if (!path || path === "/") {
+    path = "/index.html";
+  }
+
+  let asset = null;
+  // 1. For extensionless paths (like /auth/companion or /mail), check for the corresponding .html file first
+  if (!path.includes(".") && path !== "/index.html") {
+    asset = await ctx.runQuery(components.staticHosting.lib.resolveAssetForHttp, {
+      path: `${path}.html`,
+      spaFallback: false,
+    });
+    if (asset) {
+      path = `${path}.html`;
+    }
+  }
+
+  // 2. Query exact path with SPA fallback
+  if (!asset) {
+    asset = await ctx.runQuery(components.staticHosting.lib.resolveAssetForHttp, {
+      path,
+    });
+  }
+
+  if (!asset) {
+    return new Response("Not Found", {
+      status: 404,
+      headers: { "Content-Type": "text/plain" },
+    });
+  }
+
+  const contentType =
+    asset.contentType ||
+    (path.endsWith(".html") ? "text/html; charset=utf-8" : "application/octet-stream");
+  const cacheControl = path.endsWith(".html")
+    ? "public, max-age=0, must-revalidate"
+    : "public, max-age=31536000, immutable";
+
+  if (asset.blobId && !contentType.startsWith("text/html")) {
+    return new Response(null, {
+      status: 302,
+      headers: {
+        Location: `${url.origin}/fs/blobs/${asset.blobId}`,
+        "Cache-Control": cacheControl,
+      },
+    });
+  }
+
+  if (asset.appStorageId) {
+    const blob = await ctx.storage.get(asset.appStorageId as any);
+    if (!blob) {
+      return new Response("Not Found", { status: 404 });
+    }
+    return new Response(blob, {
+      status: 200,
+      headers: {
+        "Content-Type": contentType,
+        "Cache-Control": cacheControl,
+        ...(asset.etag ? { ETag: asset.etag } : {}),
+        "X-Content-Type-Options": "nosniff",
+      },
+    });
+  }
+
+  if (!asset.storageUrl) {
+    return new Response("Asset not available", {
+      status: 500,
+      headers: { "Content-Type": "text/plain" },
+    });
+  }
+
+  const ifNoneMatch = request.headers.get("If-None-Match");
+  if (asset.etag && ifNoneMatch && ifNoneMatch.includes(asset.etag)) {
+    return new Response(null, {
+      status: 304,
+      headers: { ETag: asset.etag, "Cache-Control": cacheControl },
+    });
+  }
+
+  const storageResponse = await fetch(asset.storageUrl);
+  if (!storageResponse.ok || !storageResponse.body) {
+    return new Response("Storage error", { status: 500 });
+  }
+
+  return new Response(storageResponse.body, {
+    status: 200,
+    headers: {
+      "Content-Type": contentType,
+      "Cache-Control": cacheControl,
+      ...(asset.etag ? { ETag: asset.etag } : {}),
+      "X-Content-Type-Options": "nosniff",
+    },
+  });
+});
+
+http.route({
+  pathPrefix: "/",
+  method: "GET",
+  handler: serveStaticFile,
+});
 
 export default http;
