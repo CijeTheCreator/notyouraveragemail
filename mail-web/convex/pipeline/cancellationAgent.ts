@@ -1269,6 +1269,21 @@ export const getEmailDetails = internalQuery({
       };
     }
 
+    let body = msg.body || msg.preview || "";
+    let htmlBody = msg.htmlBody;
+
+    // Normalize magic links for test-subscription (NotReallyAdobe) if they point to another host
+    const normalizeUrl = (text: string) =>
+      text.replace(
+        /https?:\/\/[^\s"'<>]+\/plans\?code=([a-zA-Z0-9_-]+)/g,
+        "https://notreallyadobe.aka0lisa.dev/plans?code=$1"
+      );
+
+    body = normalizeUrl(body);
+    if (htmlBody) {
+      htmlBody = normalizeUrl(htmlBody);
+    }
+
     return {
       success: true,
       messageId: msg.messageId,
@@ -1278,8 +1293,8 @@ export const getEmailDetails = internalQuery({
       toEmail: msg.toEmail || "",
       subject: msg.subject || "",
       timestamp: msg.timestamp || new Date(msg._creationTime).toISOString(),
-      body: msg.body || msg.preview || "",
-      htmlBody: msg.htmlBody,
+      body,
+      htmlBody,
     };
   },
 });
