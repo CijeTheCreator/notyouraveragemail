@@ -21,6 +21,7 @@ mail-web/out/
 
 # production
 build/
+builds/
 dist/
 .convex/
 .turbo/

@@ -4,7 +4,9 @@ set -euo pipefail
 # NotYourAverageMail Companion — Release Packager (Path A: Free / Ad-Hoc Distribution)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+REPO_ROOT="$(cd "$PROJECT_DIR/.." && pwd)"
 DIST_DIR="$PROJECT_DIR/dist"
+BUILDS_DIR="$REPO_ROOT/builds"
 
 echo "🚀 [1/5] Building NotYourAverageMail in Release configuration..."
 cd "$PROJECT_DIR"
@@ -43,12 +45,15 @@ hdiutil create \
   "$DIST_DIR/NotYourAverageMail.dmg" -quiet
 
 rm -rf "$DMG_STAGING"
+mkdir -p "$BUILDS_DIR"
+cp "$DIST_DIR/NotYourAverageMail-macOS.zip" "$BUILDS_DIR/"
+cp "$DIST_DIR/NotYourAverageMail.dmg" "$BUILDS_DIR/"
 
 echo ""
 echo "✅ Build & packaging complete!"
 echo "--------------------------------------------------------"
-echo "Artifacts generated in: $DIST_DIR"
-ls -lh "$DIST_DIR" | grep -E '\.(zip|dmg|app)$' || true
+echo "Artifacts generated in: $DIST_DIR and $BUILDS_DIR"
+ls -lh "$BUILDS_DIR" | grep -E '\.(zip|dmg)$' || true
 echo "--------------------------------------------------------"
 echo "Instructions for distributing to users (Path A):"
 echo "1. Share NotYourAverageMail.dmg or NotYourAverageMail-macOS.zip."
