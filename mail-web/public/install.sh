@@ -4,10 +4,14 @@ set -euo pipefail
 # NotYourAverageMail Companion — One-line Terminal Installer
 echo "📦 Installing NotYourAverageMail Companion..."
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd || echo "")"
-PROJECT_DIR="${SCRIPT_DIR}/../.."
+SCRIPT_DIR=""
+PROJECT_DIR=""
+if [ -n "${BASH_SOURCE[0]:-}" ] && [ -f "${BASH_SOURCE[0]}" ]; then
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd || echo "")"
+  PROJECT_DIR="${SCRIPT_DIR}/../.."
+fi
 
-if [ -d "$PROJECT_DIR/mail-desktop" ]; then
+if [ -n "$PROJECT_DIR" ] && [ -d "$PROJECT_DIR/mail-desktop" ]; then
   echo "🔨 Building and installing from local repository..."
   cd "$PROJECT_DIR/mail-desktop"
   xcodebuild -scheme MailBuddy -configuration Debug -destination 'platform=macOS' CODE_SIGN_IDENTITY="-" build -quiet
