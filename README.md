@@ -128,8 +128,6 @@ A native Swift / AppKit companion adapted from Clicky (YC) that lives beside you
 .
 ├── README.md               # Root repository documentation (this file)
 ├── hackathon.md            # Evidence-based hackathon build log & milestones
-├── deployment.md           # Production deployment & hosting guide
-├── landing-copy.md         # Landing page copy & product messaging
 │
 ├── mail-web/               # Web Application & Convex Backend
 │   ├── app/                # Next.js 16 App Router (React 19, Tailwind CSS v4)
